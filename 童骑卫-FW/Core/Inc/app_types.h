@@ -78,7 +78,8 @@ typedef struct
 #define FAULT_SENSOR            (1u << 10)
 #define FAULT_PEDAL             (1u << 11)
 #define FAULT_COMMISSION        (1u << 12)
-#define FAULT_MASK_ALL          (0x1FFFu)
+#define FAULT_ARM               (1u << 13)
+#define FAULT_MASK_ALL          (0x3FFFu)
 #define FAULT_MASK_REMOTE       (FAULT_REMOTE_STOP | FAULT_INJECT)
 
 /* 日志事件码 */

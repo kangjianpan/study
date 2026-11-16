@@ -35,6 +35,8 @@ volatile uint8_t  g_link_seen = 0u;
 /* 安全任务本拍的结论：允许驱动为 1。上电初值 0 —— 在 SafetyTask
  * 跑完第一拍之前，任何人都不能动手，这是最保守的默认。 */
 volatile uint8_t  g_drive_allowed = 0u;
+volatile uint8_t  g_arm_can_run = 0u;
+volatile uint8_t  g_sensor_initializing = 1u;
 volatile uint32_t g_control_tick = 0u;
 volatile uint32_t g_local_faults = 0u;
 

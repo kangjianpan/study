@@ -13,7 +13,7 @@
  * 急停      PB15         低电平有效，底板常闭回路断线下拉
  * 安全带    PB14         霍尔开关，扣合时为低
  * 蜂鸣器    PA15         高电平响
- * 状态灯    PC13         低电平点亮（板载 LED1）
+ * ARM回读   PC13         输入；禁止作为板载 LED 输出
  * ADC       PA0 电流 / PA1 母线电压 / PA3 踏板 / PB0 座垫压力片
  *--------------------------------------------------------------------------*/
 
@@ -31,9 +31,6 @@
 
 #define BUZZER_Pin              GPIO_PIN_15
 #define BUZZER_GPIO_Port        GPIOA
-
-#define STATUS_LED_Pin          GPIO_PIN_13
-#define STATUS_LED_GPIO_Port    GPIOC
 
 /* ADC 通道分配 */
 #define ADC_CH_CURRENT          ADC_CHANNEL_0     /* PA0 电流采样 */

@@ -87,6 +87,11 @@ check('wear helmet', t.wearState.helmet === true);
 /*  长度不对必须拒，而不是"尽量解" */
 check('reject 13 bytes', proto.decodeTelemetry(new Uint8Array(13)).valid === false);
 check('reject 15 bytes', proto.decodeTelemetry(new Uint8Array(15)).valid === false);
+var armFaultFrame = new Uint8Array(14);
+armFaultFrame[11] = 0x20;
+var armFault = proto.decodeTelemetry(armFaultFrame);
+eq('ARM feedback fault high byte', armFault.faults, 0x2000);
+eq('ARM feedback fault label', armFault.faultList[0].name, '手动使能反馈异常');
 
 /*  所有位都置 1 时三件装备都判为合格 */
 var allWear = proto.decodeWear(0x1F);

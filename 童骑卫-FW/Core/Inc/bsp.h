@@ -10,7 +10,7 @@
 void     Bsp_Gpio_Init(void);
 void     Bsp_Usart3_Init(void);        /* 和 ESP32 通信，PB10/PB11，115200 */
 void     Bsp_Adc_Init(void);
-uint16_t Bsp_Adc_Read(uint32_t channel);
+uint16_t Bsp_Adc_Read(uint32_t channel); /* UINT16_MAX on conversion failure. */
 
 void     Bsp_Iwdg_Init(void);
 void     Bsp_Iwdg_Feed(void);

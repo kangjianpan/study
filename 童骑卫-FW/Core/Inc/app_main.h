@@ -82,6 +82,8 @@ extern volatile uint8_t   g_link_seen;
  * 用 volatile 不加锁：单字节写是原子的，读者要么看到旧值要么看到新值，
  * 而这里本来就是个"几毫秒前"的结论，没有中间态可言。 */
 extern volatile uint8_t   g_drive_allowed;
+extern volatile uint8_t   g_arm_can_run;
+extern volatile uint8_t   g_sensor_initializing;
 extern volatile uint32_t  g_control_tick;
 extern volatile uint32_t  g_local_faults;
 

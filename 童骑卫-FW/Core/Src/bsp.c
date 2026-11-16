@@ -137,7 +137,7 @@ void Bsp_Adc_Init(void)
 uint16_t Bsp_Adc_Read(uint32_t channel)
 {
     ADC_ChannelConfTypeDef cfg;
-    uint16_t value = 0u;
+    uint16_t value = UINT16_MAX;
 
     cfg.Channel      = channel;
     cfg.Rank         = ADC_REGULAR_RANK_1;
@@ -145,12 +145,12 @@ uint16_t Bsp_Adc_Read(uint32_t channel)
 
     if (HAL_ADC_ConfigChannel(&hadc1, &cfg) != HAL_OK)
     {
-        return 0u;
+        return UINT16_MAX;
     }
 
     if (HAL_ADC_Start(&hadc1) != HAL_OK)
     {
-        return 0u;
+        return UINT16_MAX;
     }
 
     if (HAL_ADC_PollForConversion(&hadc1, 5u) == HAL_OK)

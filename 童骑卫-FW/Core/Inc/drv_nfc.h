@@ -8,7 +8,9 @@
 
 int DrvNfc_Init(void);
 
-/* 读到有效头盔标签时返回 DRV_OK，并把 4 字节 UID 填进 uid。 */
-int DrvNfc_PollTag(uint8_t uid[4]);
+/* Full ISO14443-A UID (4/7/10 bytes). AGAIN=no tag, ERR=reader/protocol error.
+ * A detected UID is not authorization; callers must check the full allowlist. */
+int DrvNfc_PollTag(uint8_t uid[10], uint8_t *length);
+int DrvNfc_IsAuthorized(const uint8_t *uid, uint8_t length);
 
 #endif /* __DRV_NFC_H */

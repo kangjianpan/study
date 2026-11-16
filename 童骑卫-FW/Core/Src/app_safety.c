@@ -4,6 +4,7 @@
 #include "app_state.h"
 #include "bsp.h"
 #include "drv_motor.h"
+#include "app_arm.h"
 
 /* SafetyTask：最高优先级，周期 10 ms
  *
@@ -23,7 +24,7 @@
 
 #define FAULT_MASK_HARD (FAULT_ESTOP      | FAULT_ROLLOVER   | FAULT_CRASH     | \
                          FAULT_OVERCURRENT | FAULT_UNDERVOLT  | FAULT_REMOTE_STOP | \
-                         FAULT_INJECT | FAULT_SENSOR | FAULT_PEDAL | FAULT_COMMISSION)
+                         FAULT_INJECT | FAULT_SENSOR | FAULT_PEDAL | FAULT_COMMISSION | FAULT_ARM)
 
 #define FAULT_MASK_SOFT (FAULT_INTERLOCK  | FAULT_OVERSPEED)
 
@@ -180,7 +181,7 @@ static uint32_t evaluate_local_faults(const sensor_data_t *s, const limit_cfg_t 
  * 是个纯函数，所以不用读任务里剩下的代码也能单独推演。 */
 static app_state_t next_state(app_state_t st, uint32_t hard, uint32_t soft,
                               uint16_t throttle, uint32_t state_ms,
-                              uint8_t latched)
+                              uint8_t latched, uint8_t can_run)
 {
     app_state_t next = st;
 
@@ -214,8 +215,7 @@ static app_state_t next_state(app_state_t st, uint32_t hard, uint32_t soft,
         {
             next = APP_STATE_DECEL;
         }
-        else if ((throttle > PEDAL_RUN_THRESHOLD) &&
-                 HAL_GPIO_ReadPin(ARM_OK_GPIO_Port, ARM_OK_Pin) == GPIO_PIN_SET)
+        else if ((throttle > PEDAL_RUN_THRESHOLD) && can_run)
         {
             next = APP_STATE_RUN;
         }
@@ -282,14 +282,16 @@ void SafetyTask(void *arg)
     uint8_t       link_lost;    /* 本拍的失联判断，和 s_link_lost 比较得出跳变 */
     uint8_t       enable;       /* 本拍该不该给电调使能 */
     app_state_t   st;           /* 当前状态 */
-    uint8_t       arm_seen = 0u;
-    uint8_t       arm_idle_seen = 0u;
+    arm_sequence_t arm = {0};
+    TickType_t    boot_since;
+    uint8_t       arm_feedback;
     app_state_t   next;         /* 状态机算出的下一状态 */
 
     (void)arg;
 
     last_wake   = xTaskGetTickCount();
     state_since = last_wake;
+    boot_since = last_wake;
 
     for (;;)
     {
@@ -303,6 +305,9 @@ void SafetyTask(void *arg)
                                          : s.throttle_permille;
 
         local  = evaluate_local_faults(&s, &lim);
+        arm_feedback = HAL_GPIO_ReadPin(ARM_OK_GPIO_Port, ARM_OK_Pin) == GPIO_PIN_SET;
+        Arm_Update(&arm, g_drive_allowed, arm_feedback, throttle, HAL_GetTick());
+        if (arm.fault) local |= FAULT_ARM;
         if (g_dbg_interlock_fail != 0u)
         {
             local |= FAULT_INTERLOCK;
@@ -354,29 +359,14 @@ void SafetyTask(void *arg)
         hard = all & FAULT_MASK_HARD;
         soft = all & FAULT_MASK_SOFT;
 
-        /* Hardware ARM can close only in READY. Require a released pedal AFTER
-         * ARM feedback, then a new press; pressing ARM with pedal down cannot run. */
-        if (HAL_GPIO_ReadPin(ARM_OK_GPIO_Port, ARM_OK_Pin) == GPIO_PIN_RESET)
-        {
-            arm_seen = 0u;
-            arm_idle_seen = 0u;
-        }
-        else if (!arm_seen)
-        {
-            arm_seen = 1u;
-            arm_idle_seen = 0u;
-        }
-        else if (throttle < PEDAL_IDLE_THRESHOLD)
-        {
-            arm_idle_seen = 1u;
-        }
         st       = g_app_state;
         state_ms = (uint32_t)(xTaskGetTickCount() - state_since);
-        next     = next_state(st, hard, soft, throttle, state_ms, s_decel_latched);
-        if ((hard == 0u) && (next == APP_STATE_RUN) && !arm_idle_seen)
-            next = APP_STATE_READY;
-        if ((hard == 0u) && (st == APP_STATE_RUN) && !arm_seen)
+        next     = next_state(st, hard, soft, throttle, state_ms, s_decel_latched, Arm_CanRun(&arm));
+        if ((hard == 0u) && (st == APP_STATE_RUN || st == APP_STATE_DECEL) && !arm_feedback)
             next = APP_STATE_STANDBY;
+        /* After any controlled stop, require a fresh pedal release. */
+        if (st == APP_STATE_DECEL && next == APP_STATE_READY) arm.idle_seen = 0;
+        g_arm_can_run = Arm_CanRun(&arm);
 
         if ((st == APP_STATE_DECEL) && (next == APP_STATE_FAULT_LOCK))
         {
@@ -404,9 +394,12 @@ void SafetyTask(void *arg)
         }
 
         /* 只在本任务里喂狗。本任务一旦卡住，复位就会跟上来。 */
-        if (s.sample_valid &&
+        if ((s.sample_valid &&
             ((xTaskGetTickCount() - s.sample_tick) <= pdMS_TO_TICKS(SENSOR_STALE_MS)) &&
-            ((xTaskGetTickCount() - g_control_tick) <= pdMS_TO_TICKS(CONTROL_STALE_MS)))
+            ((xTaskGetTickCount() - g_control_tick) <= pdMS_TO_TICKS(CONTROL_STALE_MS))) ||
+            (g_sensor_initializing &&
+             (xTaskGetTickCount() - boot_since) < pdMS_TO_TICKS(SENSOR_INIT_TIMEOUT_MS) &&
+             (xTaskGetTickCount() - g_control_tick) <= pdMS_TO_TICKS(CONTROL_STALE_MS)))
             Bsp_Iwdg_Feed();
 
         /* 把故障的跳变推给黑匣子 */

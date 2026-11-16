@@ -487,6 +487,21 @@
               <FilePath>../Core/Src/drv_motor.c</FilePath>
             </File>
             <File>
+              <FileName>drv_bus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/drv_bus.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_wheel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/drv_wheel.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_arm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/app_arm.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_imu.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/drv_imu.c</FilePath>
@@ -580,6 +595,16 @@
               <FileName>stm32f1xx_hal_exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c</FilePath>
             </File>
             <File>
               <FileName>stm32f1xx_hal_adc.c</FileName>

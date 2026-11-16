@@ -9,7 +9,7 @@
  * 中文只出现在注释里；printf 的格式串一律保持纯 ASCII，
  * 否则 ARMCC 会报 #8: missing closing quote。 */
 
-#define APP_VERSION_STR         "0.2.0-hw-v2"
+#define APP_VERSION_STR         "0.3.0-hw-v2"
 
 /* 编译开关 */
 /* 1 = 台架调试模式：IMU / ToF / NFC 还没装，
@@ -140,12 +140,16 @@
 
 /* Hardware v2: no vehicle drive until real sensor drivers and commissioning pass.
  * This is deliberately separate from the debug/interlock bypass switch. */
+#ifndef APP_DRIVE_COMMISSIONED
 #define APP_DRIVE_COMMISSIONED   0
+#endif
 #define SENSOR_STALE_MS          100U
 #define CONTROL_STALE_MS         50U
 #define PEDAL_IDLE_MV            800U
 #define PEDAL_FULL_MV            4200U
 #define PEDAL_FAULT_LOW_MV       500U
 #define PEDAL_FAULT_HIGH_MV      4500U
+
+#include "app_commission.h"
 
 #endif /* __APP_CONFIG_H */

@@ -1,34 +1,39 @@
 #include "drv_imu.h"
+#include "drv_bus.h"
 
-/* 待办（B 同学）：实现 SPI1 上的 ICM-42688-P
- *   - SPI1：PA5 SCK / PA6 MISO / PA7 MOSI / PA4 CS
- *   - WHO_AM_I（0x75 寄存器）必须读到 0x47
- *   - 量程：加速度 ±4 g，角速度 ±500 dps
- *   - 换算：accel_mg   = raw * 4000 / 32768（约等于毫 g）
- *           gyro_dps10 = raw * 5000 / 32768（0.1 度/秒）
- *
- * 在这之前桩函数一律返回"没有硬件"，
- * 这样 SensorTask 会停在台架模式，而不是误报一个侧翻故障把车锁死。
- * （驱动接进来后，访问 SPI1 前同样要先拿 g_mtx_i2c。） */
+static int write_reg(uint8_t reg, uint8_t value)
+{ return DrvBus_SpiWrite(0, reg & 0x7fu, &value, 1); }
+static int read_reg(uint8_t reg, uint8_t *value, uint16_t n)
+{ return DrvBus_SpiRead(0, reg | 0x80u, value, n); }
 
 int DrvImu_Init(void)
 {
-    return DRV_ERR;
+    uint8_t id;
+    if (write_reg(0x76, 0) || write_reg(0x11, 1)) return DRV_ERR;
+    DrvBus_Delay(2);
+    if (read_reg(0x75, &id, 1) || id != 0x47) return DRV_ERR;
+    /* Bank 0: +/-500 dps, +/-4 g, 100 Hz, low-noise mode. */
+    if (write_reg(0x4f, 0x48) || write_reg(0x50, 0x48) || write_reg(0x4e, 0x0f))
+        return DRV_ERR;
+    DrvBus_Delay(50);
+    if (read_reg(0x4f, &id, 1) || id != 0x48 ||
+        read_reg(0x50, &id, 1) || id != 0x48) return DRV_ERR;
+    return DRV_OK;
 }
 
 int DrvImu_Read(int16_t accel_mg[3], int16_t gyro_dps10[3])
 {
-    if (accel_mg != 0)
+    uint8_t status, data[12], i;
+    int16_t raw;
+    if (!accel_mg || !gyro_dps10 || read_reg(0x2d, &status, 1)) return DRV_ERR;
+    if (!(status & 0x08u)) return DRV_AGAIN;
+    if (read_reg(0x1f, data, sizeof(data))) return DRV_ERR;
+    for (i = 0; i < 6; ++i)
     {
-        accel_mg[0] = 0;
-        accel_mg[1] = 0;
-        accel_mg[2] = 1000;     /* 假装车身水平：1 g 压在 Z 轴上 */
+        raw = (int16_t)(((uint16_t)data[i * 2] << 8) | data[i * 2 + 1]);
+        if (raw == (int16_t)-32768) return DRV_ERR;
+        if (i < 3) accel_mg[i] = (int16_t)((int32_t)raw * 4000 / 32768);
+        else gyro_dps10[i - 3] = (int16_t)((int32_t)raw * 5000 / 32768);
     }
-    if (gyro_dps10 != 0)
-    {
-        gyro_dps10[0] = 0;
-        gyro_dps10[1] = 0;
-        gyro_dps10[2] = 0;
-    }
-    return DRV_ERR;
+    return DRV_OK;
 }
