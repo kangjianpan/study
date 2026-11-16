@@ -1,0 +1,13 @@
+{
+  "official_client_version": "3.2.91",
+  "sheets": 1,
+  "symbols": 139,
+  "devices": 139,
+  "pins": 427,
+  "graphics": 319,
+  "all_symbol_docType": 2,
+  "defaultSheet_valid": true,
+  "all_library_references_valid": true,
+  "canvas_parser_pass": true,
+  "limits": "Parser validation only; editor display and ERC/DRC not tested."
+}

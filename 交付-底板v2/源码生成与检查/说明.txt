@@ -1,1 +1,0 @@
-这些是本次修订的审计脚本，依赖项目tmp中的原版解析资料，不是独立EDA编辑器。build_project.py为工程生成器；verify_render.py从交付epro2重新计算实际连通性和预览。不要将脚本检查结果当成官方ERC/DRC。
