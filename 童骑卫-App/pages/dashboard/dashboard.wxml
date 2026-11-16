@@ -1,0 +1,74 @@
+<view class="wrap">
+
+  <view class="card" wx:if="{{!connected}}">
+    <view class="card-title">未连接</view>
+    <view class="muted">先去「连接」页扫描并连上车端网关。</view>
+    <view class="btn btn-primary gap-top" bindtap="goConnect">去连接</view>
+  </view>
+
+  <block wx:else>
+
+    <view class="card hero">
+      <view class="row">
+        <view class="muted">当前车速</view>
+        <view class="pill {{stale ? 'pill-warn' : 'pill-ok'}}">
+          {{stale ? '链路中断 ' + frameAge : '链路正常'}}
+        </view>
+      </view>
+
+      <view class="speed num">{{speed}}<text class="unit">km/h</text></view>
+
+      <view class="bar">
+        <view class="bar-fill" style="width: {{speedPct}}%"></view>
+      </view>
+      <view class="row muted">
+        <view>限速 {{limit}} km/h</view>
+        <view class="num">{{speedPct}}%</view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="row">
+        <view class="card-title">车辆状态</view>
+        <view class="pill {{stateClass}}">{{stateName}}</view>
+      </view>
+      <view class="row gap-top">
+        <view class="muted">电池</view>
+        <view class="num">{{volts}} V</view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">穿戴联锁</view>
+      <view class="wear">
+        <view class="chip {{wear.seat ? 'ok' : 'bad'}}">
+          <view class="chiptxt">坐垫</view>
+          <view class="chipval">{{wear.seat ? '已坐稳' : '未检测到'}}</view>
+        </view>
+        <view class="chip {{wear.belt ? 'ok' : 'bad'}}">
+          <view class="chiptxt">安全带</view>
+          <view class="chipval">{{wear.belt ? '已扣' : '未扣'}}</view>
+        </view>
+        <view class="chip {{wear.helmet ? 'ok' : 'bad'}}">
+          <view class="chiptxt">头盔</view>
+          <view class="chipval">{{wear.helmet ? '已佩戴' : '未佩戴'}}</view>
+        </view>
+      </view>
+      <view class="muted gap-top">
+        三项任一不合格，车辆不进就绪。
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{faults.length}}">
+      <view class="card-title">故障</view>
+      <view class="row fault" wx:for="{{faults}}" wx:key="*this">
+        <view class="dot"></view>
+        <view>{{item}}</view>
+      </view>
+    </view>
+
+    <view class="btn btn-ghost" bindtap="goRemote">远程查看（只读）</view>
+
+  </block>
+
+</view>

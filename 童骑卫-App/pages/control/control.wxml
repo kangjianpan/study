@@ -1,0 +1,69 @@
+<view class="wrap">
+
+  <view class="card" wx:if="{{!connected}}">
+    <view class="card-title">未连接</view>
+    <view class="muted">连上车辆之后才能下发限速和停车指令。</view>
+  </view>
+
+  <block wx:else>
+
+    <view class="card">
+      <view class="row">
+        <view class="card-title">家长限速</view>
+        <view class="muted">车上生效：<text class="num">{{effective}}</text> km/h</view>
+      </view>
+
+      <view class="limit num">{{limit}}<text class="unit">km/h</text></view>
+
+      <slider
+        min="{{limitMin}}"
+        max="{{limitMax}}"
+        step="1"
+        value="{{limit}}"
+        activeColor="#12805c"
+        backgroundColor="#e3e8ec"
+        block-size="28"
+        bindchanging="onLimitChanging"
+        bindchange="onLimitChange"
+      />
+
+      <view class="row muted">
+        <view>{{limitMin}}</view>
+        <view>{{limitMax}}</view>
+      </view>
+
+      <view class="muted gap-top">
+        拖动松手后才下发，避免滑动过程中连发几十条。
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">停车</view>
+      <view class="row btnrow">
+        <view class="btn btn-danger flex1" bindtap="onStop">请求停车</view>
+        <view class="btn btn-ghost flex1" bindtap="onResume">解除停车</view>
+      </view>
+      <view class="muted gap-top">
+        这是"请求减速到 0"，走的是通信链路。车把上的物理急停直接切接触器，
+        不经过任何软件——两套都留着，不要拿这个替代那个。
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">场地限速</view>
+      <view class="muted">
+        和上面的家长限速是两个来源，车端取最小值。
+        同一台车上，场地永远比家长更保守。
+      </view>
+      <view class="btn btn-ghost gap-top" bindtap="onVenueLimit">
+        以当前值下发场地限速
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="muted">车辆状态：{{stateName}}</view>
+    </view>
+
+  </block>
+
+</view>

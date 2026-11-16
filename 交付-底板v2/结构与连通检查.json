@@ -1,0 +1,11 @@
+{
+  "components": 139,
+  "pins": 427,
+  "pages": 6,
+  "nets": 81,
+  "wires": 398,
+  "PCB_pad_assignments": 430,
+  "key_spec_pins": 88,
+  "checks": "Archive CRC, references, actual pin/wire connectivity, pin NCs, pad coverage, cross-page labels, PCB net agreement, key interface specification, multi-pin nets: PASS",
+  "limits": "Custom format/connectivity check only. Not official EasyEDA import/ERC/DRC, electrical simulation or hardware test."
+}

@@ -1,0 +1,34 @@
+{
+  "pages": [
+    "pages/connect/connect",
+    "pages/dashboard/dashboard",
+    "pages/control/control",
+    "pages/records/records",
+    "pages/remote/remote"
+  ],
+  "window": {
+    "navigationBarTitleText": "童骑卫 GuardKart",
+    "navigationBarBackgroundColor": "#111820",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#eef2f5"
+  },
+  "tabBar": {
+    "color": "#8a94a6",
+    "selectedColor": "#12805c",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/connect/connect", "text": "连接" },
+      { "pagePath": "pages/dashboard/dashboard", "text": "仪表" },
+      { "pagePath": "pages/control/control", "text": "控制" },
+      { "pagePath": "pages/records/records", "text": "记录" }
+    ]
+  },
+  "permission": {
+    "scope.bluetooth": {
+      "desc": "用于连接童骑卫车上的蓝牙网关"
+    }
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

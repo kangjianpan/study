@@ -1,0 +1,8 @@
+.item {
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f3f5;
+}
+
+.item:last-of-type {
+  border-bottom: none;
+}

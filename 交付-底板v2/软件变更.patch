@@ -1,0 +1,4813 @@
+--- a/童骑卫-FW/Core/Inc/app_config.h
++++ b/童骑卫-FW/Core/Inc/app_config.h
+@@ -1,141 +1,151 @@
+-#ifndef __APP_CONFIG_H
+-#define __APP_CONFIG_H
+-
+-#include <stdint.h>
+-
+-/* GuardKart 中央配置文件
+- *
+- * 所有可调参数都集中在这里，不要在各模块里散落魔法数字。
+- * 中文只出现在注释里；printf 的格式串一律保持纯 ASCII，
+- * 否则 ARMCC 会报 #8: missing closing quote。 */
+-
+-#define APP_VERSION_STR         "0.1.0"
+-
+-/* 编译开关 */
+-/* 1 = 台架调试模式：IMU / ToF / NFC 还没装，
+- *     佩戴连锁整个旁路掉，好在桌面上先跑起来。
+- *     传感器接好并标定之后改回 0。 */
+-#define APP_BRINGUP_MODE        1
+-
+-/* 1 = 打开独立看门狗。用调试器单步时记得改成 0，
+- *     否则每停在一个断点上芯片就会被复位。 */
+-#define APP_USE_IWDG            1
+-
+-/* 1 = 除 USART3 外，调试串口 USART1 也接受协议帧。
+- *     这样只插一根 USB 线就能发指令测试。 */
+-#define APP_DEBUG_UART1_CMD     1
+-
+-/* 任务优先级（configMAX_PRIORITIES = 32，这里只用到 1..6，数字越大越优先） */
+-#define PRIO_SAFETY             6
+-#define PRIO_CONTROL            5
+-#define PRIO_SENSOR             4
+-#define PRIO_COMM               3
+-#define PRIO_TELEMETRY              2
+-#define PRIO_HMI                2
+-#define PRIO_LOG                1
+-
+-/* 任务栈大小，单位是字（1 字 = 4 字节），所以 128 就是 512 字节 */
+-#define STK_SAFETY              128
+-#define STK_CONTROL             192
+-#define STK_SENSOR              192
+-#define STK_COMM                256
+-#define STK_TELEMETRY               256
+-#define STK_HMI                 192
+-#define STK_LOG                 256
+-
+-/* 各任务的周期，单位毫秒 */
+-#define PERIOD_SAFETY_MS        10
+-#define PERIOD_CONTROL_MS       5
+-#define PERIOD_SENSOR_MS        10
+-#define PERIOD_COMM_MS          20
+-#define PERIOD_TELEMETRY_MS         100
+-#define PERIOD_HMI_MS           33
+-
+-/* 安全阈值 */
+-/* 状态机（对应方案文档 7.5 节） */
+-#define SELFTEST_MS             200     /* 复位后等传感器稳定的时间 */
+-#define DECEL_TIMEOUT_MS        3000    /* DECEL 超过这么久没恢复就锁死 */
+-
+-/* 踏板门限，单位千分比。进 RUN 要求明确踩下，回 READY 要求明确松开；
+- * 两者之间留这段死区，是为了防止"油门本来就踩着"的时候一使能就直接窜出去。 */
+-#define PEDAL_RUN_THRESHOLD     100
+-#define PEDAL_IDLE_THRESHOLD    50
+-
+-/* 0 = 踏板还没接：SensorTask 一律上报 0，
+- *     免得悬空的 PA3 上那点 ADC 噪声把状态机一路推到 RUN。
+- *     分压电路焊好并标定之后改 1。 */
+-#define APP_PEDAL_PRESENT       0
+-
+-/* 1 = 进 READY 就拉高电调使能线。航模电调上电后要先收到一段中立脉宽才会上膛，
+- *     所以必须提前给使能，否则到了 RUN 它还是没准备的状态。
+- * 0 = 只在 RUN / DECEL 使能。这样孩子不踩踏板车子就永远上不了膛，
+- *     第一次 RUN 是从"未上膛"开始的。
+- *
+- * 注意：READY 到底算不算安全的待机，完全取决于电调是否真把 1500 us 当成零扭矩。
+- * 这一点必须在实物电调上实测过，才能在设计文档里写"READY 是安全待机状态"，
+- * 见方案文档 13.3 节。 */
+-#define APP_ENABLE_IN_READY     1
+-
+-#define LIMIT_VENUE_DEFAULT     12      /* km/h，场地硬上限 */
+-#define LIMIT_PARENT_DEFAULT    10      /* km/h，家长设定 */
+-#define LIMIT_CHILD_DEFAULT     12      /* km/h，孩子端选择，只许往下调 */
+-#define LIMIT_FALLBACK          6       /* km/h，手机断连后降到的速度 */
+-
+-#define LINK_TIMEOUT_MS         3000    /* BLE / 串口心跳超时 */
+-#define INTERLOCK_DEBOUNCE_MS   300     /* 佩戴传感器要稳定这么久才算数 */
+-#define ROLL_LIMIT_DEG10        450     /* 侧翻角门限，45.0 度 */
+-#define ROLL_TIME_MS            200     /* 角度要持续这么久才判定侧翻 */
+-#define CRASH_ACCEL_G10         30      /* 碰撞加速度门限，3.0 g */
+-#define TTC_WARN_MS             1500
+-#define TTC_BRAKE_MS            800
+-#define TOF_STOP_MM             300
+-
+-/* 柔性限速 */
+-#define SOFT_LIMIT_DEADBAND_X100  50    /* 超出限速 0.5 km/h 就开始收油门 */
+-#define OVERSPEED_FACTOR_X100    120    /* 到限速的 1.20 倍算硬故障 */
+-
+-/* 油门斜率，单位千分比 / 每个控制周期（5 ms） */
+-#define THROTTLE_RAMP_UP        25
+-#define THROTTLE_RAMP_DOWN      60
+-
+-/* 电机 / 电调 */
+-#define ESC_PULSE_NEUTRAL_US    1500
+-#define ESC_PULSE_MIN_US        1000
+-#define ESC_PULSE_MAX_US        2000
+-
+-/* ADC 换算 */
+-#define ADC_VREF_MV             3300U
+-#define ADC_FULL_SCALE          4095U
+-#define VBUS_DIVIDER_X10        110     /* 100k / 10k 分压，比例 11.0 */
+-
+-/* 电流采样通道。
+- * ACS712 供电 5 V、输出摆幅 0..5 V，直接进 MCU 会顶到钳位二极管，
+- * 所以 J16-3 先过 R28 10k / R29 15k 分压：5 V × 0.6 = 3.0 V，正落在 ADC 量程内。
+- * （若直连 R13，超过 3.6 V 的部分全被钳位管吃掉，-20 A 型号在 8 A 就读满了。）
+- * 该器件是双向输出，零电流时停在 2.5 V，所以换算前要先扣掉这个零点。
+- * CURR_MV_PER_AMP：66 对应 -30 A 型号，100 对应 -20 A 型号。
+- * 建议用 -30 A 那颗：-20 A 上，25 A 过流门限已经落在量程的最后一个码值上。 */
+-#define CURR_DIVIDER_X10        6       /* 10k / 15k 分压，比例 0.6 */
+-#define CURR_ZERO_MV            2500    /* 零电流时的静态输出（传感器侧） */
+-#define CURR_MV_PER_AMP         66
+-#define CURR_ZERO_COUNT         ((uint16_t)((uint32_t)CURR_ZERO_MV *              \
+-                                            CURR_DIVIDER_X10 / 10u *              \
+-                                            ADC_FULL_SCALE / ADC_VREF_MV))
+-#define CURRENT_MA_PER_COUNT    ((ADC_VREF_MV * 10000UL) /                        \
+-                                 (ADC_FULL_SCALE * CURR_DIVIDER_X10 * CURR_MV_PER_AMP))
+-
+-/* 需要模拟前端标定过才准的门限检查。分压电阻和电流放大器实测之前，先都关掉。 */
+-#define APP_CHECK_VBUS          0
+-#define APP_CHECK_OVERCURRENT   0
+-#define UNDERVOLT_MV            19000U  /* 6S 电池组，单节约 3.17 V */
+-#define OVERCURRENT_MA          25000U
+-
+-/* 协议 / 链路 */
+-#define PROTO_MAX_PAYLOAD       32
+-#define PROTO_TELEMETRY_LEN     14
+-#define LINK_HB_PERIOD_MS      1000
+-
+-/* 黑匣子 */
+-#define LOGBOX_DEPTH            64      /* 在 RAM 里保留的事件条数 */
+-
+-#endif /* __APP_CONFIG_H */
++#ifndef __APP_CONFIG_H
++#define __APP_CONFIG_H
++
++#include <stdint.h>
++
++/* GuardKart 中央配置文件
++ *
++ * 所有可调参数都集中在这里，不要在各模块里散落魔法数字。
++ * 中文只出现在注释里；printf 的格式串一律保持纯 ASCII，
++ * 否则 ARMCC 会报 #8: missing closing quote。 */
++
++#define APP_VERSION_STR         "0.2.0-hw-v2"
++
++/* 编译开关 */
++/* 1 = 台架调试模式：IMU / ToF / NFC 还没装，
++ *     佩戴连锁整个旁路掉，好在桌面上先跑起来。
++ *     传感器接好并标定之后改回 0。 */
++#define APP_BRINGUP_MODE        0
++
++/* 1 = 打开独立看门狗。用调试器单步时记得改成 0，
++ *     否则每停在一个断点上芯片就会被复位。 */
++#define APP_USE_IWDG            1
++
++/* 1 = 除 USART3 外，调试串口 USART1 也接受协议帧。
++ *     这样只插一根 USB 线就能发指令测试。 */
++#define APP_DEBUG_UART1_CMD     0
++
++/* 任务优先级（configMAX_PRIORITIES = 32，这里只用到 1..6，数字越大越优先） */
++#define PRIO_SAFETY             6
++#define PRIO_CONTROL            5
++#define PRIO_SENSOR             4
++#define PRIO_COMM               3
++#define PRIO_TELEMETRY              2
++#define PRIO_HMI                2
++#define PRIO_LOG                1
++
++/* 任务栈大小，单位是字（1 字 = 4 字节），所以 128 就是 512 字节 */
++#define STK_SAFETY              128
++#define STK_CONTROL             192
++#define STK_SENSOR              192
++#define STK_COMM                256
++#define STK_TELEMETRY               256
++#define STK_HMI                 192
++#define STK_LOG                 256
++
++/* 各任务的周期，单位毫秒 */
++#define PERIOD_SAFETY_MS        10
++#define PERIOD_CONTROL_MS       5
++#define PERIOD_SENSOR_MS        10
++#define PERIOD_COMM_MS          20
++#define PERIOD_TELEMETRY_MS         100
++#define PERIOD_HMI_MS           33
++
++/* 安全阈值 */
++/* 状态机（对应方案文档 7.5 节） */
++#define SELFTEST_MS             200     /* 复位后等传感器稳定的时间 */
++#define DECEL_TIMEOUT_MS        3000    /* DECEL 超过这么久没恢复就锁死 */
++
++/* 踏板门限，单位千分比。进 RUN 要求明确踩下，回 READY 要求明确松开；
++ * 两者之间留这段死区，是为了防止"油门本来就踩着"的时候一使能就直接窜出去。 */
++#define PEDAL_RUN_THRESHOLD     100
++#define PEDAL_IDLE_THRESHOLD    50
++
++/* 0 = 踏板还没接：SensorTask 一律上报 0，
++ *     免得悬空的 PA3 上那点 ADC 噪声把状态机一路推到 RUN。
++ *     分压电路焊好并标定之后改 1。 */
++#define APP_PEDAL_PRESENT       1
++
++/* 1 = 进 READY 就拉高电调使能线。航模电调上电后要先收到一段中立脉宽才会上膛，
++ *     所以必须提前给使能，否则到了 RUN 它还是没准备的状态。
++ * 0 = 只在 RUN / DECEL 使能。这样孩子不踩踏板车子就永远上不了膛，
++ *     第一次 RUN 是从"未上膛"开始的。
++ *
++ * 注意：READY 到底算不算安全的待机，完全取决于电调是否真把 1500 us 当成零扭矩。
++ * 这一点必须在实物电调上实测过，才能在设计文档里写"READY 是安全待机状态"，
++ * 见方案文档 13.3 节。 */
++#define APP_ENABLE_IN_READY     1
++
++#define LIMIT_VENUE_DEFAULT     12      /* km/h，场地硬上限 */
++#define LIMIT_PARENT_DEFAULT    10      /* km/h，家长设定 */
++#define LIMIT_CHILD_DEFAULT     12      /* km/h，孩子端选择，只许往下调 */
++#define LIMIT_FALLBACK          6       /* km/h，手机断连后降到的速度 */
++
++#define LINK_TIMEOUT_MS         3000    /* BLE / 串口心跳超时 */
++#define INTERLOCK_DEBOUNCE_MS   300     /* 佩戴传感器要稳定这么久才算数 */
++#define ROLL_LIMIT_DEG10        450     /* 侧翻角门限，45.0 度 */
++#define ROLL_TIME_MS            200     /* 角度要持续这么久才判定侧翻 */
++#define CRASH_ACCEL_G10         30      /* 碰撞加速度门限，3.0 g */
++#define TTC_WARN_MS             1500
++#define TTC_BRAKE_MS            800
++#define TOF_STOP_MM             300
++
++/* 柔性限速 */
++#define SOFT_LIMIT_DEADBAND_X100  50    /* 超出限速 0.5 km/h 就开始收油门 */
++#define OVERSPEED_FACTOR_X100    120    /* 到限速的 1.20 倍算硬故障 */
++
++/* 油门斜率，单位千分比 / 每个控制周期（5 ms） */
++#define THROTTLE_RAMP_UP        25
++#define THROTTLE_RAMP_DOWN      60
++
++/* 电机 / 电调 */
++#define ESC_PULSE_NEUTRAL_US    1500
++#define ESC_PULSE_MIN_US        1000
++#define ESC_PULSE_MAX_US        2000
++
++/* ADC 换算 */
++#define ADC_VREF_MV             3300U
++#define ADC_FULL_SCALE          4095U
++#define VBUS_DIVIDER_X10        190 /* 180k / 10k, ratio 19 */
++
++/* 电流采样通道。
++ * ACS712 供电 5 V、输出摆幅 0..5 V，直接进 MCU 会顶到钳位二极管，
++ * 所以 J16-3 先过 R28 10k / R29 15k 分压：5 V × 0.6 = 3.0 V，正落在 ADC 量程内。
++ * （若直连 R13，超过 3.6 V 的部分全被钳位管吃掉，-20 A 型号在 8 A 就读满了。）
++ * 该器件是双向输出，零电流时停在 2.5 V，所以换算前要先扣掉这个零点。
++ * CURR_MV_PER_AMP：66 对应 -30 A 型号，100 对应 -20 A 型号。
++ * 建议用 -30 A 那颗：-20 A 上，25 A 过流门限已经落在量程的最后一个码值上。 */
++#define CURR_DIVIDER_X10        6       /* 10k / 15k 分压，比例 0.6 */
++#define CURR_ZERO_MV            2500    /* 零电流时的静态输出（传感器侧） */
++#define CURR_MV_PER_AMP         66
++#define CURR_ZERO_COUNT         ((uint16_t)((uint32_t)CURR_ZERO_MV *              \
++                                            CURR_DIVIDER_X10 / 10u *              \
++                                            ADC_FULL_SCALE / ADC_VREF_MV))
++#define CURRENT_MA_PER_COUNT    ((ADC_VREF_MV * 10000UL) /                        \
++                                 (ADC_FULL_SCALE * CURR_DIVIDER_X10 * CURR_MV_PER_AMP))
++
++/* Hardware v2 enables fault checks. Drive stays disabled until commissioning. */
++#define APP_CHECK_VBUS          1
++#define APP_CHECK_OVERCURRENT   1
++#define UNDERVOLT_MV            22400U /* 7S: 3.2V/cell, measures protected VBAT */
++#define OVERCURRENT_MA          25000U
++
++/* 协议 / 链路 */
++#define PROTO_MAX_PAYLOAD       32
++#define PROTO_TELEMETRY_LEN     14
++#define LINK_HB_PERIOD_MS      1000
++
++/* 黑匣子 */
++#define LOGBOX_DEPTH            64      /* 在 RAM 里保留的事件条数 */
++
++/* Hardware v2: no vehicle drive until real sensor drivers and commissioning pass.
++ * This is deliberately separate from the debug/interlock bypass switch. */
++#define APP_DRIVE_COMMISSIONED   0
++#define SENSOR_STALE_MS          100U
++#define CONTROL_STALE_MS         50U
++#define PEDAL_IDLE_MV            800U
++#define PEDAL_FULL_MV            4200U
++#define PEDAL_FAULT_LOW_MV       500U
++#define PEDAL_FAULT_HIGH_MV      4500U
++
++#endif /* __APP_CONFIG_H */
+--- a/童骑卫-FW/Core/Inc/app_main.h
++++ b/童骑卫-FW/Core/Inc/app_main.h
+@@ -1,132 +1,134 @@
+-#ifndef __APP_MAIN_H
+-#define __APP_MAIN_H
+-
+-#include "FreeRTOS.h"
+-#include "task.h"
+-#include "queue.h"
+-#include "event_groups.h"
+-#include "semphr.h"
+-#include "app_types.h"
+-
+-/* RTOS 对象
+- *
+- * 全部在 app_start() 里创建，任何一个创建失败就直接死循环等看门狗。
+- * 下面每个对象都注明了：装什么、谁写、谁读。 */
+-
+-/* 传感器数据队列。元素类型 sensor_data_t，深度 1。
+- * 写：SensorTask，每 10 ms 一次 xQueueOverwrite —— 写入即覆盖旧值。
+- * 读：ControlTask(5ms)、SafetyTask(10ms)、HmiTask(33ms)、TelemetryTask(100ms)，
+- *     全部用 xQueuePeek(...,0) 非阻塞取。
+- * 深度刻意做成 1：传感器是"最新值"语义，不是事件流；
+- * 读者多一点慢一点都无所谓，谁也不需要历史采样。 */
+-extern QueueHandle_t      g_q_sensor;
+-
+-/* 黑匣子事件队列。元素类型 log_event_t，深度 8。
+- * 写：任何任务（包括最紧急的 SafetyTask）调用 App_LogEvent()，
+- *     非阻塞发送，队列满了这条事件就直接丢掉，绝不堵住调用者。
+- * 读：LogTask（优先级最低，1），收到后存进 64 条的 RAM 环形记录并打印。 */
+-extern QueueHandle_t      g_q_log;
+-
+-/* 故障事件组。每一位对应 app_types.h 里一个 FAULT_xxx 宏。
+- * 写：只有 CommTask —— 远程停车置/清 FAULT_REMOTE_STOP，
+- *     故障注入命令置 FAULT_INJECT。
+- * 读：SafetyTask（取 FAULT_MASK_REMOTE 合成总故障字）、
+- *     HmiTask（打印）、TelemetryTask（塞进遥测帧）。
+- * 之所以用事件组而不是队列：这几个读者只关心"此刻有哪些位立着"，
+- * 不关心怎么变的，也无所谓错过中间跳变。 */
+-extern EventGroupHandle_t g_eg_fault;
+-
+-/* 总线互斥量，保护 I2C1 和 SPI1。
+- * 目前还没有任何代码在用 —— drv_imu / drv_tof / drv_nfc 都是桩函数。
+- * 等真实驱动接进来后：ICM-42688 走 SPI1(CS=PA4)、MFRC522 走 SPI1(CS=PA2)，
+- * 两者共用一根总线，任何一次访问前都必须先拿这把锁；
+- * VL53L1X 走 I2C1(PB6/PB7)，也用这一把。
+- * 注意：一次 ToF 转换要 20 ms，锁不要跨整次转换一直攥着。 */
+-extern SemaphoreHandle_t  g_mtx_i2c;
+-
+-/* 限速配置互斥量，保护 app_main.c 里的 static limit_cfg_t s_limit。
+- * 写：CommTask 经 App_SetLimit()（场地/家长/孩子三路限速指令）、
+- *     SafetyTask 经 App_SetLinkFallback()（链路断了降速）。
+- * 读：ControlTask / SafetyTask / HmiTask / TelemetryTask 经 App_GetLimitSnapshot()。
+- * 临界区只有几条赋值，所以三个存取函数取锁超时都定成 5 ms，
+- * 抢不到就保留旧值继续跑 —— 绝不为一个限速数字把任务卡住。 */
+-extern SemaphoreHandle_t  g_mtx_cfg;
+-
+-/* 调试串口打印互斥量，保护 USART1 上的 printf 输出。
+- * 使用者：App_Logf()，以及直接调它的 HmiTask / LogTask。
+- * 只保护 printf，不保护 USART3 上的协议帧 ——
+- * 那条链路由 TelemetryTask 独占发送，天然只有一个写者，不需要锁。 */
+-extern SemaphoreHandle_t  g_mtx_uart_log;
+-
+-/* CommTask 的任务句柄，全工程唯一被保存下来的句柄。
+- * 用途：USART1 / USART3 接收中断里调 vTaskNotifyGiveFromISR() 把它直接唤醒，
+- * 这样 CommTask 不必空转轮询，也不用到点才去查缓冲区。 */
+-extern TaskHandle_t       g_comm_task_handle;
+-
+-/* 链路监视，只由 CommTask 写
+- *
+- * g_last_link_tick：收到最后一帧有效数据的系统节拍数，handle_frame() 里刷新。
+- *   SafetyTask 每 10 ms 拿它和当前节拍相减，超过 LINK_TIMEOUT_MS(3 s)
+- *   就判定失联，把限速压到 LIMIT_FALLBACK(6 km/h)。
+- * g_link_seen：是否曾经收到过至少一帧。
+- *   开机后一直没数据不算失联 —— 否则从没连过的手机
+- *   会让车一上电就莫名其妙被限速。只有"先连上、后来断"才降速。 */
+-extern volatile uint32_t  g_last_link_tick;
+-extern volatile uint8_t   g_link_seen;
+-
+-/* 安全结论：此刻是否允许驱动输出。由 SafetyTask 每拍算一次写入，
+- * 取值为 App_State_MotorEnabled(当前状态)。
+- * 读方：ControlTask（为 0 就把油门清零）、
+- *       HmiTask（决定状态灯闪快闪慢）、
+- *       TelemetryTask（塞进心跳帧的 bit0）。
+- * 用 volatile 不加锁：单字节写是原子的，读者要么看到旧值要么看到新值，
+- * 而这里本来就是个"几毫秒前"的结论，没有中间态可言。 */
+-extern volatile uint8_t   g_drive_allowed;
+-
+-/* 调试覆盖量，由协议命令驱动
+- *
+- * g_dbg_throttle：油门覆盖值，千分比 0..1000。
+- *   -1 = 不覆盖，跟随踏板 ADC。用 -1 而不是 0 当哨兵，
+- *   因为 0 是"完全松油门"的合法值，两者必须分得开。
+- * g_dbg_speed_x100：车速覆盖值，km/h × 100。0 = 不覆盖。
+- *   霍尔还没接，SensorTask 直接把它当 speed_kmh_x100 上报，
+- *   没有这一路覆盖就没法在台架上演示超速和碰撞时间逻辑。
+- * g_dbg_interlock_fail：1 = 强制认为佩戴传感器失效。
+- *   bring-up 模式下真实的联锁检查被 #if 关掉了，
+- *   靠这一位才能在桌面上走通 READY -> DECEL 这条路径。 */
+-extern volatile int16_t   g_dbg_throttle;
+-extern volatile uint16_t  g_dbg_speed_x100;
+-extern volatile uint8_t   g_dbg_interlock_fail;
+-
+-/* 应用启动（由 main.c 调用，永不返回） */
+-void app_start(void);
+-
+-/* 限速权限 */
+-#define LIMIT_SRC_VENUE   0u
+-#define LIMIT_SRC_PARENT  1u
+-#define LIMIT_SRC_CHILD   2u
+-#define LIMIT_SRC_LINK    3u
+-
+-void App_SetLimit(uint8_t source, uint8_t kmh);
+-void App_SetLinkFallback(uint8_t kmh);          /* 0 = 链路正常 */
+-void App_GetLimitSnapshot(limit_cfg_t *out);
+-
+-/* 各任务的入口函数 */
+-void SafetyTask(void *arg);
+-void ControlTask(void *arg);
+-void SensorTask(void *arg);
+-void CommTask(void *arg);
+-void TelemetryTask(void *arg);
+-void HmiTask(void *arg);
+-void LogTask(void *arg);
+-
+-/* 打开串口接收中断。调度器启动之前调用一次。 */
+-void Comm_RxInit(void);
+-
+-/* 日志 */
+-void App_LogEvent(uint8_t code, uint16_t value);
+-void App_Logf(const char *fmt, ...);
+-uint16_t App_LogCount(void);
+-const log_event_t *App_LogGet(uint16_t back);   /* back = 0 取最新一条 */
+-
+-#endif /* __APP_MAIN_H */
++#ifndef __APP_MAIN_H
++#define __APP_MAIN_H
++
++#include "FreeRTOS.h"
++#include "task.h"
++#include "queue.h"
++#include "event_groups.h"
++#include "semphr.h"
++#include "app_types.h"
++
++/* RTOS 对象
++ *
++ * 全部在 app_start() 里创建，任何一个创建失败就直接死循环等看门狗。
++ * 下面每个对象都注明了：装什么、谁写、谁读。 */
++
++/* 传感器数据队列。元素类型 sensor_data_t，深度 1。
++ * 写：SensorTask，每 10 ms 一次 xQueueOverwrite —— 写入即覆盖旧值。
++ * 读：ControlTask(5ms)、SafetyTask(10ms)、HmiTask(33ms)、TelemetryTask(100ms)，
++ *     全部用 xQueuePeek(...,0) 非阻塞取。
++ * 深度刻意做成 1：传感器是"最新值"语义，不是事件流；
++ * 读者多一点慢一点都无所谓，谁也不需要历史采样。 */
++extern QueueHandle_t      g_q_sensor;
++
++/* 黑匣子事件队列。元素类型 log_event_t，深度 8。
++ * 写：任何任务（包括最紧急的 SafetyTask）调用 App_LogEvent()，
++ *     非阻塞发送，队列满了这条事件就直接丢掉，绝不堵住调用者。
++ * 读：LogTask（优先级最低，1），收到后存进 64 条的 RAM 环形记录并打印。 */
++extern QueueHandle_t      g_q_log;
++
++/* 故障事件组。每一位对应 app_types.h 里一个 FAULT_xxx 宏。
++ * 写：只有 CommTask —— 远程停车置/清 FAULT_REMOTE_STOP，
++ *     故障注入命令置 FAULT_INJECT。
++ * 读：SafetyTask（取 FAULT_MASK_REMOTE 合成总故障字）、
++ *     HmiTask（打印）、TelemetryTask（塞进遥测帧）。
++ * 之所以用事件组而不是队列：这几个读者只关心"此刻有哪些位立着"，
++ * 不关心怎么变的，也无所谓错过中间跳变。 */
++extern EventGroupHandle_t g_eg_fault;
++
++/* 总线互斥量，保护 I2C1 和 SPI1。
++ * 目前还没有任何代码在用 —— drv_imu / drv_tof / drv_nfc 都是桩函数。
++ * 等真实驱动接进来后：ICM-42688 走 SPI1(CS=PA4)、MFRC522 走 SPI1(CS=PA2)，
++ * 两者共用一根总线，任何一次访问前都必须先拿这把锁；
++ * VL53L1X 走 I2C1(PB6/PB7)，也用这一把。
++ * 注意：一次 ToF 转换要 20 ms，锁不要跨整次转换一直攥着。 */
++extern SemaphoreHandle_t  g_mtx_i2c;
++
++/* 限速配置互斥量，保护 app_main.c 里的 static limit_cfg_t s_limit。
++ * 写：CommTask 经 App_SetLimit()（场地/家长/孩子三路限速指令）、
++ *     SafetyTask 经 App_SetLinkFallback()（链路断了降速）。
++ * 读：ControlTask / SafetyTask / HmiTask / TelemetryTask 经 App_GetLimitSnapshot()。
++ * 临界区只有几条赋值，所以三个存取函数取锁超时都定成 5 ms，
++ * 抢不到就保留旧值继续跑 —— 绝不为一个限速数字把任务卡住。 */
++extern SemaphoreHandle_t  g_mtx_cfg;
++
++/* 调试串口打印互斥量，保护 USART1 上的 printf 输出。
++ * 使用者：App_Logf()，以及直接调它的 HmiTask / LogTask。
++ * 只保护 printf，不保护 USART3 上的协议帧 ——
++ * 那条链路由 TelemetryTask 独占发送，天然只有一个写者，不需要锁。 */
++extern SemaphoreHandle_t  g_mtx_uart_log;
++
++/* CommTask 的任务句柄，全工程唯一被保存下来的句柄。
++ * 用途：USART1 / USART3 接收中断里调 vTaskNotifyGiveFromISR() 把它直接唤醒，
++ * 这样 CommTask 不必空转轮询，也不用到点才去查缓冲区。 */
++extern TaskHandle_t       g_comm_task_handle;
++
++/* 链路监视，只由 CommTask 写
++ *
++ * g_last_link_tick：收到最后一帧有效数据的系统节拍数，handle_frame() 里刷新。
++ *   SafetyTask 每 10 ms 拿它和当前节拍相减，超过 LINK_TIMEOUT_MS(3 s)
++ *   就判定失联，把限速压到 LIMIT_FALLBACK(6 km/h)。
++ * g_link_seen：是否曾经收到过至少一帧。
++ *   开机后一直没数据不算失联 —— 否则从没连过的手机
++ *   会让车一上电就莫名其妙被限速。只有"先连上、后来断"才降速。 */
++extern volatile uint32_t  g_last_link_tick;
++extern volatile uint8_t   g_link_seen;
++
++/* 安全结论：此刻是否允许驱动输出。由 SafetyTask 每拍算一次写入，
++ * 取值为 App_State_MotorEnabled(当前状态)。
++ * 读方：ControlTask（为 0 就把油门清零）、
++ *       HmiTask（决定状态灯闪快闪慢）、
++ *       TelemetryTask（塞进心跳帧的 bit0）。
++ * 用 volatile 不加锁：单字节写是原子的，读者要么看到旧值要么看到新值，
++ * 而这里本来就是个"几毫秒前"的结论，没有中间态可言。 */
++extern volatile uint8_t   g_drive_allowed;
++extern volatile uint32_t  g_control_tick;
++extern volatile uint32_t  g_local_faults;
++
++/* 调试覆盖量，由协议命令驱动
++ *
++ * g_dbg_throttle：油门覆盖值，千分比 0..1000。
++ *   -1 = 不覆盖，跟随踏板 ADC。用 -1 而不是 0 当哨兵，
++ *   因为 0 是"完全松油门"的合法值，两者必须分得开。
++ * g_dbg_speed_x100：车速覆盖值，km/h × 100。0 = 不覆盖。
++ *   霍尔还没接，SensorTask 直接把它当 speed_kmh_x100 上报，
++ *   没有这一路覆盖就没法在台架上演示超速和碰撞时间逻辑。
++ * g_dbg_interlock_fail：1 = 强制认为佩戴传感器失效。
++ *   bring-up 模式下真实的联锁检查被 #if 关掉了，
++ *   靠这一位才能在桌面上走通 READY -> DECEL 这条路径。 */
++extern volatile int16_t   g_dbg_throttle;
++extern volatile uint16_t  g_dbg_speed_x100;
++extern volatile uint8_t   g_dbg_interlock_fail;
++
++/* 应用启动（由 main.c 调用，永不返回） */
++void app_start(void);
++
++/* 限速权限 */
++#define LIMIT_SRC_VENUE   0u
++#define LIMIT_SRC_PARENT  1u
++#define LIMIT_SRC_CHILD   2u
++#define LIMIT_SRC_LINK    3u
++
++void App_SetLimit(uint8_t source, uint8_t kmh);
++void App_SetLinkFallback(uint8_t kmh);          /* 0 = 链路正常 */
++void App_GetLimitSnapshot(limit_cfg_t *out);
++
++/* 各任务的入口函数 */
++void SafetyTask(void *arg);
++void ControlTask(void *arg);
++void SensorTask(void *arg);
++void CommTask(void *arg);
++void TelemetryTask(void *arg);
++void HmiTask(void *arg);
++void LogTask(void *arg);
++
++/* 打开串口接收中断。调度器启动之前调用一次。 */
++void Comm_RxInit(void);
++
++/* 日志 */
++void App_LogEvent(uint8_t code, uint16_t value);
++void App_Logf(const char *fmt, ...);
++uint16_t App_LogCount(void);
++const log_event_t *App_LogGet(uint16_t back);   /* back = 0 取最新一条 */
++
++#endif /* __APP_MAIN_H */
+--- a/童骑卫-FW/Core/Inc/app_pins.h
++++ b/童骑卫-FW/Core/Inc/app_pins.h
+@@ -1,44 +1,55 @@
+-#ifndef __APP_PINS_H
+-#define __APP_PINS_H
+-
+-#include "main.h"
+-
+-/* GuardKart 引脚表（STM32F103C8T6，兼容蓝色最小系统板）
+- *
+- * 调试串口  PA9 / PA10   USART1  115200   （CubeMX 已经配好）
+- * ESP32     PB10 / PB11  USART3  115200
+- * 电调 PWM  PA8          TIM1_CH1 50 Hz，脉宽 1000-2000 us
+- * 心跳      PB13         每 10 ms（SafetyTask 一拍）翻转一次
+- * 电机使能  PB12         高电平 = 电调上膛
+- * 急停      PB15         低电平有效，内部上拉
+- * 安全带    PB14         霍尔开关，扣合时为低
+- * 蜂鸣器    PA11         高电平响
+- * 状态灯    PC13         低电平点亮（板载 LED1）
+- * ADC       PA0 电流 / PA1 母线电压 / PA3 踏板 / PB0 座垫压力片
+- *--------------------------------------------------------------------------*/
+-
+-#define MOTOR_EN_Pin            GPIO_PIN_12
+-#define MOTOR_EN_GPIO_Port      GPIOB
+-
+-#define HB_Pin                  GPIO_PIN_13
+-#define HB_GPIO_Port            GPIOB
+-
+-#define ESTOP_Pin               GPIO_PIN_15
+-#define ESTOP_GPIO_Port         GPIOB
+-
+-#define BELT_Pin                GPIO_PIN_14
+-#define BELT_GPIO_Port          GPIOB
+-
+-#define BUZZER_Pin              GPIO_PIN_11
+-#define BUZZER_GPIO_Port        GPIOA
+-
+-#define STATUS_LED_Pin          GPIO_PIN_13
+-#define STATUS_LED_GPIO_Port    GPIOC
+-
+-/* ADC 通道分配 */
+-#define ADC_CH_CURRENT          ADC_CHANNEL_0     /* PA0 电流采样 */
+-#define ADC_CH_VBUS             ADC_CHANNEL_1     /* PA1 母线电压 */
+-#define ADC_CH_PEDAL            ADC_CHANNEL_3     /* PA3 踏板 */
+-#define ADC_CH_SEAT             ADC_CHANNEL_8     /* PB0 座垫压力片 */
+-
+-#endif /* __APP_PINS_H */
++#ifndef __APP_PINS_H
++#define __APP_PINS_H
++
++#include "main.h"
++
++/* GuardKart 引脚表（STM32F103C8T6，兼容蓝色最小系统板）
++ *
++ * 调试串口  PA9 / PA10   USART1  115200   （CubeMX 已经配好）
++ * ESP32     PB10 / PB11  USART3  115200
++ * 电调 PWM  PA8          TIM1_CH1 50 Hz，脉宽 1000-2000 us
++ * 心跳      PB13         每 10 ms（SafetyTask 一拍）翻转一次
++ * 电机使能  PB12         高电平 = 允许硬件手动使能
++ * 急停      PB15         低电平有效，底板常闭回路断线下拉
++ * 安全带    PB14         霍尔开关，扣合时为低
++ * 蜂鸣器    PA15         高电平响
++ * 状态灯    PC13         低电平点亮（板载 LED1）
++ * ADC       PA0 电流 / PA1 母线电压 / PA3 踏板 / PB0 座垫压力片
++ *--------------------------------------------------------------------------*/
++
++#define MOTOR_EN_Pin            GPIO_PIN_12
++#define MOTOR_EN_GPIO_Port      GPIOB
++
++#define HB_Pin                  GPIO_PIN_13
++#define HB_GPIO_Port            GPIOB
++
++#define ESTOP_Pin               GPIO_PIN_15
++#define ESTOP_GPIO_Port         GPIOB
++
++#define BELT_Pin                GPIO_PIN_14
++#define BELT_GPIO_Port          GPIOB
++
++#define BUZZER_Pin              GPIO_PIN_15
++#define BUZZER_GPIO_Port        GPIOA
++
++#define STATUS_LED_Pin          GPIO_PIN_13
++#define STATUS_LED_GPIO_Port    GPIOC
++
++/* ADC 通道分配 */
++#define ADC_CH_CURRENT          ADC_CHANNEL_0     /* PA0 电流采样 */
++#define ADC_CH_VBUS             ADC_CHANNEL_1     /* PA1 母线电压 */
++#define ADC_CH_PEDAL            ADC_CHANNEL_3     /* PA3 踏板 */
++#define ADC_CH_SEAT             ADC_CHANNEL_8     /* PB0 座垫压力片 */
++
++/* PC13 is arm feedback INPUT; the on-core LED must not be driven by HMI. */
++#define ARM_OK_Pin              GPIO_PIN_13
++#define ARM_OK_GPIO_Port        GPIOC
++#define TOF_XSHUT1_Pin          GPIO_PIN_3
++#define TOF_XSHUT1_GPIO_Port     GPIOB
++#define TOF_XSHUT2_Pin          GPIO_PIN_9
++#define TOF_XSHUT2_GPIO_Port     GPIOB
++#define NFC_RST_Pin             GPIO_PIN_8
++#define NFC_RST_GPIO_Port       GPIOB
++#define ADC_CH_SEAT_R           ADC_CHANNEL_9 /* PB1 */
++
++#endif /* __APP_PINS_H */
+--- a/童骑卫-FW/Core/Inc/app_types.h
++++ b/童骑卫-FW/Core/Inc/app_types.h
+@@ -1,91 +1,100 @@
+-#ifndef __APP_TYPES_H
+-#define __APP_TYPES_H
+-
+-#include <stdint.h>
+-
+-/* 公共数据类型 */
+-
+-/* SensorTask 产出的原始测量值，由 ControlTask / SafetyTask 消费 */
+-typedef struct
+-{
+-    uint16_t speed_kmh_x100;        /* 车速，12.34 km/h 记作 1234 */
+-    int16_t  accel_mg[3];           /* 加速度，单位毫 g，x/y/z */
+-    int16_t  gyro_dps10[3];         /* 角速度，单位 0.1 度/秒，x/y/z */
+-    uint16_t tof_mm[2];             /* 前左 / 前右 测距 */
+-    uint16_t current_ma;
+-    uint16_t bus_mv;
+-    uint16_t throttle_permille;     /* 踏板 ADC 换算出的千分比，0..1000 */
+-    uint8_t  seat_pressed;
+-    uint8_t  belt_closed;
+-    uint8_t  helmet_ok;
+-    uint8_t  imu_present;
+-    uint8_t  tof_present;
+-    uint8_t  nfc_present;
+-    uint16_t hall_pulses;
+-} sensor_data_t;
+-
+-/* 限速权限。effective = min(venue, parent, child, fallback)。
+- * 链路正常时 fallback 为 0；手机那头没动静了就置成 LIMIT_FALLBACK，
+- * 于是断连的结果是"车变慢"，而不是"完全没有上限"。 */
+-typedef struct
+-{
+-    uint8_t venue;
+-    uint8_t parent;
+-    uint8_t child;
+-    uint8_t fallback;
+-    uint8_t effective;
+-} limit_cfg_t;
+-
+-/* 14 字节遥测，和方案文档 6.2 节的字段逐字节对齐 */
+-typedef struct
+-{
+-    uint16_t speed_kmh_x100;
+-    uint8_t  limit_kmh;
+-    uint8_t  fault_bits;
+-    uint16_t lap_ms_x10;
+-    uint8_t  battery_v10;
+-    uint8_t  wear_state;
+-    uint16_t trip_m;
+-} telemetry_t;
+-
+-/* 黑匣子事件 */
+-typedef struct
+-{
+-    uint32_t tick_ms;
+-    uint8_t  code;
+-    uint16_t value;
+-    uint8_t  reserved;
+-} log_event_t;
+-
+-/* 故障位，同时镜像进 FreeRTOS 事件组 */
+-#define FAULT_ROLLOVER          (1u << 0)   /* 侧翻 */
+-#define FAULT_CRASH             (1u << 1)   /* 碰撞 */
+-#define FAULT_OVERCURRENT       (1u << 2)   /* 过流 */
+-#define FAULT_INTERLOCK         (1u << 3)   /* 佩戴连锁失效 */
+-#define FAULT_LINK_LOST         (1u << 4)   /* 与手机 / 网关失联 */
+-#define FAULT_OVERSPEED         (1u << 5)   /* 超速 */
+-#define FAULT_UNDERVOLT         (1u << 6)   /* 电池欠压 */
+-#define FAULT_ESTOP             (1u << 7)   /* 急停按下 */
+-#define FAULT_REMOTE_STOP       (1u << 8)   /* 远程停车指令 */
+-#define FAULT_INJECT            (1u << 9)   /* 故障注入，演示用 */
+-
+-#define FAULT_MASK_ALL          (0x03FFu)
+-#define FAULT_MASK_REMOTE       (FAULT_REMOTE_STOP | FAULT_INJECT)
+-
+-/* 日志事件码 */
+-#define LOG_EVT_BOOT            0x01        /* 开机 */
+-#define LOG_EVT_RESET_IWDG      0x02        /* 看门狗复位 */
+-#define LOG_EVT_RESET_PIN       0x03        /* 复位引脚 / 上电 */
+-#define LOG_EVT_FAULT_SET       0x10        /* 故障置位 */
+-#define LOG_EVT_FAULT_CLEAR     0x11        /* 故障清除 */
+-#define LOG_EVT_LIMIT_CHANGE    0x20        /* 限速变更 */
+-#define LOG_EVT_REMOTE_CMD      0x30        /* 收到远程指令 */
+-#define LOG_EVT_STATUS          0x40        /* 周期状态快照 */
+-#define LOG_EVT_STATE           0x50        /* 状态切换 */
+-
+-/* 佩戴状态位域，打包进遥测的第 7 字节 */
+-#define WEAR_SEAT_SHIFT         0           /* 座位压力片 */
+-#define WEAR_BELT_SHIFT         2           /* 安全带 */
+-#define WEAR_HELMET_SHIFT       4           /* 头盔 */
+-
+-#endif /* __APP_TYPES_H */
++#ifndef __APP_TYPES_H
++#define __APP_TYPES_H
++
++#include <stdint.h>
++
++/* 公共数据类型 */
++
++/* SensorTask 产出的原始测量值，由 ControlTask / SafetyTask 消费 */
++typedef struct
++{
++    uint16_t speed_kmh_x100;        /* 车速，12.34 km/h 记作 1234 */
++    int16_t  accel_mg[3];           /* 加速度，单位毫 g，x/y/z */
++    int16_t  gyro_dps10[3];         /* 角速度，单位 0.1 度/秒，x/y/z */
++    uint16_t tof_mm[2];             /* 前左 / 前右 测距 */
++    uint16_t current_ma;
++    uint16_t bus_mv;
++    uint16_t throttle_permille;     /* 踏板 ADC 换算出的千分比，0..1000 */
++    uint8_t  seat_pressed;
++    uint8_t  belt_closed;
++    uint8_t  helmet_ok;
++    uint8_t  imu_present;
++    uint8_t  tof_present;
++    uint8_t  nfc_present;
++    uint32_t sample_tick;
++    uint8_t  sample_valid;
++    uint8_t  pedal_fault;
++    uint8_t  speed_valid;
++    uint8_t  seat_left_pressed;
++    uint8_t  seat_right_pressed;
++    uint16_t hall_pulses;
++} sensor_data_t;
++
++/* 限速权限。effective = min(venue, parent, child, fallback)。
++ * 链路正常时 fallback 为 0；手机那头没动静了就置成 LIMIT_FALLBACK，
++ * 于是断连的结果是"车变慢"，而不是"完全没有上限"。 */
++typedef struct
++{
++    uint8_t venue;
++    uint8_t parent;
++    uint8_t child;
++    uint8_t fallback;
++    uint8_t effective;
++} limit_cfg_t;
++
++/* 14 字节遥测，和方案文档 6.2 节的字段逐字节对齐 */
++typedef struct
++{
++    uint16_t speed_kmh_x100;
++    uint8_t  limit_kmh;
++    uint8_t  fault_bits;
++    uint16_t lap_ms_x10;
++    uint8_t  battery_v10;
++    uint8_t  wear_state;
++    uint16_t trip_m;
++} telemetry_t;
++
++/* 黑匣子事件 */
++typedef struct
++{
++    uint32_t tick_ms;
++    uint8_t  code;
++    uint16_t value;
++    uint8_t  reserved;
++} log_event_t;
++
++/* 故障位，同时镜像进 FreeRTOS 事件组 */
++#define FAULT_ROLLOVER          (1u << 0)   /* 侧翻 */
++#define FAULT_CRASH             (1u << 1)   /* 碰撞 */
++#define FAULT_OVERCURRENT       (1u << 2)   /* 过流 */
++#define FAULT_INTERLOCK         (1u << 3)   /* 佩戴连锁失效 */
++#define FAULT_LINK_LOST         (1u << 4)   /* 与手机 / 网关失联 */
++#define FAULT_OVERSPEED         (1u << 5)   /* 超速 */
++#define FAULT_UNDERVOLT         (1u << 6)   /* 电池欠压 */
++#define FAULT_ESTOP             (1u << 7)   /* 急停按下 */
++#define FAULT_REMOTE_STOP       (1u << 8)   /* 远程停车指令 */
++#define FAULT_INJECT            (1u << 9)   /* 故障注入，演示用 */
++
++#define FAULT_SENSOR            (1u << 10)
++#define FAULT_PEDAL             (1u << 11)
++#define FAULT_COMMISSION        (1u << 12)
++#define FAULT_MASK_ALL          (0x1FFFu)
++#define FAULT_MASK_REMOTE       (FAULT_REMOTE_STOP | FAULT_INJECT)
++
++/* 日志事件码 */
++#define LOG_EVT_BOOT            0x01        /* 开机 */
++#define LOG_EVT_RESET_IWDG      0x02        /* 看门狗复位 */
++#define LOG_EVT_RESET_PIN       0x03        /* 复位引脚 / 上电 */
++#define LOG_EVT_FAULT_SET       0x10        /* 故障置位 */
++#define LOG_EVT_FAULT_CLEAR     0x11        /* 故障清除 */
++#define LOG_EVT_LIMIT_CHANGE    0x20        /* 限速变更 */
++#define LOG_EVT_REMOTE_CMD      0x30        /* 收到远程指令 */
++#define LOG_EVT_STATUS          0x40        /* 周期状态快照 */
++#define LOG_EVT_STATE           0x50        /* 状态切换 */
++
++/* 佩戴状态位域，打包进遥测的第 7 字节 */
++#define WEAR_SEAT_SHIFT         0           /* 座位压力片 */
++#define WEAR_BELT_SHIFT         2           /* 安全带 */
++#define WEAR_HELMET_SHIFT       4           /* 头盔 */
++
++#endif /* __APP_TYPES_H */
+--- a/童骑卫-FW/Core/Src/app_comm.c
++++ b/童骑卫-FW/Core/Src/app_comm.c
+@@ -1,280 +1,286 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "bsp.h"
+-#include "protocol.h"
+-#include "ringbuf.h"
+-#include "usart.h"
+-
+-/* CommTask：链路层
+- *
+- * 中断里只做两件事——把字节塞进环形缓冲、唤醒本任务。
+- * 所有拆帧工作都在任务上下文里做，
+- * 这样哪怕数据流全乱了，也不会把中断或安全任务卡住。
+- *
+- * 两个互相独立的解析器，一条物理链路一个。
+- * 如果硬塞进同一个状态机，一旦调试控制台和 ESP32 同时在发数据，帧就会串掉。 */
+-
+-/* 每条链路一套：缓冲区 + 解析器 + 重复帧过滤器
+- *
+- * USART3（ESP32 / BLE 网关）是主链路：
+- *   s_rb3_mem / s_rb3    128 字节环形缓冲 + 它的控制块
+- *   s_rx3_byte           HAL_UART_Receive_IT 的落点，中断每收 1 字节就搬进 s_rb3
+- *   s_parser3            这条链路的协议状态机（半帧状态不能和 USART1 共用）
+- *   s_filter3            这条链路的 SEQ 去重与会话跟踪
+- *
+- * USART1（USB 调试口）是辅助链路，只在 APP_DEBUG_UART1_CMD=1 时启用：
+- *   s_rb1_mem / s_rb1    64 字节，比主链路小一半——人工敲命令用不到那么大
+- *   s_rx1_byte           同上，中断落点
+- *   s_parser1            独立的状态机
+- *   s_filter1            独立的过滤器
+- *
+- * 两条链路的所有缓冲都声明为 static，从 .bss 里分配，
+- * 不占任何任务的栈——中断服务程序要写它们，放栈上就不可靠了。 */
+-#define RB_USART3_SIZE   128u
+-#define RB_USART1_SIZE   64u
+-
+-static uint8_t        s_rb3_mem[RB_USART3_SIZE];
+-static uint8_t        s_rb1_mem[RB_USART1_SIZE];
+-static ringbuf_t      s_rb3;
+-static ringbuf_t      s_rb1;
+-
+-static uint8_t        s_rx3_byte;
+-static uint8_t        s_rx1_byte;
+-
+-static proto_parser_t s_parser3;
+-static proto_parser_t s_parser1;
+-
+-/* 重复帧抑制与会话跟踪，每条链路各一套过滤器
+- *
+- * 规则故意定得很简单，因为凡是更花哨的版本，在序号回绕这一点上都有洞：
+- *
+- *   - 同一会话内，SEQ 在 DUP_WINDOW_MS 之内重复出现，判为重传，直接丢掉；
+- *   - 一条链路静默超过 LINK_TIMEOUT_MS 就算开启新会话，
+- *     下一帧不管 SEQ 是多少都接受。
+- *     正是这一条让手机或 ESP32 重启后能从 0 重新开始计数。
+- *
+- * 为什么不要求"SEQ 必须比上一帧大"：SEQ 只有 8 位、会回绕，
+- * 任何大小比较都得搬出序列号运算，还要额外规定半个窗口怎么判，
+- * 而在这个场景里一点好处都没有。
+- * 同一条 BLE 连接内 ATT 写操作本身就是有序可靠的，
+- * 真正的乱序只可能发生在重连前后，而那已经被会话复位覆盖了。
+- *
+- * 作用范围：过滤器按物理链路分，不按命令分。
+- * 窗口内任意两帧只要 SEQ 相同，就当成同一帧处理。 */
+-#define DUP_WINDOW_MS   1000u
+-
+-typedef struct
+-{
+-    uint8_t    last_seq;    /* 最近一帧的序号 */
+-    uint8_t    valid;       /* 0 = 还没见过任何帧，或刚判定为新会话；1 = 正常跟踪中 */
+-    TickType_t last_tick;   /* 最近一帧到达的节拍数 */
+-} seq_filter_t;
+-
+-static seq_filter_t s_filter3;   /* USART3 的去重过滤器 */
+-static seq_filter_t s_filter1;   /* USART1 的去重过滤器 */
+-
+-static int seq_accept(seq_filter_t *f, uint8_t seq)
+-{
+-    TickType_t now = xTaskGetTickCount();   /* 本帧到达时刻 */
+-    TickType_t idle;                        /* 距离上一帧过了多久 */
+-
+-    if (f->valid != 0u)
+-    {
+-        idle = now - f->last_tick;
+-
+-        if (idle >= pdMS_TO_TICKS(LINK_TIMEOUT_MS))
+-        {
+-            f->valid = 0u;              /* 新会话，重新起算 */
+-        }
+-        else if ((seq == f->last_seq) && (idle < pdMS_TO_TICKS(DUP_WINDOW_MS)))
+-        {
+-            return 0;                   /* 重传，丢弃 */
+-        }
+-        else
+-        {
+-            /* 会话内的正常帧 */
+-        }
+-    }
+-
+-    f->last_seq  = seq;
+-    f->last_tick = now;
+-    f->valid     = 1u;
+-
+-    return 1;
+-}
+-
+-void Comm_RxInit(void)
+-{
+-    RingBuf_Init(&s_rb3, s_rb3_mem, RB_USART3_SIZE);
+-    RingBuf_Init(&s_rb1, s_rb1_mem, RB_USART1_SIZE);
+-
+-    Protocol_Init(&s_parser3);
+-    Protocol_Init(&s_parser1);
+-
+-    (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
+-#if APP_DEBUG_UART1_CMD
+-    (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
+-#endif
+-}
+-
+-/* USART3 的中断入口，由 USART3 向量跳进来。
+- * 写在这里是因为 stm32f1xx_it.c 只提供了 USART1 的处理函数。 */
+-void USART3_IRQHandler(void)
+-{
+-    HAL_UART_IRQHandler(&huart3);
+-}
+-
+-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+-{
+-    BaseType_t woken = pdFALSE;     /* 本中断是否唤醒了更高优先级任务，出中断时要据此让出 */
+-
+-    if (huart->Instance == USART3)
+-    {
+-        (void)RingBuf_Put(&s_rb3, s_rx3_byte);
+-        (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
+-    }
+-#if APP_DEBUG_UART1_CMD
+-    else if (huart->Instance == USART1)
+-    {
+-        (void)RingBuf_Put(&s_rb1, s_rx1_byte);
+-        (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
+-    }
+-#endif
+-    else
+-    {
+-        return;
+-    }
+-
+-    if (g_comm_task_handle != NULL)
+-    {
+-        vTaskNotifyGiveFromISR(g_comm_task_handle, &woken);
+-    }
+-
+-    portYIELD_FROM_ISR(woken);
+-}
+-
+-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+-{
+-    /* 帧错误或溢出错误不能把接收通路弄死，重新挂上一次接收即可 */
+-    if (huart->Instance == USART3)
+-    {
+-        (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
+-    }
+-#if APP_DEBUG_UART1_CMD
+-    else if (huart->Instance == USART1)
+-    {
+-        (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
+-    }
+-#endif
+-}
+-
+-static void handle_frame(const proto_frame_t *f)
+-{
+-    /* 只要收到一帧有效数据，就说明链路还活着 */
+-    g_last_link_tick = xTaskGetTickCount();
+-    g_link_seen = 1u;
+-
+-    switch (f->cmd)
+-    {
+-    case CMD_SET_LIMIT:
+-        if (f->len >= 1u)
+-        {
+-            App_SetLimit(LIMIT_SRC_PARENT, f->payload[0]);
+-        }
+-        break;
+-
+-    case CMD_SET_LIMIT_VENUE:
+-        if (f->len >= 1u)
+-        {
+-            App_SetLimit(LIMIT_SRC_VENUE, f->payload[0]);
+-        }
+-        break;
+-
+-    case CMD_SET_LIMIT_CHILD:
+-        if (f->len >= 1u)
+-        {
+-            App_SetLimit(LIMIT_SRC_CHILD, f->payload[0]);
+-        }
+-        break;
+-
+-    case CMD_STOP:
+-        (void)xEventGroupSetBits(g_eg_fault, FAULT_REMOTE_STOP);
+-        break;
+-
+-    case CMD_RESUME:
+-        (void)xEventGroupClearBits(g_eg_fault, FAULT_REMOTE_STOP);
+-        break;
+-
+-    case CMD_FAULT_INJECT:
+-        (void)xEventGroupSetBits(g_eg_fault, FAULT_INJECT);
+-        break;
+-
+-    case CMD_SET_THROTTLE:              /* 仅调试用 */
+-        if (f->len >= 2u)
+-        {
+-            g_dbg_throttle = (int16_t)((uint16_t)f->payload[0] |
+-                                       ((uint16_t)f->payload[1] << 8));
+-        }
+-        break;
+-
+-    case CMD_SET_SPEED:                 /* 仅调试用 */
+-        if (f->len >= 2u)
+-        {
+-            g_dbg_speed_x100 = (uint16_t)((uint16_t)f->payload[0] |
+-                                          ((uint16_t)f->payload[1] << 8));
+-        }
+-        break;
+-
+-    case CMD_DEBUG_INTERLOCK:           /* 仅调试用，专门用来演示 DECEL 状态 */
+-        if (f->len >= 1u)
+-        {
+-            g_dbg_interlock_fail = (f->payload[0] != 0u) ? 1u : 0u;
+-        }
+-        break;
+-
+-    case CMD_HEARTBEAT:
+-        break;
+-
+-    default:
+-        break;
+-    }
+-
+-    App_LogEvent(LOG_EVT_REMOTE_CMD, f->cmd);
+-}
+-
+-void CommTask(void *arg)
+-{
+-    uint8_t       b;    /* 从环形缓冲里取出的一个字节 */
+-    proto_frame_t f;    /* 解析器凑出来的一帧；CRC 不对时内容不可信，不会用到 */
+-
+-    (void)arg;
+-
+-    for (;;)
+-    {
+-        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(PERIOD_COMM_MS));
+-
+-        while (RingBuf_Get(&s_rb3, &b) != 0)
+-        {
+-            if (Protocol_FeedByte(&s_parser3, b, &f) != 0)
+-            {
+-                if (seq_accept(&s_filter3, f.seq) != 0)
+-                {
+-                    handle_frame(&f);
+-                }
+-            }
+-        }
+-
+-#if APP_DEBUG_UART1_CMD
+-        while (RingBuf_Get(&s_rb1, &b) != 0)
+-        {
+-            if (Protocol_FeedByte(&s_parser1, b, &f) != 0)
+-            {
+-                if (seq_accept(&s_filter1, f.seq) != 0)
+-                {
+-                    handle_frame(&f);
+-                }
+-            }
+-        }
+-#endif
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "bsp.h"
++#include "protocol.h"
++#include "ringbuf.h"
++#include "usart.h"
++
++/* CommTask：链路层
++ *
++ * 中断里只做两件事——把字节塞进环形缓冲、唤醒本任务。
++ * 所有拆帧工作都在任务上下文里做，
++ * 这样哪怕数据流全乱了，也不会把中断或安全任务卡住。
++ *
++ * 两个互相独立的解析器，一条物理链路一个。
++ * 如果硬塞进同一个状态机，一旦调试控制台和 ESP32 同时在发数据，帧就会串掉。 */
++
++/* 每条链路一套：缓冲区 + 解析器 + 重复帧过滤器
++ *
++ * USART3（ESP32 / BLE 网关）是主链路：
++ *   s_rb3_mem / s_rb3    128 字节环形缓冲 + 它的控制块
++ *   s_rx3_byte           HAL_UART_Receive_IT 的落点，中断每收 1 字节就搬进 s_rb3
++ *   s_parser3            这条链路的协议状态机（半帧状态不能和 USART1 共用）
++ *   s_filter3            这条链路的 SEQ 去重与会话跟踪
++ *
++ * USART1（USB 调试口）是辅助链路，只在 APP_DEBUG_UART1_CMD=1 时启用：
++ *   s_rb1_mem / s_rb1    64 字节，比主链路小一半——人工敲命令用不到那么大
++ *   s_rx1_byte           同上，中断落点
++ *   s_parser1            独立的状态机
++ *   s_filter1            独立的过滤器
++ *
++ * 两条链路的所有缓冲都声明为 static，从 .bss 里分配，
++ * 不占任何任务的栈——中断服务程序要写它们，放栈上就不可靠了。 */
++#define RB_USART3_SIZE   128u
++#define RB_USART1_SIZE   64u
++
++static uint8_t        s_rb3_mem[RB_USART3_SIZE];
++static uint8_t        s_rb1_mem[RB_USART1_SIZE];
++static ringbuf_t      s_rb3;
++static ringbuf_t      s_rb1;
++
++static uint8_t        s_rx3_byte;
++#if APP_DEBUG_UART1_CMD
++static uint8_t        s_rx1_byte;
++#endif
++
++static proto_parser_t s_parser3;
++static proto_parser_t s_parser1;
++
++/* 重复帧抑制与会话跟踪，每条链路各一套过滤器
++ *
++ * 规则故意定得很简单，因为凡是更花哨的版本，在序号回绕这一点上都有洞：
++ *
++ *   - 同一会话内，SEQ 在 DUP_WINDOW_MS 之内重复出现，判为重传，直接丢掉；
++ *   - 一条链路静默超过 LINK_TIMEOUT_MS 就算开启新会话，
++ *     下一帧不管 SEQ 是多少都接受。
++ *     正是这一条让手机或 ESP32 重启后能从 0 重新开始计数。
++ *
++ * 为什么不要求"SEQ 必须比上一帧大"：SEQ 只有 8 位、会回绕，
++ * 任何大小比较都得搬出序列号运算，还要额外规定半个窗口怎么判，
++ * 而在这个场景里一点好处都没有。
++ * 同一条 BLE 连接内 ATT 写操作本身就是有序可靠的，
++ * 真正的乱序只可能发生在重连前后，而那已经被会话复位覆盖了。
++ *
++ * 作用范围：过滤器按物理链路分，不按命令分。
++ * 窗口内任意两帧只要 SEQ 相同，就当成同一帧处理。 */
++#define DUP_WINDOW_MS   1000u
++
++typedef struct
++{
++    uint8_t    last_seq;    /* 最近一帧的序号 */
++    uint8_t    valid;       /* 0 = 还没见过任何帧，或刚判定为新会话；1 = 正常跟踪中 */
++    TickType_t last_tick;   /* 最近一帧到达的节拍数 */
++} seq_filter_t;
++
++static seq_filter_t s_filter3;   /* USART3 的去重过滤器 */
++#if APP_DEBUG_UART1_CMD
++static seq_filter_t s_filter1;   /* USART1 的去重过滤器 */
++#endif
++
++static int seq_accept(seq_filter_t *f, uint8_t seq)
++{
++    TickType_t now = xTaskGetTickCount();   /* 本帧到达时刻 */
++    TickType_t idle;                        /* 距离上一帧过了多久 */
++
++    if (f->valid != 0u)
++    {
++        idle = now - f->last_tick;
++
++        if (idle >= pdMS_TO_TICKS(LINK_TIMEOUT_MS))
++        {
++            f->valid = 0u;              /* 新会话，重新起算 */
++        }
++        else if ((seq == f->last_seq) && (idle < pdMS_TO_TICKS(DUP_WINDOW_MS)))
++        {
++            return 0;                   /* 重传，丢弃 */
++        }
++        else
++        {
++            /* 会话内的正常帧 */
++        }
++    }
++
++    f->last_seq  = seq;
++    f->last_tick = now;
++    f->valid     = 1u;
++
++    return 1;
++}
++
++void Comm_RxInit(void)
++{
++    RingBuf_Init(&s_rb3, s_rb3_mem, RB_USART3_SIZE);
++    RingBuf_Init(&s_rb1, s_rb1_mem, RB_USART1_SIZE);
++
++    Protocol_Init(&s_parser3);
++    Protocol_Init(&s_parser1);
++
++    (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
++#if APP_DEBUG_UART1_CMD
++    (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
++#endif
++}
++
++/* USART3 的中断入口，由 USART3 向量跳进来。
++ * 写在这里是因为 stm32f1xx_it.c 只提供了 USART1 的处理函数。 */
++void USART3_IRQHandler(void)
++{
++    HAL_UART_IRQHandler(&huart3);
++}
++
++void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
++{
++    BaseType_t woken = pdFALSE;     /* 本中断是否唤醒了更高优先级任务，出中断时要据此让出 */
++
++    if (huart->Instance == USART3)
++    {
++        (void)RingBuf_Put(&s_rb3, s_rx3_byte);
++        (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
++    }
++#if APP_DEBUG_UART1_CMD
++    else if (huart->Instance == USART1)
++    {
++        (void)RingBuf_Put(&s_rb1, s_rx1_byte);
++        (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
++    }
++#endif
++    else
++    {
++        return;
++    }
++
++    if (g_comm_task_handle != NULL)
++    {
++        vTaskNotifyGiveFromISR(g_comm_task_handle, &woken);
++    }
++
++    portYIELD_FROM_ISR(woken);
++}
++
++void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
++{
++    /* 帧错误或溢出错误不能把接收通路弄死，重新挂上一次接收即可 */
++    if (huart->Instance == USART3)
++    {
++        (void)HAL_UART_Receive_IT(&huart3, &s_rx3_byte, 1u);
++    }
++#if APP_DEBUG_UART1_CMD
++    else if (huart->Instance == USART1)
++    {
++        (void)HAL_UART_Receive_IT(&huart1, &s_rx1_byte, 1u);
++    }
++#endif
++}
++
++static void handle_frame(const proto_frame_t *f)
++{
++    /* 只要收到一帧有效数据，就说明链路还活着 */
++    g_last_link_tick = xTaskGetTickCount();
++    g_link_seen = 1u;
++
++    switch (f->cmd)
++    {
++    case CMD_SET_LIMIT:
++        if (f->len >= 1u)
++        {
++            App_SetLimit(LIMIT_SRC_PARENT, f->payload[0]);
++        }
++        break;
++
++    case CMD_SET_LIMIT_VENUE:
++        if (f->len >= 1u)
++        {
++            App_SetLimit(LIMIT_SRC_VENUE, f->payload[0]);
++        }
++        break;
++
++    case CMD_SET_LIMIT_CHILD:
++        if (f->len >= 1u)
++        {
++            App_SetLimit(LIMIT_SRC_CHILD, f->payload[0]);
++        }
++        break;
++
++    case CMD_STOP:
++        (void)xEventGroupSetBits(g_eg_fault, FAULT_REMOTE_STOP);
++        break;
++
++    case CMD_RESUME:
++        (void)xEventGroupClearBits(g_eg_fault, FAULT_REMOTE_STOP);
++        break;
++
++#if APP_BRINGUP_MODE
++    case CMD_FAULT_INJECT:
++        (void)xEventGroupSetBits(g_eg_fault, FAULT_INJECT);
++        break;
++
++    case CMD_SET_THROTTLE:              /* 仅调试用 */
++        if (f->len >= 2u)
++        {
++            g_dbg_throttle = (int16_t)((uint16_t)f->payload[0] |
++                                       ((uint16_t)f->payload[1] << 8));
++        }
++        break;
++
++    case CMD_SET_SPEED:                 /* 仅调试用 */
++        if (f->len >= 2u)
++        {
++            g_dbg_speed_x100 = (uint16_t)((uint16_t)f->payload[0] |
++                                          ((uint16_t)f->payload[1] << 8));
++        }
++        break;
++
++    case CMD_DEBUG_INTERLOCK:           /* 仅调试用，专门用来演示 DECEL 状态 */
++        if (f->len >= 1u)
++        {
++            g_dbg_interlock_fail = (f->payload[0] != 0u) ? 1u : 0u;
++        }
++        break;
++
++#endif
++    case CMD_HEARTBEAT:
++        break;
++
++    default:
++        break;
++    }
++
++    App_LogEvent(LOG_EVT_REMOTE_CMD, f->cmd);
++}
++
++void CommTask(void *arg)
++{
++    uint8_t       b;    /* 从环形缓冲里取出的一个字节 */
++    proto_frame_t f;    /* 解析器凑出来的一帧；CRC 不对时内容不可信，不会用到 */
++
++    (void)arg;
++
++    for (;;)
++    {
++        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(PERIOD_COMM_MS));
++
++        while (RingBuf_Get(&s_rb3, &b) != 0)
++        {
++            if (Protocol_FeedByte(&s_parser3, b, &f) != 0)
++            {
++                if (seq_accept(&s_filter3, f.seq) != 0)
++                {
++                    handle_frame(&f);
++                }
++            }
++        }
++
++#if APP_DEBUG_UART1_CMD
++        while (RingBuf_Get(&s_rb1, &b) != 0)
++        {
++            if (Protocol_FeedByte(&s_parser1, b, &f) != 0)
++            {
++                if (seq_accept(&s_filter1, f.seq) != 0)
++                {
++                    handle_frame(&f);
++                }
++            }
++        }
++#endif
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_control.c
++++ b/童骑卫-FW/Core/Src/app_control.c
+@@ -1,149 +1,150 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "app_state.h"
+-
+-#include "drv_motor.h"
+-
+-/* ControlTask，周期 5 ms
+- *
+- * 油门量 = 踏板读数，然后依次被三层逻辑修正：
+- *   - 三级限速权限（柔性限幅，不做硬切）
+- *   - 两个 ToF 传感器算出来的碰撞时间
+- *   - 斜率限制，保证电调永远看不到阶跃
+- * 最后把结果送给电调。 */
+-
+-void ControlTask(void *arg)
+-{
+-    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，锁住 5 ms 周期 */
+-    sensor_data_t s;            /* 本拍传感器快照（Peek 最新值） */
+-    limit_cfg_t   lim;          /* 本拍的限速快照 */
+-    int16_t       target;       /* 本拍"想给"的油门，千分比，还没过斜率限制 */
+-    int16_t       out;          /* 本拍"实际给"的油门，跨拍保留，充当积分器的当前值 */
+-    uint16_t      limit_x100;   /* 有效限速，km/h × 100，与 speed 同量纲便于比较 */
+-    uint16_t      speed;        /* 本拍车速，km/h × 100 */
+-    uint16_t      d_min;        /* 左右两颗 ToF 里更近的那一个，mm */
+-    uint32_t      ttc_ms;       /* 碰撞时间，ms；到障碍物还剩多久 */
+-    uint16_t      over;         /* 超出限速多少，km/h × 100 */
+-
+-    (void)arg;
+-
+-    last_wake = xTaskGetTickCount();
+-    out = 0;
+-
+-    for (;;)
+-    {
+-        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_CONTROL_MS));
+-
+-        (void)xQueuePeek(g_q_sensor, &s, 0);
+-        App_GetLimitSnapshot(&lim);
+-
+-        if (g_drive_allowed == 0u)
+-        {
+-            out = 0;
+-            Motor_SetOutput(0);
+-            continue;
+-        }
+-
+-        /* 不在 RUN 状态时油门指令一律给 0。DECEL 就靠这一条：
+-         * 电调保持使能，下面的斜率限制让目标值按 THROTTLE_RAMP_DOWN
+-         * 慢慢收到 0，而不是在高速行驶中直接切断动力。 */
+-        if (g_app_state != APP_STATE_RUN)
+-        {
+-            target = 0;
+-            goto slew;
+-        }
+-
+-        /* 踏板读数 */
+-        if (g_dbg_throttle >= 0)
+-        {
+-            target = g_dbg_throttle;
+-        }
+-        else
+-        {
+-            target = (int16_t)s.throttle_permille;
+-        }
+-        if (target < 0)
+-        {
+-            target = 0;
+-        }
+-        if (target > 1000)
+-        {
+-            target = 1000;
+-        }
+-
+-        speed = s.speed_kmh_x100;
+-
+-        /* 柔性限速
+-         * 一过限速就开始按比例收油门；超出 SOFT_LIMIT_DEADBAND 才完全切断。 */
+-        limit_x100 = (uint16_t)((uint16_t)lim.effective * 100u);
+-        if ((limit_x100 > 0u) && (speed > limit_x100))
+-        {
+-            over = (uint16_t)(speed - limit_x100);
+-            if (over >= SOFT_LIMIT_DEADBAND_X100)
+-            {
+-                target = 0;
+-            }
+-            else
+-            {
+-                target = (int16_t)(((int32_t)target *
+-                                    (int32_t)(SOFT_LIMIT_DEADBAND_X100 - over)) /
+-                                   (int32_t)SOFT_LIMIT_DEADBAND_X100);
+-            }
+-        }
+-
+-        /* 障碍避让 */
+-        if (s.tof_present != 0u)
+-        {
+-            d_min = (s.tof_mm[0] < s.tof_mm[1]) ? s.tof_mm[0] : s.tof_mm[1];
+-
+-            if ((speed > 0u) && (d_min > 0u))
+-            {
+-                /* 碰撞时间(ms) = 360 * 距离(mm) / 车速(km/h x100)
+-                 * 系数 360 的来历：1 km/h = 277.8 mm/s，
+-                 * 车距 d mm、速度 v km/h，则 t = d / (v * 277.8) 秒
+-                 * = 3.6 * d * 100 / v_x100 ms = 360 * d / v_x100。 */
+-                ttc_ms = (360u * (uint32_t)d_min) / (uint32_t)speed;
+-
+-                if (ttc_ms < TTC_BRAKE_MS)
+-                {
+-                    target = 0;
+-                }
+-                else if (ttc_ms < TTC_WARN_MS)
+-                {
+-                    target = (int16_t)(target / 2);
+-                }
+-            }
+-
+-            if (d_min < TOF_STOP_MM)
+-            {
+-                target = 0;
+-            }
+-        }
+-
+-        /* 斜率限制：每次走一小步，逼近 target */
+-slew:
+-        if (target > out)
+-        {
+-            out = (int16_t)(out + THROTTLE_RAMP_UP);
+-            if (out > target)
+-            {
+-                out = target;
+-            }
+-        }
+-        else if (target < out)
+-        {
+-            out = (int16_t)(out - THROTTLE_RAMP_DOWN);
+-            if (out < target)
+-            {
+-                out = target;
+-            }
+-        }
+-
+-        if (out < 0)
+-        {
+-            out = 0;
+-        }
+-
+-        Motor_SetOutput(out);
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "app_state.h"
++
++#include "drv_motor.h"
++
++/* ControlTask，周期 5 ms
++ *
++ * 油门量 = 踏板读数，然后依次被三层逻辑修正：
++ *   - 三级限速权限（柔性限幅，不做硬切）
++ *   - 两个 ToF 传感器算出来的碰撞时间
++ *   - 斜率限制，保证电调永远看不到阶跃
++ * 最后把结果送给电调。 */
++
++void ControlTask(void *arg)
++{
++    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，锁住 5 ms 周期 */
++    sensor_data_t s;            /* 本拍传感器快照（Peek 最新值） */
++    limit_cfg_t   lim;          /* 本拍的限速快照 */
++    int16_t       target;       /* 本拍"想给"的油门，千分比，还没过斜率限制 */
++    int16_t       out;          /* 本拍"实际给"的油门，跨拍保留，充当积分器的当前值 */
++    uint16_t      limit_x100;   /* 有效限速，km/h × 100，与 speed 同量纲便于比较 */
++    uint16_t      speed;        /* 本拍车速，km/h × 100 */
++    uint16_t      d_min;        /* 左右两颗 ToF 里更近的那一个，mm */
++    uint32_t      ttc_ms;       /* 碰撞时间，ms；到障碍物还剩多久 */
++    uint16_t      over;         /* 超出限速多少，km/h × 100 */
++
++    (void)arg;
++
++    last_wake = xTaskGetTickCount();
++    out = 0;
++
++    for (;;)
++    {
++        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_CONTROL_MS));
++
++        (void)xQueuePeek(g_q_sensor, &s, 0);
++        App_GetLimitSnapshot(&lim);
++
++        g_control_tick = xTaskGetTickCount();
++        if ((g_drive_allowed == 0u) || (lim.effective == 0u))
++        {
++            out = 0;
++            Motor_SetOutput(0);
++            continue;
++        }
++
++        /* 不在 RUN 状态时油门指令一律给 0。DECEL 就靠这一条：
++         * 电调保持使能，下面的斜率限制让目标值按 THROTTLE_RAMP_DOWN
++         * 慢慢收到 0，而不是在高速行驶中直接切断动力。 */
++        if (g_app_state != APP_STATE_RUN)
++        {
++            target = 0;
++            goto slew;
++        }
++
++        /* 踏板读数 */
++        if (g_dbg_throttle >= 0)
++        {
++            target = g_dbg_throttle;
++        }
++        else
++        {
++            target = (int16_t)s.throttle_permille;
++        }
++        if (target < 0)
++        {
++            target = 0;
++        }
++        if (target > 1000)
++        {
++            target = 1000;
++        }
++
++        speed = s.speed_kmh_x100;
++
++        /* 柔性限速
++         * 一过限速就开始按比例收油门；超出 SOFT_LIMIT_DEADBAND 才完全切断。 */
++        limit_x100 = (uint16_t)((uint16_t)lim.effective * 100u);
++        if ((limit_x100 > 0u) && (speed > limit_x100))
++        {
++            over = (uint16_t)(speed - limit_x100);
++            if (over >= SOFT_LIMIT_DEADBAND_X100)
++            {
++                target = 0;
++            }
++            else
++            {
++                target = (int16_t)(((int32_t)target *
++                                    (int32_t)(SOFT_LIMIT_DEADBAND_X100 - over)) /
++                                   (int32_t)SOFT_LIMIT_DEADBAND_X100);
++            }
++        }
++
++        /* 障碍避让 */
++        if (s.tof_present != 0u)
++        {
++            d_min = (s.tof_mm[0] < s.tof_mm[1]) ? s.tof_mm[0] : s.tof_mm[1];
++
++            if ((speed > 0u) && (d_min > 0u))
++            {
++                /* 碰撞时间(ms) = 360 * 距离(mm) / 车速(km/h x100)
++                 * 系数 360 的来历：1 km/h = 277.8 mm/s，
++                 * 车距 d mm、速度 v km/h，则 t = d / (v * 277.8) 秒
++                 * = 3.6 * d * 100 / v_x100 ms = 360 * d / v_x100。 */
++                ttc_ms = (360u * (uint32_t)d_min) / (uint32_t)speed;
++
++                if (ttc_ms < TTC_BRAKE_MS)
++                {
++                    target = 0;
++                }
++                else if (ttc_ms < TTC_WARN_MS)
++                {
++                    target = (int16_t)(target / 2);
++                }
++            }
++
++            if (d_min < TOF_STOP_MM)
++            {
++                target = 0;
++            }
++        }
++
++        /* 斜率限制：每次走一小步，逼近 target */
++slew:
++        if (target > out)
++        {
++            out = (int16_t)(out + THROTTLE_RAMP_UP);
++            if (out > target)
++            {
++                out = target;
++            }
++        }
++        else if (target < out)
++        {
++            out = (int16_t)(out - THROTTLE_RAMP_DOWN);
++            if (out < target)
++            {
++                out = target;
++            }
++        }
++
++        if (out < 0)
++        {
++            out = 0;
++        }
++
++        Motor_SetOutput(out);
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_hmi.c
++++ b/童骑卫-FW/Core/Src/app_hmi.c
+@@ -1,73 +1,70 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "app_pins.h"
+-#include "app_state.h"
+-
+-/* HmiTask，周期 33 ms
+- *
+- * 状态灯闪烁频率：
+- *   允许驱动    1 Hz
+- *   禁止驱动    5 Hz
+- *
+- * 每秒往调试串口打一行状态。
+- * 打印内容全部是 ASCII —— printf 里写中文，ARMCC 按 GBK 读源码时会报
+- * #8: missing closing quote，中文只写在注释里。 */
+-
+-void HmiTask(void *arg)
+-{
+-    TickType_t    last_wake;    /* 33 ms 周期基准 */
+-    sensor_data_t s;            /* 只用来打印，不参与任何控制判断 */
+-    limit_cfg_t   lim;          /* 当前生效限速，同样只用于打印 */
+-    uint32_t      faults;       /* 事件组里的故障位，只用于打印 */
+-    uint32_t      ticks;        /* 自启动以来的拍数，同时充当闪烁相位和打印节流 */
+-    uint32_t      period;       /* 本次闪烁的半周期，单位是 33 ms 的拍数（2/3/15） */
+-    uint8_t       led;          /* 状态灯当前电平，每半周期取反 */
+-
+-    (void)arg;
+-
+-    last_wake = xTaskGetTickCount();
+-    ticks = 0u;
+-    led = 0u;
+-
+-    for (;;)
+-    {
+-        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_HMI_MS));
+-        ticks++;
+-
+-        (void)xQueuePeek(g_q_sensor, &s, 0);
+-        App_GetLimitSnapshot(&lim);
+-        faults = (uint32_t)xEventGroupGetBits(g_eg_fault);
+-
+-        if (g_app_state == APP_STATE_DECEL)
+-        {
+-            period = 2u;                                /* 正在收油门，快闪 */
+-        }
+-        else
+-        {
+-            period = (g_drive_allowed != 0u) ? 15u : 3u; /* 单位是 33 ms 的拍数 */
+-        }
+-        if ((ticks % period) == 0u)
+-        {
+-            led ^= 1u;
+-            HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin,
+-                              (led != 0u) ? GPIO_PIN_RESET : GPIO_PIN_SET);
+-        }
+-
+-        if ((ticks % 30u) == 0u)                        /* 约 1 秒一次 */
+-        {
+-            App_Logf("[%lu] st=%s v=%u.%02u lim=%u run=%u f=0x%03X "
+-                     "seat=%u belt=%u helm=%u heap=%u\r\n",
+-                     (unsigned long)(ticks * PERIOD_HMI_MS),
+-                     App_State_Name(g_app_state),
+-                     (unsigned)(s.speed_kmh_x100 / 100u),
+-                     (unsigned)(s.speed_kmh_x100 % 100u),
+-                     (unsigned)lim.effective,
+-                     (unsigned)g_drive_allowed,
+-                     (unsigned)(faults & 0x0FFFu),
+-                     (unsigned)s.seat_pressed,
+-                     (unsigned)s.belt_closed,
+-                     (unsigned)s.helmet_ok,
+-                     (unsigned)xPortGetFreeHeapSize());
+-        }
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "app_pins.h"
++#include "app_state.h"
++
++/* HmiTask，周期 33 ms
++ *
++ * 状态灯闪烁频率：
++ *   允许驱动    1 Hz
++ *   禁止驱动    5 Hz
++ *
++ * 每秒往调试串口打一行状态。
++ * 打印内容全部是 ASCII —— printf 里写中文，ARMCC 按 GBK 读源码时会报
++ * #8: missing closing quote，中文只写在注释里。 */
++
++void HmiTask(void *arg)
++{
++    TickType_t    last_wake;    /* 33 ms 周期基准 */
++    sensor_data_t s;            /* 只用来打印，不参与任何控制判断 */
++    limit_cfg_t   lim;          /* 当前生效限速，同样只用于打印 */
++    uint32_t      faults;       /* 事件组里的故障位，只用于打印 */
++    uint32_t      ticks;        /* 自启动以来的拍数，同时充当闪烁相位和打印节流 */
++    uint32_t      period;       /* 本次闪烁的半周期，单位是 33 ms 的拍数（2/3/15） */
++    uint8_t       led;          /* 状态灯当前电平，每半周期取反 */
++
++    (void)arg;
++
++    last_wake = xTaskGetTickCount();
++    ticks = 0u;
++    led = 0u;
++
++    for (;;)
++    {
++        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_HMI_MS));
++        ticks++;
++
++        (void)xQueuePeek(g_q_sensor, &s, 0);
++        App_GetLimitSnapshot(&lim);
++        faults = (uint32_t)xEventGroupGetBits(g_eg_fault) | g_local_faults;
++
++        if (g_app_state == APP_STATE_DECEL)
++        {
++            period = 2u;                                /* 正在收油门，快闪 */
++        }
++        else
++        {
++            period = (g_drive_allowed != 0u) ? 15u : 3u; /* 单位是 33 ms 的拍数 */
++        }
++        /* PC13 is hardware ARM feedback input in v2. */
++        (void)period;
++        (void)led;
++
++        if ((ticks % 30u) == 0u)                        /* 约 1 秒一次 */
++        {
++            App_Logf("[%lu] st=%s v=%u.%02u lim=%u run=%u f=0x%03X "
++                     "seat=%u belt=%u helm=%u heap=%u\r\n",
++                     (unsigned long)(ticks * PERIOD_HMI_MS),
++                     App_State_Name(g_app_state),
++                     (unsigned)(s.speed_kmh_x100 / 100u),
++                     (unsigned)(s.speed_kmh_x100 % 100u),
++                     (unsigned)lim.effective,
++                     (unsigned)g_drive_allowed,
++                     (unsigned)(faults & FAULT_MASK_ALL),
++                     (unsigned)s.seat_pressed,
++                     (unsigned)s.belt_closed,
++                     (unsigned)s.helmet_ok,
++                     (unsigned)xPortGetFreeHeapSize());
++        }
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_main.c
++++ b/童骑卫-FW/Core/Src/app_main.c
+@@ -1,290 +1,297 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "bsp.h"
+-
+-#include <stdio.h>
+-#include <string.h>
+-
+-/* RTOS 对象（详细说明见 app_main.h，这里只标出各自的创建参数）
+- *
+- * g_q_sensor     深度 1，元素 sensor_data_t —— 只留最新一份采样
+- * g_q_log        深度 8，元素 log_event_t  —— 日志事件中转，满了就丢
+- * g_eg_fault     事件组，位定义见 app_types.h 的 FAULT_xxx
+- * g_mtx_i2c      普通互斥量 —— 保护 I2C1 / SPI1 总线（驱动接进来后才用得上）
+- * g_mtx_cfg      普通互斥量 —— 保护下面的 s_limit
+- * g_mtx_uart_log 普通互斥量 —— 保护 USART1 上的 printf
+- *
+- * 全部初始化为 NULL。app_start() 创建后若仍为 NULL 就进入死循环，
+- * 等 200 ms 看门狗复位 —— 那种状态下跑下去比不跑更危险。 */
+-QueueHandle_t      g_q_sensor = NULL;
+-QueueHandle_t      g_q_log = NULL;
+-EventGroupHandle_t g_eg_fault = NULL;
+-SemaphoreHandle_t  g_mtx_i2c = NULL;
+-SemaphoreHandle_t  g_mtx_cfg = NULL;
+-SemaphoreHandle_t  g_mtx_uart_log = NULL;
+-
+-/* CommTask 句柄，唯一目的：让串口接收中断能直接把它叫醒，见 app_main.h。 */
+-TaskHandle_t       g_comm_task_handle = NULL;
+-
+-/* 链路活性。g_last_link_tick 由 CommTask 每收到一帧刷新一次，
+- * g_link_seen 一旦置 1 就永不清零（表示"这辆车见过了手机"）。
+- * SafetyTask 靠这两个判断"连上过但后来断了"这种真正的失联。 */
+-volatile uint32_t g_last_link_tick = 0u;
+-volatile uint8_t  g_link_seen = 0u;
+-
+-/* 安全任务本拍的结论：允许驱动为 1。上电初值 0 —— 在 SafetyTask
+- * 跑完第一拍之前，任何人都不能动手，这是最保守的默认。 */
+-volatile uint8_t  g_drive_allowed = 0u;
+-
+-/* 台架调试覆盖量，只能由协议命令 CMD_SET_THROTTLE / CMD_SET_SPEED /
+- * CMD_DEBUG_INTERLOCK 改写。初值是有讲究的：
+- *   g_dbg_throttle = -1  表示"不覆盖"，跟随真实踏板；
+- *   g_dbg_speed_x100 = 0 表示"不覆盖"（霍尔尚未接入，实际等价于车速为 0）；
+- *   g_dbg_interlock_fail = 0 表示不伪造联锁故障。 */
+-volatile int16_t  g_dbg_throttle = -1;
+-volatile uint16_t g_dbg_speed_x100 = 0u;
+-volatile uint8_t  g_dbg_interlock_fail = 0u;
+-
+-/* 限速权限，只通过下面的那几个存取函数访问 ——
+- * 因为它是多任务共享的，直接读写会被另一个任务打断。
+- * 四个来源取最小值才是最终生效的限速：
+- *   venue   场地硬上限，由场馆那侧下发
+- *   parent  家长设定
+- *   child   孩子端自己选的，只能往下调
+- *   fallback 链路断开时临时压上来的值，链路恢复后清零
+- * 加进来一个新来源时，记得同步去改 calc_effective()。 */
+-static limit_cfg_t s_limit;
+-
+-/* 限速权限的读写接口 */
+-static uint8_t calc_effective(const limit_cfg_t *l)
+-{
+-    uint8_t m = l->venue;
+-
+-    if (l->parent < m)
+-    {
+-        m = l->parent;
+-    }
+-    if (l->child < m)
+-    {
+-        m = l->child;
+-    }
+-    if ((l->fallback > 0u) && (l->fallback < m))
+-    {
+-        m = l->fallback;
+-    }
+-
+-    return m;
+-}
+-
+-void App_SetLimit(uint8_t source, uint8_t kmh)
+-{
+-    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
+-    {
+-        return;
+-    }
+-
+-    switch (source)
+-    {
+-    case LIMIT_SRC_VENUE:
+-        s_limit.venue = kmh;
+-        break;
+-    case LIMIT_SRC_PARENT:
+-        s_limit.parent = kmh;
+-        break;
+-    case LIMIT_SRC_CHILD:
+-        /* 孩子端只能往低里调，不许把上限抬高 */
+-        if (kmh < s_limit.child)
+-        {
+-            s_limit.child = kmh;
+-        }
+-        break;
+-    default:
+-        break;
+-    }
+-
+-    s_limit.effective = calc_effective(&s_limit);
+-
+-    (void)xSemaphoreGive(g_mtx_cfg);
+-
+-    App_LogEvent(LOG_EVT_LIMIT_CHANGE,
+-                 (uint16_t)((source << 8) | s_limit.effective));
+-}
+-
+-/* 只在链路状态发生变化时由 SafetyTask 调用。传入 0 表示撤销降级。 */
+-void App_SetLinkFallback(uint8_t kmh)
+-{
+-    uint8_t changed;
+-
+-    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
+-    {
+-        return;
+-    }
+-
+-    changed = (s_limit.fallback != kmh) ? 1u : 0u;
+-    s_limit.fallback = kmh;
+-    s_limit.effective = calc_effective(&s_limit);
+-
+-    (void)xSemaphoreGive(g_mtx_cfg);
+-
+-    if (changed != 0u)
+-    {
+-        App_LogEvent(LOG_EVT_LIMIT_CHANGE,
+-                     (uint16_t)((LIMIT_SRC_LINK << 8) | s_limit.effective));
+-    }
+-}
+-
+-void App_GetLimitSnapshot(limit_cfg_t *out)
+-{
+-    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
+-    {
+-        return;             /* 抢不到锁就保留调用者原来的值 */
+-    }
+-
+-    *out = s_limit;
+-
+-    (void)xSemaphoreGive(g_mtx_cfg);
+-}
+-
+-/* 创建 7 个任务
+- *
+- * 优先级从高到低：safety(6) > control(5) > sensor(4) > comm(3)
+- *               > telemetry(2) = hmi(2) > log(1)
+- * telemetry 和 hmi 同优先级，靠时间片轮转，谁都不会饿死。
+- * 只有 comm 需要保存句柄，因为串口中断要直接唤醒它。 */
+-static void create_tasks(void)
+-{
+-    /* 10 ms 扫一遍故障、跑状态机、喂狗。最高优先级，谁也别想挡它。 */
+-    xTaskCreate(SafetyTask,  "safety",  STK_SAFETY,  NULL, PRIO_SAFETY,  NULL);
+-    /* 5 ms 一次，把踏板/限速/避障/斜率算完丢给电调。 */
+-    xTaskCreate(ControlTask, "control", STK_CONTROL, NULL, PRIO_CONTROL, NULL);
+-    /* 10 ms 采一次 IMU/ADC，30 ms 采 ToF，50 ms 采 NFC。 */
+-    xTaskCreate(SensorTask,  "sensor",  STK_SENSOR,  NULL, PRIO_SENSOR,  NULL);
+-    /* 收帧、拆帧、执行命令。无数据时被通知阻塞，不占 CPU。 */
+-    xTaskCreate(CommTask,    "comm",    STK_COMM,    NULL, PRIO_COMM,    &g_comm_task_handle);
+-    /* 100 ms 一帧遥测，每 1 s 一帧心跳。走 USART3 给 ESP32。 */
+-    xTaskCreate(TelemetryTask,   "cloud",   STK_TELEMETRY,   NULL, PRIO_TELEMETRY,   NULL);
+-    /* 33 ms 一次：状态灯闪烁 + 每秒一行调试打印。 */
+-    xTaskCreate(HmiTask,     "hmi",     STK_HMI,     NULL, PRIO_HMI,     NULL);
+-    /* 最低优先级：从日志队列里取事件、存黑匣子、打印。
+-     * 只有别的任务都闲着它才能跑，绝不会拖慢控制回路。 */
+-    xTaskCreate(LogTask,     "log",     STK_LOG,     NULL, PRIO_LOG,     NULL);
+-}
+-
+-/* FreeRTOS 钩子函数
+- *
+- * 两个都是先打一行 ASCII 标记，然后彻底停住。
+- * 停在这里是故意的：SafetyTask 从此不会再喂狗，
+- * 200 ms 后硬件看门狗复位，而不是让卡丁车在没人管的情况下继续跑。
+- * （IWDG 靠 LSI 独立计数，中断全关也拦不住它。） */
+-void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+-{
+-    (void)xTask;
+-
+-    /* configCHECK_FOR_STACK_OVERFLOW == 2 时内核会把任务名带过来，
+-     * 这里的判空只是防御性写法。
+-     * 注意本函数是在上下文切换里被调用的（异常上下文），
+-     * 打印走的是阻塞式轮询串口，会有毫秒级延迟，只因为反正是要死了才容忍。 */
+-    printf("\r\nFATAL: stack overflow in %s\r\n",
+-           (pcTaskName != NULL) ? pcTaskName : "?");
+-
+-    taskDISABLE_INTERRUPTS();
+-    for (;;)
+-    {
+-    }
+-}
+-
+-void vApplicationMallocFailedHook(void)
+-{
+-    printf("\r\nFATAL: heap exhausted\r\n");
+-
+-    taskDISABLE_INTERRUPTS();
+-    for (;;)
+-    {
+-    }
+-}
+-
+-/* 应用入口 */
+-void app_start(void)
+-{
+-    sensor_data_t zero;     /* 占位样本，清零后先塞进队列 */
+-    uint8_t       reason;   /* Bsp_GetResetReason() 的返回值，只用于开机横幅 */
+-
+-    memset(&zero, 0, sizeof(zero));
+-
+-    /* 六个内核对象的创建。参数在这里能一眼看出"多大、装什么"：
+-     * 传感器队列深度 1（只要最新值），日志队列深度 8（能扛一小段突发）。
+-     * 三个信号量都建成互斥量而不是二值信号量：
+-     * 互斥量带优先级继承，持锁的低优先级任务被抢占时不会把高优先级任务拖住。 */
+-    g_q_sensor     = xQueueCreate(1, sizeof(sensor_data_t));
+-    g_q_log        = xQueueCreate(8, sizeof(log_event_t));
+-    g_eg_fault     = xEventGroupCreate();
+-    g_mtx_i2c      = xSemaphoreCreateMutex();
+-    g_mtx_cfg      = xSemaphoreCreateMutex();
+-    g_mtx_uart_log = xSemaphoreCreateMutex();
+-
+-    /* 注意：堆真不够时，pvPortMalloc 内部会先调 vApplicationMallocFailedHook()，
+-     * 在那里死循环并被看门狗复位，所以下面这条分支其实走不到。
+-     * 留着是为了将来万一关掉 configUSE_MALLOC_FAILED_HOOK 还能兜底。 */
+-    if ((g_q_sensor == NULL) || (g_q_log == NULL) || (g_eg_fault == NULL) ||
+-        (g_mtx_i2c == NULL) || (g_mtx_cfg == NULL) || (g_mtx_uart_log == NULL))
+-    {
+-        printf("FATAL: RTOS object creation failed\r\n");
+-        for (;;)
+-        {
+-        }
+-    }
+-
+-    /* 先塞一份全零样本，免得消费者 Peek 到一个空队列 */
+-    (void)xQueueOverwrite(g_q_sensor, &zero);
+-
+-    s_limit.venue     = LIMIT_VENUE_DEFAULT;
+-    s_limit.parent    = LIMIT_PARENT_DEFAULT;
+-    s_limit.child     = LIMIT_CHILD_DEFAULT;
+-    s_limit.effective = calc_effective(&s_limit);
+-
+-    /* 读一下复位来源，好区分"被看门狗拉回来的"和"正常上电" */
+-    reason = Bsp_GetResetReason();
+-
+-    printf("\r\n");
+-    printf("============================================\r\n");
+-    printf(" GuardKart %s\r\n", APP_VERSION_STR);
+-    if (reason == RESET_IWDG)
+-    {
+-        printf(" RESET: watchdog - supervisor intervened\r\n");
+-    }
+-    else if (reason == RESET_PIN)
+-    {
+-        printf(" RESET: power-on / reset pin\r\n");
+-    }
+-    else
+-    {
+-        printf(" RESET: unknown\r\n");
+-    }
+-#if APP_BRINGUP_MODE
+-    printf(" INTERLOCK: bypassed (bring-up mode)\r\n");
+-#else
+-    printf(" INTERLOCK: enforced\r\n");
+-#endif
+-    printf(" limit: venue=%u parent=%u child=%u -> %u km/h\r\n",
+-           (unsigned)s_limit.venue, (unsigned)s_limit.parent,
+-           (unsigned)s_limit.child, (unsigned)s_limit.effective);
+-    printf("============================================\r\n");
+-
+-    Bsp_ClearResetFlags();
+-
+-    Comm_RxInit();
+-
+-    create_tasks();
+-
+-    printf(" heap free after tasks: %u bytes\r\n",
+-           (unsigned)xPortGetFreeHeapSize());
+-    printf(" starting scheduler\r\n");
+-
+-    vTaskStartScheduler();
+-
+-    /* 只有堆内存不够、调度器起不来时才会走到这里 */
+-    printf("FATAL: scheduler returned\r\n");
+-    for (;;)
+-    {
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "bsp.h"
++
++#include <stdio.h>
++#include <string.h>
++
++/* RTOS 对象（详细说明见 app_main.h，这里只标出各自的创建参数）
++ *
++ * g_q_sensor     深度 1，元素 sensor_data_t —— 只留最新一份采样
++ * g_q_log        深度 8，元素 log_event_t  —— 日志事件中转，满了就丢
++ * g_eg_fault     事件组，位定义见 app_types.h 的 FAULT_xxx
++ * g_mtx_i2c      普通互斥量 —— 保护 I2C1 / SPI1 总线（驱动接进来后才用得上）
++ * g_mtx_cfg      普通互斥量 —— 保护下面的 s_limit
++ * g_mtx_uart_log 普通互斥量 —— 保护 USART1 上的 printf
++ *
++ * 全部初始化为 NULL。app_start() 创建后若仍为 NULL 就进入死循环，
++ * 等 200 ms 看门狗复位 —— 那种状态下跑下去比不跑更危险。 */
++QueueHandle_t      g_q_sensor = NULL;
++QueueHandle_t      g_q_log = NULL;
++EventGroupHandle_t g_eg_fault = NULL;
++SemaphoreHandle_t  g_mtx_i2c = NULL;
++SemaphoreHandle_t  g_mtx_cfg = NULL;
++SemaphoreHandle_t  g_mtx_uart_log = NULL;
++
++/* CommTask 句柄，唯一目的：让串口接收中断能直接把它叫醒，见 app_main.h。 */
++TaskHandle_t       g_comm_task_handle = NULL;
++
++/* 链路活性。g_last_link_tick 由 CommTask 每收到一帧刷新一次，
++ * g_link_seen 一旦置 1 就永不清零（表示"这辆车见过了手机"）。
++ * SafetyTask 靠这两个判断"连上过但后来断了"这种真正的失联。 */
++volatile uint32_t g_last_link_tick = 0u;
++volatile uint8_t  g_link_seen = 0u;
++
++/* 安全任务本拍的结论：允许驱动为 1。上电初值 0 —— 在 SafetyTask
++ * 跑完第一拍之前，任何人都不能动手，这是最保守的默认。 */
++volatile uint8_t  g_drive_allowed = 0u;
++volatile uint32_t g_control_tick = 0u;
++volatile uint32_t g_local_faults = 0u;
++
++/* 台架调试覆盖量，只能由协议命令 CMD_SET_THROTTLE / CMD_SET_SPEED /
++ * CMD_DEBUG_INTERLOCK 改写。初值是有讲究的：
++ *   g_dbg_throttle = -1  表示"不覆盖"，跟随真实踏板；
++ *   g_dbg_speed_x100 = 0 表示"不覆盖"（霍尔尚未接入，实际等价于车速为 0）；
++ *   g_dbg_interlock_fail = 0 表示不伪造联锁故障。 */
++volatile int16_t  g_dbg_throttle = -1;
++volatile uint16_t g_dbg_speed_x100 = 0u;
++volatile uint8_t  g_dbg_interlock_fail = 0u;
++
++/* 限速权限，只通过下面的那几个存取函数访问 ——
++ * 因为它是多任务共享的，直接读写会被另一个任务打断。
++ * 四个来源取最小值才是最终生效的限速：
++ *   venue   场地硬上限，由场馆那侧下发
++ *   parent  家长设定
++ *   child   孩子端自己选的，只能往下调
++ *   fallback 链路断开时临时压上来的值，链路恢复后清零
++ * 加进来一个新来源时，记得同步去改 calc_effective()。 */
++static limit_cfg_t s_limit;
++
++/* 限速权限的读写接口 */
++static uint8_t calc_effective(const limit_cfg_t *l)
++{
++    uint8_t m = l->venue;
++
++    if (l->parent < m)
++    {
++        m = l->parent;
++    }
++    if (l->child < m)
++    {
++        m = l->child;
++    }
++    if ((l->fallback > 0u) && (l->fallback < m))
++    {
++        m = l->fallback;
++    }
++
++    return m;
++}
++
++void App_SetLimit(uint8_t source, uint8_t kmh)
++{
++    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
++    {
++        return;
++    }
++
++    switch (source)
++    {
++    case LIMIT_SRC_VENUE:
++        s_limit.venue = kmh;
++        break;
++    case LIMIT_SRC_PARENT:
++        s_limit.parent = kmh;
++        break;
++    case LIMIT_SRC_CHILD:
++        /* 孩子端只能往低里调，不许把上限抬高 */
++        if (kmh < s_limit.child)
++        {
++            s_limit.child = kmh;
++        }
++        break;
++    default:
++        break;
++    }
++
++    s_limit.effective = calc_effective(&s_limit);
++
++    (void)xSemaphoreGive(g_mtx_cfg);
++
++    App_LogEvent(LOG_EVT_LIMIT_CHANGE,
++                 (uint16_t)((source << 8) | s_limit.effective));
++}
++
++/* 只在链路状态发生变化时由 SafetyTask 调用。传入 0 表示撤销降级。 */
++void App_SetLinkFallback(uint8_t kmh)
++{
++    uint8_t changed;
++
++    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
++    {
++        return;
++    }
++
++    changed = (s_limit.fallback != kmh) ? 1u : 0u;
++    s_limit.fallback = kmh;
++    s_limit.effective = calc_effective(&s_limit);
++
++    (void)xSemaphoreGive(g_mtx_cfg);
++
++    if (changed != 0u)
++    {
++        App_LogEvent(LOG_EVT_LIMIT_CHANGE,
++                     (uint16_t)((LIMIT_SRC_LINK << 8) | s_limit.effective));
++    }
++}
++
++void App_GetLimitSnapshot(limit_cfg_t *out)
++{
++    if (xSemaphoreTake(g_mtx_cfg, pdMS_TO_TICKS(5)) != pdTRUE)
++    {
++        out->venue = 0u;
++        out->parent = 0u;
++        out->child = 0u;
++        out->fallback = 0u;
++        out->effective = 0u;
++        return; /* Fail closed rather than leave an uninitialized/old limit. */
++    }
++
++    *out = s_limit;
++
++    (void)xSemaphoreGive(g_mtx_cfg);
++}
++
++/* 创建 7 个任务
++ *
++ * 优先级从高到低：safety(6) > control(5) > sensor(4) > comm(3)
++ *               > telemetry(2) = hmi(2) > log(1)
++ * telemetry 和 hmi 同优先级，靠时间片轮转，谁都不会饿死。
++ * 只有 comm 需要保存句柄，因为串口中断要直接唤醒它。 */
++static void create_tasks(void)
++{
++    /* 10 ms 扫一遍故障、跑状态机、喂狗。最高优先级，谁也别想挡它。 */
++    xTaskCreate(SafetyTask,  "safety",  STK_SAFETY,  NULL, PRIO_SAFETY,  NULL);
++    /* 5 ms 一次，把踏板/限速/避障/斜率算完丢给电调。 */
++    xTaskCreate(ControlTask, "control", STK_CONTROL, NULL, PRIO_CONTROL, NULL);
++    /* 10 ms 采一次 IMU/ADC，30 ms 采 ToF，50 ms 采 NFC。 */
++    xTaskCreate(SensorTask,  "sensor",  STK_SENSOR,  NULL, PRIO_SENSOR,  NULL);
++    /* 收帧、拆帧、执行命令。无数据时被通知阻塞，不占 CPU。 */
++    xTaskCreate(CommTask,    "comm",    STK_COMM,    NULL, PRIO_COMM,    &g_comm_task_handle);
++    /* 100 ms 一帧遥测，每 1 s 一帧心跳。走 USART3 给 ESP32。 */
++    xTaskCreate(TelemetryTask,   "cloud",   STK_TELEMETRY,   NULL, PRIO_TELEMETRY,   NULL);
++    /* 33 ms 一次：状态灯闪烁 + 每秒一行调试打印。 */
++    xTaskCreate(HmiTask,     "hmi",     STK_HMI,     NULL, PRIO_HMI,     NULL);
++    /* 最低优先级：从日志队列里取事件、存黑匣子、打印。
++     * 只有别的任务都闲着它才能跑，绝不会拖慢控制回路。 */
++    xTaskCreate(LogTask,     "log",     STK_LOG,     NULL, PRIO_LOG,     NULL);
++}
++
++/* FreeRTOS 钩子函数
++ *
++ * 两个都是先打一行 ASCII 标记，然后彻底停住。
++ * 停在这里是故意的：SafetyTask 从此不会再喂狗，
++ * 200 ms 后硬件看门狗复位，而不是让卡丁车在没人管的情况下继续跑。
++ * （IWDG 靠 LSI 独立计数，中断全关也拦不住它。） */
++void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
++{
++    (void)xTask;
++
++    /* configCHECK_FOR_STACK_OVERFLOW == 2 时内核会把任务名带过来，
++     * 这里的判空只是防御性写法。
++     * 注意本函数是在上下文切换里被调用的（异常上下文），
++     * 打印走的是阻塞式轮询串口，会有毫秒级延迟，只因为反正是要死了才容忍。 */
++    printf("\r\nFATAL: stack overflow in %s\r\n",
++           (pcTaskName != NULL) ? pcTaskName : "?");
++
++    taskDISABLE_INTERRUPTS();
++    for (;;)
++    {
++    }
++}
++
++void vApplicationMallocFailedHook(void)
++{
++    printf("\r\nFATAL: heap exhausted\r\n");
++
++    taskDISABLE_INTERRUPTS();
++    for (;;)
++    {
++    }
++}
++
++/* 应用入口 */
++void app_start(void)
++{
++    sensor_data_t zero;     /* 占位样本，清零后先塞进队列 */
++    uint8_t       reason;   /* Bsp_GetResetReason() 的返回值，只用于开机横幅 */
++
++    memset(&zero, 0, sizeof(zero));
++
++    /* 六个内核对象的创建。参数在这里能一眼看出"多大、装什么"：
++     * 传感器队列深度 1（只要最新值），日志队列深度 8（能扛一小段突发）。
++     * 三个信号量都建成互斥量而不是二值信号量：
++     * 互斥量带优先级继承，持锁的低优先级任务被抢占时不会把高优先级任务拖住。 */
++    g_q_sensor     = xQueueCreate(1, sizeof(sensor_data_t));
++    g_q_log        = xQueueCreate(8, sizeof(log_event_t));
++    g_eg_fault     = xEventGroupCreate();
++    g_mtx_i2c      = xSemaphoreCreateMutex();
++    g_mtx_cfg      = xSemaphoreCreateMutex();
++    g_mtx_uart_log = xSemaphoreCreateMutex();
++
++    /* 注意：堆真不够时，pvPortMalloc 内部会先调 vApplicationMallocFailedHook()，
++     * 在那里死循环并被看门狗复位，所以下面这条分支其实走不到。
++     * 留着是为了将来万一关掉 configUSE_MALLOC_FAILED_HOOK 还能兜底。 */
++    if ((g_q_sensor == NULL) || (g_q_log == NULL) || (g_eg_fault == NULL) ||
++        (g_mtx_i2c == NULL) || (g_mtx_cfg == NULL) || (g_mtx_uart_log == NULL))
++    {
++        printf("FATAL: RTOS object creation failed\r\n");
++        for (;;)
++        {
++        }
++    }
++
++    /* 先塞一份全零样本，免得消费者 Peek 到一个空队列 */
++    (void)xQueueOverwrite(g_q_sensor, &zero);
++
++    s_limit.venue     = LIMIT_VENUE_DEFAULT;
++    s_limit.parent    = LIMIT_PARENT_DEFAULT;
++    s_limit.child     = LIMIT_CHILD_DEFAULT;
++    s_limit.effective = calc_effective(&s_limit);
++
++    /* 读一下复位来源，好区分"被看门狗拉回来的"和"正常上电" */
++    reason = Bsp_GetResetReason();
++
++    printf("\r\n");
++    printf("============================================\r\n");
++    printf(" GuardKart %s\r\n", APP_VERSION_STR);
++    if (reason == RESET_IWDG)
++    {
++        printf(" RESET: watchdog - supervisor intervened\r\n");
++    }
++    else if (reason == RESET_PIN)
++    {
++        printf(" RESET: power-on / reset pin\r\n");
++    }
++    else
++    {
++        printf(" RESET: unknown\r\n");
++    }
++#if APP_BRINGUP_MODE
++    printf(" INTERLOCK: bypassed (bring-up mode)\r\n");
++#else
++    printf(" INTERLOCK: enforced\r\n");
++#endif
++    printf(" limit: venue=%u parent=%u child=%u -> %u km/h\r\n",
++           (unsigned)s_limit.venue, (unsigned)s_limit.parent,
++           (unsigned)s_limit.child, (unsigned)s_limit.effective);
++    printf("============================================\r\n");
++
++    Bsp_ClearResetFlags();
++
++    Comm_RxInit();
++
++    create_tasks();
++
++    printf(" heap free after tasks: %u bytes\r\n",
++           (unsigned)xPortGetFreeHeapSize());
++    printf(" starting scheduler\r\n");
++
++    vTaskStartScheduler();
++
++    /* 只有堆内存不够、调度器起不来时才会走到这里 */
++    printf("FATAL: scheduler returned\r\n");
++    for (;;)
++    {
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_safety.c
++++ b/童骑卫-FW/Core/Src/app_safety.c
+@@ -1,384 +1,426 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "app_pins.h"
+-#include "app_state.h"
+-#include "bsp.h"
+-#include "drv_motor.h"
+-
+-/* SafetyTask：最高优先级，周期 10 ms
+- *
+- * 职责
+- *   1. 每个节拍翻转一次监控心跳（PB13）
+- *   2. 逐条评估所有故障条件
+- *   3. 跑状态机（文档 7.5）并控制电调使能线
+- *   4. 喂看门狗——而且只在完整跑完一圈之后才喂
+- *
+- * 故障分三类，区别很关键：
+- *   HARD  直接进 FAULT_LOCK，立刻切断驱动
+- *   SOFT  先进 DECEL：把油门斜坡降下来，一直不消失才切
+- *   INFO  只限速，不改状态（丢链路就属于这一类）
+- *
+- * 高速行驶中直接断驱动本身就是危险动作，
+- * 这正是 DECEL 这个状态存在的全部理由。 */
+-
+-#define FAULT_MASK_HARD (FAULT_ESTOP      | FAULT_ROLLOVER   | FAULT_CRASH     | \
+-                         FAULT_OVERCURRENT | FAULT_UNDERVOLT  | FAULT_REMOTE_STOP | \
+-                         FAULT_INJECT)
+-
+-#define FAULT_MASK_SOFT (FAULT_INTERLOCK  | FAULT_OVERSPEED)
+-
+-/* SafetyTask 的文件级状态
+- *
+- * 这些变量跨节拍保留，而且只有 SafetyTask 自己读写，所以不加锁、不 volatile。
+- * 每个"条件持续一段时间才判定"的故障，都需要一对 (计时中标志, 起始时刻)；
+- * 每个"判定后不允许自动恢复"的故障，都需要一个闩锁位。
+- *
+- * s_hb_level        心跳输出电平，每拍取反，PB13 上看到 50 Hz 方波说明本任务在跑
+- * s_roll_timing     倾覆计时器是否正在计时（1 = 上一拍已经超阈值，正在累计）
+- * s_roll_start      倾覆计时起点，只在 s_roll_timing 由 0 变 1 时写入
+- * s_roll_latched    倾覆已判定，只能复位清除
+- * s_crash_latched   碰撞已判定，只能复位清除
+- * s_estop_latched   急停已按下，只能复位清除（松开按钮不能自动恢复）
+- * s_decel_latched   DECEL 超时已判定，见下方详细说明
+- * s_oc_latched      过流已判定，只能复位清除（仅 APP_CHECK_OVERCURRENT=1 时存在）
+- * s_published_faults 上一拍推给黑匣子的故障字，用来检测跳变、避免每拍都记一条
+- * s_link_lost       上一拍的失联判断结果，只在变化时去改限速，避免反复写 */
+-static uint8_t    s_hb_level = 0u;
+-static uint8_t    s_roll_timing = 0u;
+-static TickType_t s_roll_start = 0u;
+-static uint8_t    s_roll_latched = 0u;
+-static uint8_t    s_crash_latched = 0u;
+-static uint8_t    s_estop_latched = 0u;
+-/* DECEL 超时之后置位。没有这一位的话，升级就只是去 FAULT_LOCK 逛一个节拍：
+- * 下一拍已经看不到硬故障，又直接掉回 STANDBY，
+- * 那条"我们已经不再信任它了"的规则就完全看不出来。
+- * 和别的闩锁一样，只能靠复位清除。 */
+-static uint8_t    s_decel_latched = 0u;
+-#if APP_CHECK_OVERCURRENT
+-static uint8_t    s_oc_latched = 0u;
+-#endif
+-static uint32_t   s_published_faults = 0u;
+-static uint8_t    s_link_lost = 0u;
+-
+-/* 故障评估 */
+-static uint32_t evaluate_local_faults(const sensor_data_t *s, const limit_cfg_t *lim)
+-{
+-    uint32_t faults = 0u;           /* 本拍累积出来的故障位 */
+-    uint32_t limit_x100;            /* 当前有效限速，换算成 km/h × 100 */
+-    int32_t  ax;                    /* 三轴加速度，单位 mg，先提出来避免重复取 */
+-    int32_t  ay;
+-    int32_t  az;
+-    uint32_t mag2;                  /* 加速度模的平方，单位 (mg)^2，比平方省一次开方 */
+-
+-    /* 急停，低电平有效。做成了闩锁：文档规定物理急停不能靠软件恢复，
+-     * 所以松开按钮本身不应该把车重新武装起来。 */
+-    if (HAL_GPIO_ReadPin(ESTOP_GPIO_Port, ESTOP_Pin) == GPIO_PIN_RESET)
+-    {
+-        s_estop_latched = 1u;
+-    }
+-    if (s_estop_latched != 0u)
+-    {
+-        faults |= FAULT_ESTOP;
+-    }
+-
+-    /* 佩戴联锁。bring-up 模式下传感器还没装，
+-     * 所以这一位只能由调试覆盖命令（CMD_DEBUG_INTERLOCK）造出来。 */
+-#if !APP_BRINGUP_MODE
+-    if ((s->seat_pressed == 0u) || (s->belt_closed == 0u) || (s->helmet_ok == 0u))
+-    {
+-        faults |= FAULT_INTERLOCK;
+-    }
+-#endif
+-
+-    /* 倾覆：|ay| 超过 sin(45°) 并持续 ROLL_TIME_MS */
+-    if (s->imu_present != 0u)
+-    {
+-        if ((s->accel_mg[1] > 7000) || (s->accel_mg[1] < -7000))
+-        {
+-            if (s_roll_timing == 0u)
+-            {
+-                s_roll_timing = 1u;
+-                s_roll_start = xTaskGetTickCount();
+-            }
+-            else if ((xTaskGetTickCount() - s_roll_start) >=
+-                     pdMS_TO_TICKS(ROLL_TIME_MS))
+-            {
+-                s_roll_latched = 1u;
+-            }
+-        }
+-        else
+-        {
+-            s_roll_timing = 0u;
+-        }
+-    }
+-    if (s_roll_latched != 0u)
+-    {
+-        faults |= FAULT_ROLLOVER;
+-    }
+-
+-    /* 碰撞：|a|^2 明显超过 1 g，不开根号，直接比平方 */
+-    if (s->imu_present != 0u)
+-    {
+-        ax = (int32_t)s->accel_mg[0];
+-        ay = (int32_t)s->accel_mg[1];
+-        az = (int32_t)s->accel_mg[2];
+-        mag2 = (uint32_t)(ax * ax) + (uint32_t)(ay * ay) + (uint32_t)(az * az);
+-        if (mag2 > 9000000u)            /* (3000 mg) 的平方 */
+-        {
+-            s_crash_latched = 1u;
+-        }
+-    }
+-    if (s_crash_latched != 0u)
+-    {
+-        faults |= FAULT_CRASH;
+-    }
+-
+-    /* 超速。属于 SOFT：车还在动，所以先斜坡降下来。 */
+-    limit_x100 = (uint32_t)lim->effective * 100u;
+-    if ((limit_x100 > 0u) &&
+-        (s->speed_kmh_x100 > (uint16_t)((limit_x100 * OVERSPEED_FACTOR_X100) / 100u)))
+-    {
+-        faults |= FAULT_OVERSPEED;
+-    }
+-
+-    /* 欠压 */
+-#if APP_CHECK_VBUS
+-    if ((s->bus_mv > 1000u) && (s->bus_mv < UNDERVOLT_MV))
+-    {
+-        faults |= FAULT_UNDERVOLT;
+-    }
+-#endif
+-
+-    /* 过流，和急停一样做闩锁 */
+-#if APP_CHECK_OVERCURRENT
+-    if (s->current_ma > OVERCURRENT_MA)
+-    {
+-        s_oc_latched = 1u;
+-    }
+-    if (s_oc_latched != 0u)
+-    {
+-        faults |= FAULT_OVERCURRENT;
+-    }
+-#endif
+-
+-    return faults;
+-}
+-
+-/* 状态转移表（文档 7.5）
+- *
+- * 输入只有 (当前状态, 故障掩码, 油门, 停留时长)，
+- * 是个纯函数，所以不用读任务里剩下的代码也能单独推演。 */
+-static app_state_t next_state(app_state_t st, uint32_t hard, uint32_t soft,
+-                              uint16_t throttle, uint32_t state_ms,
+-                              uint8_t latched)
+-{
+-    app_state_t next = st;
+-
+-    switch (st)
+-    {
+-    case APP_STATE_SELF_TEST:
+-        if (state_ms >= SELFTEST_MS)
+-        {
+-            next = (hard != 0u) ? APP_STATE_FAULT_LOCK : APP_STATE_STANDBY;
+-        }
+-        break;
+-
+-    case APP_STATE_STANDBY:
+-        if (hard != 0u)
+-        {
+-            next = APP_STATE_FAULT_LOCK;
+-        }
+-        else if ((soft == 0u) && (throttle < PEDAL_IDLE_THRESHOLD))
+-        {
+-            /* 必须先松开油门，才允许使能驱动 */
+-            next = APP_STATE_READY;
+-        }
+-        break;
+-
+-    case APP_STATE_READY:
+-        if (hard != 0u)
+-        {
+-            next = APP_STATE_FAULT_LOCK;
+-        }
+-        else if (soft != 0u)
+-        {
+-            next = APP_STATE_DECEL;
+-        }
+-        else if (throttle > PEDAL_RUN_THRESHOLD)
+-        {
+-            next = APP_STATE_RUN;
+-        }
+-        break;
+-
+-    case APP_STATE_RUN:
+-        if (hard != 0u)
+-        {
+-            next = APP_STATE_FAULT_LOCK;
+-        }
+-        else if (soft != 0u)
+-        {
+-            next = APP_STATE_DECEL;
+-        }
+-        break;
+-
+-    case APP_STATE_DECEL:
+-        /* 3 秒的期限从进入 DECEL 那一刻起算，
+-         * 而不是从斜坡降到零那一刻起算：
+-         * 降不下来本身就是要升级的故障。 */
+-        if (hard != 0u)
+-        {
+-            next = APP_STATE_FAULT_LOCK;
+-        }
+-        else if (state_ms >= DECEL_TIMEOUT_MS)
+-        {
+-            next = APP_STATE_FAULT_LOCK;
+-        }
+-        else if ((soft == 0u) && (Motor_GetOutput() == 0))
+-        {
+-            next = APP_STATE_READY;         /* condition cleared, stopped */
+-        }
+-        break;
+-
+-    case APP_STATE_FAULT_LOCK:
+-    default:
+-        /* 只有远程停车和欠压可以不掉电就解除；
+-         * 其余闩锁（急停、倾覆、碰撞、过流、DECEL 超时）都会一直让条件成立，
+-         * 所以这条边只可能被那两个触发。 */
+-        if ((hard == 0u) && (latched == 0u))
+-        {
+-            next = APP_STATE_STANDBY;
+-        }
+-        break;
+-    }
+-
+-    return next;
+-}
+-
+-/* 任务主体 */
+-void SafetyTask(void *arg)
+-{
+-    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，保证周期严格 10 ms */
+-    TickType_t    state_since;  /* 进入当前状态的时刻，算 DECEL 超时用 */
+-    sensor_data_t s;            /* 本拍从 g_q_sensor 取到的传感器快照 */
+-    limit_cfg_t   lim;          /* 本拍从 g_mtx_cfg 取到的限速快照 */
+-    uint32_t      local;        /* 本任务自己评估出来的故障（急停/倾覆/碰撞/超速…） */
+-    uint32_t      remote;       /* 远端命令产生的故障，来自 g_eg_fault 事件组 */
+-    uint32_t      all;          /* local | remote，本拍的总故障字 */
+-    uint32_t      hard;         /* all 里属于"立刻切断"的那一类 */
+-    uint32_t      soft;         /* all 里属于"先降速再切"的那一类 */
+-    uint32_t      state_ms;     /* 在当前状态已经停留了多久 */
+-    uint16_t      throttle;     /* 本拍采用的油门值，千分比 */
+-    uint8_t       link_lost;    /* 本拍的失联判断，和 s_link_lost 比较得出跳变 */
+-    uint8_t       enable;       /* 本拍该不该给电调使能 */
+-    app_state_t   st;           /* 当前状态 */
+-    app_state_t   next;         /* 状态机算出的下一状态 */
+-
+-    (void)arg;
+-
+-    last_wake   = xTaskGetTickCount();
+-    state_since = last_wake;
+-
+-    for (;;)
+-    {
+-        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_SAFETY_MS));
+-
+-        /* 心跳，每个节拍翻转一次 */
+-        s_hb_level ^= 1u;
+-        HAL_GPIO_WritePin(HB_GPIO_Port, HB_Pin,
+-                          (s_hb_level != 0u) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+-
+-        (void)xQueuePeek(g_q_sensor, &s, 0);
+-        App_GetLimitSnapshot(&lim);
+-
+-        /* 油门：调试覆盖优先，规则和 ControlTask 保持一致。 */
+-        throttle = (g_dbg_throttle >= 0) ? (uint16_t)g_dbg_throttle
+-                                         : s.throttle_permille;
+-
+-        local  = evaluate_local_faults(&s, &lim);
+-        if (g_dbg_interlock_fail != 0u)
+-        {
+-            local |= FAULT_INTERLOCK;
+-        }
+-        remote = (uint32_t)xEventGroupGetBits(g_eg_fault) & FAULT_MASK_REMOTE;
+-        all    = local | remote;
+-
+-        /* 链路监护。丢了手机不能把孩子晾在赛道中间，
+-         * 所以这里不改状态：只把限速压到 LIMIT_FALLBACK，等链路回来。
+-         * 但标志位仍会通过 FAULT_LINK_LOST 传给 HMI 和黑匣子。 */
+-        link_lost = 0u;
+-        if (g_link_seen != 0u)
+-        {
+-            if ((xTaskGetTickCount() - g_last_link_tick) >
+-                pdMS_TO_TICKS(LINK_TIMEOUT_MS))
+-            {
+-                link_lost = 1u;
+-                all |= FAULT_LINK_LOST;
+-            }
+-        }
+-        if (link_lost != s_link_lost)
+-        {
+-            s_link_lost = link_lost;
+-            App_SetLinkFallback((link_lost != 0u) ? LIMIT_FALLBACK : 0u);
+-        }
+-
+-        /* 故障注入：模拟一个不再调度的控制器。
+-         * 中断还开着，但这里永不主动让出，
+-         * 而本任务又是最高优先级，所以别的任务再也不会运行。
+-         * 看门狗会在约 200 ms 内把它变成一次复位。 */
+-        if ((all & FAULT_INJECT) != 0u)
+-        {
+-            for (;;)
+-            {
+-                __NOP();
+-            }
+-        }
+-
+-        hard = all & FAULT_MASK_HARD;
+-        soft = all & FAULT_MASK_SOFT;
+-
+-        st       = g_app_state;
+-        state_ms = (uint32_t)(xTaskGetTickCount() - state_since);
+-        next     = next_state(st, hard, soft, throttle, state_ms, s_decel_latched);
+-
+-        if ((st == APP_STATE_DECEL) && (next == APP_STATE_FAULT_LOCK))
+-        {
+-            /* DECEL 超时一律永久升级 */
+-            s_decel_latched = 1u;
+-        }
+-
+-        if (next != st)
+-        {
+-            g_app_state = next;
+-            state_since = xTaskGetTickCount();
+-            App_LogEvent(LOG_EVT_STATE,
+-                         (uint16_t)(((uint16_t)st << 8) | (uint16_t)next));
+-        }
+-
+-        /* 驱动使能。DECEL 期间保持开着：
+-         * 电调必须活着，才有机会把转速降下来。 */
+-        enable = App_State_MotorEnabled(next);
+-        g_drive_allowed = enable;
+-        Motor_Enable(enable);
+-        if (enable == 0u)
+-        {
+-            Motor_Stop();
+-        }
+-
+-        /* 只在本任务里喂狗。本任务一旦卡住，复位就会跟上来。 */
+-        Bsp_Iwdg_Feed();
+-
+-        /* 把故障的跳变推给黑匣子 */
+-        if (all != s_published_faults)
+-        {
+-            if (all != 0u)
+-            {
+-                App_LogEvent(LOG_EVT_FAULT_SET, (uint16_t)all);
+-            }
+-            else
+-            {
+-                App_LogEvent(LOG_EVT_FAULT_CLEAR, (uint16_t)s_published_faults);
+-            }
+-            s_published_faults = all;
+-        }
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "app_pins.h"
++#include "app_state.h"
++#include "bsp.h"
++#include "drv_motor.h"
++
++/* SafetyTask：最高优先级，周期 10 ms
++ *
++ * 职责
++ *   1. 每个节拍翻转一次监控心跳（PB13）
++ *   2. 逐条评估所有故障条件
++ *   3. 跑状态机（文档 7.5）并控制电调使能线
++ *   4. 喂看门狗——而且只在完整跑完一圈之后才喂
++ *
++ * 故障分三类，区别很关键：
++ *   HARD  直接进 FAULT_LOCK，立刻切断驱动
++ *   SOFT  先进 DECEL：把油门斜坡降下来，一直不消失才切
++ *   INFO  只限速，不改状态（丢链路就属于这一类）
++ *
++ * 高速行驶中直接断驱动本身就是危险动作，
++ * 这正是 DECEL 这个状态存在的全部理由。 */
++
++#define FAULT_MASK_HARD (FAULT_ESTOP      | FAULT_ROLLOVER   | FAULT_CRASH     | \
++                         FAULT_OVERCURRENT | FAULT_UNDERVOLT  | FAULT_REMOTE_STOP | \
++                         FAULT_INJECT | FAULT_SENSOR | FAULT_PEDAL | FAULT_COMMISSION)
++
++#define FAULT_MASK_SOFT (FAULT_INTERLOCK  | FAULT_OVERSPEED)
++
++/* SafetyTask 的文件级状态
++ *
++ * 这些变量跨节拍保留，而且只有 SafetyTask 自己读写，所以不加锁、不 volatile。
++ * 每个"条件持续一段时间才判定"的故障，都需要一对 (计时中标志, 起始时刻)；
++ * 每个"判定后不允许自动恢复"的故障，都需要一个闩锁位。
++ *
++ * s_hb_level        心跳输出电平，每拍取反，PB13 上看到 50 Hz 方波说明本任务在跑
++ * s_roll_timing     倾覆计时器是否正在计时（1 = 上一拍已经超阈值，正在累计）
++ * s_roll_start      倾覆计时起点，只在 s_roll_timing 由 0 变 1 时写入
++ * s_roll_latched    倾覆已判定，只能复位清除
++ * s_crash_latched   碰撞已判定，只能复位清除
++ * s_estop_latched   急停已按下，只能复位清除（松开按钮不能自动恢复）
++ * s_decel_latched   DECEL 超时已判定，见下方详细说明
++ * s_oc_latched      过流已判定，只能复位清除（仅 APP_CHECK_OVERCURRENT=1 时存在）
++ * s_published_faults 上一拍推给黑匣子的故障字，用来检测跳变、避免每拍都记一条
++ * s_link_lost       上一拍的失联判断结果，只在变化时去改限速，避免反复写 */
++static uint8_t    s_hb_level = 0u;
++static uint8_t    s_roll_timing = 0u;
++static TickType_t s_roll_start = 0u;
++static uint8_t    s_roll_latched = 0u;
++static uint8_t    s_crash_latched = 0u;
++static uint8_t    s_estop_latched = 0u;
++static uint8_t    s_uv_latched = 0u;
++/* DECEL 超时之后置位。没有这一位的话，升级就只是去 FAULT_LOCK 逛一个节拍：
++ * 下一拍已经看不到硬故障，又直接掉回 STANDBY，
++ * 那条"我们已经不再信任它了"的规则就完全看不出来。
++ * 和别的闩锁一样，只能靠复位清除。 */
++static uint8_t    s_decel_latched = 0u;
++#if APP_CHECK_OVERCURRENT
++static uint8_t    s_oc_latched = 0u;
++#endif
++static uint32_t   s_published_faults = 0u;
++static uint8_t    s_link_lost = 0u;
++
++/* 故障评估 */
++static uint32_t evaluate_local_faults(const sensor_data_t *s, const limit_cfg_t *lim)
++{
++    uint32_t faults = 0u;           /* 本拍累积出来的故障位 */
++    uint32_t limit_x100;            /* 当前有效限速，换算成 km/h × 100 */
++    int32_t  ax;                    /* 三轴加速度，单位 mg，先提出来避免重复取 */
++    int32_t  ay;
++    int32_t  az;
++    uint32_t mag2;                  /* 加速度模的平方，单位 (mg)^2，比平方省一次开方 */
++
++    /* 急停，低电平有效。做成了闩锁：文档规定物理急停不能靠软件恢复，
++     * 所以松开按钮本身不应该把车重新武装起来。 */
++    if (HAL_GPIO_ReadPin(ESTOP_GPIO_Port, ESTOP_Pin) == GPIO_PIN_RESET)
++    {
++        s_estop_latched = 1u;
++    }
++    if (s_estop_latched != 0u)
++    {
++        faults |= FAULT_ESTOP;
++    }
++
++    if ((s->sample_valid == 0u) ||
++        ((xTaskGetTickCount() - s->sample_tick) > pdMS_TO_TICKS(SENSOR_STALE_MS)) ||
++        ((xTaskGetTickCount() - g_control_tick) > pdMS_TO_TICKS(CONTROL_STALE_MS)) ||
++        !s->imu_present || !s->tof_present || !s->nfc_present || !s->speed_valid)
++        faults |= FAULT_SENSOR;
++    if (s->pedal_fault) faults |= FAULT_PEDAL;
++    if (!APP_DRIVE_COMMISSIONED) faults |= FAULT_COMMISSION;
++
++    /* 佩戴联锁。bring-up 模式下传感器还没装，
++     * 所以这一位只能由调试覆盖命令（CMD_DEBUG_INTERLOCK）造出来。 */
++#if !APP_BRINGUP_MODE
++    if ((s->seat_pressed == 0u) || (s->belt_closed == 0u) || (s->helmet_ok == 0u))
++    {
++        faults |= FAULT_INTERLOCK;
++    }
++#endif
++
++    /* 倾覆：|ay| 超过 sin(45°) 并持续 ROLL_TIME_MS */
++    if (s->imu_present != 0u)
++    {
++        /* Provisional body axes: +Z up. Validate mounting and dynamic filtering. */
++        ay = (int32_t)s->accel_mg[1];
++        az = (int32_t)s->accel_mg[2];
++        if ((az < 0) || ((ay * ay) > (az * az)))
++        {
++            if (s_roll_timing == 0u)
++            {
++                s_roll_timing = 1u;
++                s_roll_start = xTaskGetTickCount();
++            }
++            else if ((xTaskGetTickCount() - s_roll_start) >=
++                     pdMS_TO_TICKS(ROLL_TIME_MS))
++            {
++                s_roll_latched = 1u;
++            }
++        }
++        else
++        {
++            s_roll_timing = 0u;
++        }
++    }
++    if (s_roll_latched != 0u)
++    {
++        faults |= FAULT_ROLLOVER;
++    }
++
++    /* 碰撞：|a|^2 明显超过 1 g，不开根号，直接比平方 */
++    if (s->imu_present != 0u)
++    {
++        ax = (int32_t)s->accel_mg[0];
++        ay = (int32_t)s->accel_mg[1];
++        az = (int32_t)s->accel_mg[2];
++        mag2 = (uint32_t)(ax * ax) + (uint32_t)(ay * ay) + (uint32_t)(az * az);
++        if (mag2 > 9000000u)            /* (3000 mg) 的平方 */
++        {
++            s_crash_latched = 1u;
++        }
++    }
++    if (s_crash_latched != 0u)
++    {
++        faults |= FAULT_CRASH;
++    }
++
++    /* 超速。属于 SOFT：车还在动，所以先斜坡降下来。 */
++    limit_x100 = (uint32_t)lim->effective * 100u;
++    if ((limit_x100 > 0u) &&
++        (s->speed_kmh_x100 > (uint16_t)((limit_x100 * OVERSPEED_FACTOR_X100) / 100u)))
++    {
++        faults |= FAULT_OVERSPEED;
++    }
++
++    /* 欠压 */
++#if APP_CHECK_VBUS
++    if (s->sample_valid && (s->bus_mv < UNDERVOLT_MV)) s_uv_latched = 1u;
++    if (s_uv_latched) faults |= FAULT_UNDERVOLT;
++#endif
++
++    /* 过流，和急停一样做闩锁 */
++#if APP_CHECK_OVERCURRENT
++    if (s->current_ma > OVERCURRENT_MA)
++    {
++        s_oc_latched = 1u;
++    }
++    if (s_oc_latched != 0u)
++    {
++        faults |= FAULT_OVERCURRENT;
++    }
++#endif
++
++    return faults;
++}
++
++/* 状态转移表（文档 7.5）
++ *
++ * 输入只有 (当前状态, 故障掩码, 油门, 停留时长)，
++ * 是个纯函数，所以不用读任务里剩下的代码也能单独推演。 */
++static app_state_t next_state(app_state_t st, uint32_t hard, uint32_t soft,
++                              uint16_t throttle, uint32_t state_ms,
++                              uint8_t latched)
++{
++    app_state_t next = st;
++
++    switch (st)
++    {
++    case APP_STATE_SELF_TEST:
++        if (state_ms >= SELFTEST_MS)
++        {
++            next = (hard != 0u) ? APP_STATE_FAULT_LOCK : APP_STATE_STANDBY;
++        }
++        break;
++
++    case APP_STATE_STANDBY:
++        if (hard != 0u)
++        {
++            next = APP_STATE_FAULT_LOCK;
++        }
++        else if ((soft == 0u) && (throttle < PEDAL_IDLE_THRESHOLD))
++        {
++            /* 必须先松开油门，才允许使能驱动 */
++            next = APP_STATE_READY;
++        }
++        break;
++
++    case APP_STATE_READY:
++        if (hard != 0u)
++        {
++            next = APP_STATE_FAULT_LOCK;
++        }
++        else if (soft != 0u)
++        {
++            next = APP_STATE_DECEL;
++        }
++        else if ((throttle > PEDAL_RUN_THRESHOLD) &&
++                 HAL_GPIO_ReadPin(ARM_OK_GPIO_Port, ARM_OK_Pin) == GPIO_PIN_SET)
++        {
++            next = APP_STATE_RUN;
++        }
++        break;
++
++    case APP_STATE_RUN:
++        if (hard != 0u)
++        {
++            next = APP_STATE_FAULT_LOCK;
++        }
++        else if (soft != 0u)
++        {
++            next = APP_STATE_DECEL;
++        }
++        break;
++
++    case APP_STATE_DECEL:
++        /* 3 秒的期限从进入 DECEL 那一刻起算，
++         * 而不是从斜坡降到零那一刻起算：
++         * 降不下来本身就是要升级的故障。 */
++        if (hard != 0u)
++        {
++            next = APP_STATE_FAULT_LOCK;
++        }
++        else if (state_ms >= DECEL_TIMEOUT_MS)
++        {
++            next = APP_STATE_FAULT_LOCK;
++        }
++        else if ((soft == 0u) && (Motor_GetOutput() == 0))
++        {
++            next = APP_STATE_READY;         /* condition cleared, stopped */
++        }
++        break;
++
++    case APP_STATE_FAULT_LOCK:
++    default:
++        /* 只有远程停车和欠压可以不掉电就解除；
++         * 其余闩锁（急停、倾覆、碰撞、过流、DECEL 超时）都会一直让条件成立，
++         * 所以这条边只可能被那两个触发。 */
++        if ((hard == 0u) && (latched == 0u))
++        {
++            next = APP_STATE_STANDBY;
++        }
++        break;
++    }
++
++    return next;
++}
++
++/* 任务主体 */
++void SafetyTask(void *arg)
++{
++    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，保证周期严格 10 ms */
++    TickType_t    state_since;  /* 进入当前状态的时刻，算 DECEL 超时用 */
++    sensor_data_t s;            /* 本拍从 g_q_sensor 取到的传感器快照 */
++    limit_cfg_t   lim;          /* 本拍从 g_mtx_cfg 取到的限速快照 */
++    uint32_t      local;        /* 本任务自己评估出来的故障（急停/倾覆/碰撞/超速…） */
++    uint32_t      remote;       /* 远端命令产生的故障，来自 g_eg_fault 事件组 */
++    uint32_t      all;          /* local | remote，本拍的总故障字 */
++    uint32_t      hard;         /* all 里属于"立刻切断"的那一类 */
++    uint32_t      soft;         /* all 里属于"先降速再切"的那一类 */
++    uint32_t      state_ms;     /* 在当前状态已经停留了多久 */
++    uint16_t      throttle;     /* 本拍采用的油门值，千分比 */
++    uint8_t       link_lost;    /* 本拍的失联判断，和 s_link_lost 比较得出跳变 */
++    uint8_t       enable;       /* 本拍该不该给电调使能 */
++    app_state_t   st;           /* 当前状态 */
++    uint8_t       arm_seen = 0u;
++    uint8_t       arm_idle_seen = 0u;
++    app_state_t   next;         /* 状态机算出的下一状态 */
++
++    (void)arg;
++
++    last_wake   = xTaskGetTickCount();
++    state_since = last_wake;
++
++    for (;;)
++    {
++        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_SAFETY_MS));
++
++        (void)xQueuePeek(g_q_sensor, &s, 0);
++        App_GetLimitSnapshot(&lim);
++
++        /* 油门：调试覆盖优先，规则和 ControlTask 保持一致。 */
++        throttle = (g_dbg_throttle >= 0) ? (uint16_t)g_dbg_throttle
++                                         : s.throttle_permille;
++
++        local  = evaluate_local_faults(&s, &lim);
++        if (g_dbg_interlock_fail != 0u)
++        {
++            local |= FAULT_INTERLOCK;
++        }
++        remote = (uint32_t)xEventGroupGetBits(g_eg_fault) & FAULT_MASK_REMOTE;
++        all    = local | remote;
++        g_local_faults = local;
++        /* Only produce the external watchdog heartbeat if both essential tasks progress. */
++        if (s.sample_valid &&
++            ((xTaskGetTickCount() - s.sample_tick) <= pdMS_TO_TICKS(SENSOR_STALE_MS)) &&
++            ((xTaskGetTickCount() - g_control_tick) <= pdMS_TO_TICKS(CONTROL_STALE_MS)))
++        {
++            s_hb_level ^= 1u;
++            HAL_GPIO_WritePin(HB_GPIO_Port, HB_Pin,
++                             s_hb_level ? GPIO_PIN_SET : GPIO_PIN_RESET);
++        }
++
++        /* 链路监护。丢了手机不能把孩子晾在赛道中间，
++         * 所以这里不改状态：只把限速压到 LIMIT_FALLBACK，等链路回来。
++         * 但标志位仍会通过 FAULT_LINK_LOST 传给 HMI 和黑匣子。 */
++        link_lost = 0u;
++        if (g_link_seen != 0u)
++        {
++            if ((xTaskGetTickCount() - g_last_link_tick) >
++                pdMS_TO_TICKS(LINK_TIMEOUT_MS))
++            {
++                link_lost = 1u;
++                all |= FAULT_LINK_LOST;
++            }
++        }
++        if (link_lost != s_link_lost)
++        {
++            s_link_lost = link_lost;
++            App_SetLinkFallback((link_lost != 0u) ? LIMIT_FALLBACK : 0u);
++        }
++
++        /* 故障注入：模拟一个不再调度的控制器。
++         * 中断还开着，但这里永不主动让出，
++         * 而本任务又是最高优先级，所以别的任务再也不会运行。
++         * 看门狗会在约 200 ms 内把它变成一次复位。 */
++        if ((all & FAULT_INJECT) != 0u)
++        {
++            for (;;)
++            {
++                __NOP();
++            }
++        }
++
++        hard = all & FAULT_MASK_HARD;
++        soft = all & FAULT_MASK_SOFT;
++
++        /* Hardware ARM can close only in READY. Require a released pedal AFTER
++         * ARM feedback, then a new press; pressing ARM with pedal down cannot run. */
++        if (HAL_GPIO_ReadPin(ARM_OK_GPIO_Port, ARM_OK_Pin) == GPIO_PIN_RESET)
++        {
++            arm_seen = 0u;
++            arm_idle_seen = 0u;
++        }
++        else if (!arm_seen)
++        {
++            arm_seen = 1u;
++            arm_idle_seen = 0u;
++        }
++        else if (throttle < PEDAL_IDLE_THRESHOLD)
++        {
++            arm_idle_seen = 1u;
++        }
++        st       = g_app_state;
++        state_ms = (uint32_t)(xTaskGetTickCount() - state_since);
++        next     = next_state(st, hard, soft, throttle, state_ms, s_decel_latched);
++        if ((hard == 0u) && (next == APP_STATE_RUN) && !arm_idle_seen)
++            next = APP_STATE_READY;
++        if ((hard == 0u) && (st == APP_STATE_RUN) && !arm_seen)
++            next = APP_STATE_STANDBY;
++
++        if ((st == APP_STATE_DECEL) && (next == APP_STATE_FAULT_LOCK))
++        {
++            /* DECEL 超时一律永久升级 */
++            s_decel_latched = 1u;
++        }
++
++        if (next != st)
++        {
++            g_app_state = next;
++            state_since = xTaskGetTickCount();
++            App_LogEvent(LOG_EVT_STATE,
++                         (uint16_t)(((uint16_t)st << 8) | (uint16_t)next));
++        }
++
++        /* 驱动使能。DECEL 期间保持开着：
++         * 电调必须活着，才有机会把转速降下来。 */
++        enable = App_State_MotorEnabled(next);
++        if (!APP_DRIVE_COMMISSIONED || hard) enable = 0u;
++        g_drive_allowed = enable;
++        Motor_Enable(enable);
++        if (enable == 0u)
++        {
++            Motor_Stop();
++        }
++
++        /* 只在本任务里喂狗。本任务一旦卡住，复位就会跟上来。 */
++        if (s.sample_valid &&
++            ((xTaskGetTickCount() - s.sample_tick) <= pdMS_TO_TICKS(SENSOR_STALE_MS)) &&
++            ((xTaskGetTickCount() - g_control_tick) <= pdMS_TO_TICKS(CONTROL_STALE_MS)))
++            Bsp_Iwdg_Feed();
++
++        /* 把故障的跳变推给黑匣子 */
++        if (all != s_published_faults)
++        {
++            if (all != 0u)
++            {
++                App_LogEvent(LOG_EVT_FAULT_SET, (uint16_t)all);
++            }
++            else
++            {
++                App_LogEvent(LOG_EVT_FAULT_CLEAR, (uint16_t)s_published_faults);
++            }
++            s_published_faults = all;
++        }
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_sensor.c
++++ b/童骑卫-FW/Core/Src/app_sensor.c
+@@ -1,147 +1,166 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "app_pins.h"
+-#include "bsp.h"
+-
+-#include "drv_imu.h"
+-#include "drv_tof.h"
+-#include "drv_nfc.h"
+-
+-#include <string.h>
+-
+-/* SensorTask，周期 10 ms
+- *
+- * 把一份 sensor_data_t 写进长度 1 的队列。下游都用 Peek 读，
+- * 所以每个消费者随时都能拿到最新的一次采样，
+- * 既不用来回拷贝，也不会把生产者卡住。
+- *
+- * ToF 每 3 拍读一次（30 ms），NFC 每 5 拍一次（50 ms）：
+- * 这两颗器件的转换时间都比 10 ms 的节拍长。 */
+-
+-void SensorTask(void *arg)
+-{
+-    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，锁住 10 ms 周期 */
+-    sensor_data_t s;            /* 正在往上写的这一份采样，写完整份才覆盖进队列 */
+-    int16_t       acc[3];       /* IMU 加速度临时缓冲，mg */
+-    int16_t       gyr[3];       /* IMU 角速度临时缓冲，0.1 °/s */
+-    uint16_t      dist[2];      /* ToF 临时缓冲，mm */
+-    uint8_t       uid[4];       /* 读到的头盔标签 UID 临时缓冲；本文件只关心"读到没有" */
+-    uint16_t      raw;          /* ADC 原始码值，各通道轮流复用 */
+-    uint8_t       tof_div;      /* ToF 分频计数：10 ms 一拍，数到 3 才是 30 ms */
+-    uint8_t       nfc_div;      /* 佩戴分频计数：数到 5 才是 50 ms */
+-
+-    (void)arg;
+-
+-    memset(&s, 0, sizeof(s));
+-    s.accel_mg[2] = 1000;
+-
+-    s.imu_present = (DrvImu_Init() == DRV_OK) ? 1u : 0u;
+-    s.tof_present = (DrvTof_Init() == DRV_OK) ? 1u : 0u;
+-    s.nfc_present = (DrvNfc_Init() == DRV_OK) ? 1u : 0u;
+-
+-    dist[0] = 4000u;
+-    dist[1] = 4000u;
+-    tof_div = 0u;
+-    nfc_div = 0u;
+-
+-    App_Logf("sensor: imu=%u tof=%u nfc=%u\r\n",
+-             (unsigned)s.imu_present,
+-             (unsigned)s.tof_present,
+-             (unsigned)s.nfc_present);
+-
+-    last_wake = xTaskGetTickCount();
+-
+-    for (;;)
+-    {
+-        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_SENSOR_MS));
+-
+-        /* IMU */
+-        if (s.imu_present != 0u)
+-        {
+-            if (DrvImu_Read(acc, gyr) == DRV_OK)
+-            {
+-                s.accel_mg[0] = acc[0];
+-                s.accel_mg[1] = acc[1];
+-                s.accel_mg[2] = acc[2];
+-                s.gyro_dps10[0] = gyr[0];
+-                s.gyro_dps10[1] = gyr[1];
+-                s.gyro_dps10[2] = gyr[2];
+-            }
+-        }
+-
+-        /* ToF，每 30 ms 读一次 */
+-        tof_div++;
+-        if (tof_div >= 3u)
+-        {
+-            tof_div = 0u;
+-            if (s.tof_present != 0u)
+-            {
+-                if (DrvTof_Read(dist) == DRV_OK)
+-                {
+-                    s.tof_mm[0] = dist[0];
+-                    s.tof_mm[1] = dist[1];
+-                }
+-            }
+-            else
+-            {
+-                s.tof_mm[0] = 4000u;
+-                s.tof_mm[1] = 4000u;
+-            }
+-        }
+-
+-        /* 头盔标签，每 50 ms 读一次 */
+-        nfc_div++;
+-        if (nfc_div >= 5u)
+-        {
+-            nfc_div = 0u;
+-            if (s.nfc_present != 0u)
+-            {
+-                s.helmet_ok = (DrvNfc_PollTag(uid) == DRV_OK) ? 1u : 0u;
+-            }
+-            else
+-            {
+-                s.helmet_ok = 0u;
+-            }
+-
+-            /* 安全带开关跟着标签一起读，省一次来回 */
+-            s.belt_closed =
+-                (HAL_GPIO_ReadPin(BELT_GPIO_Port, BELT_Pin) == GPIO_PIN_RESET)
+-                    ? 1u : 0u;
+-        }
+-
+-        /* 模拟前端 */
+-        raw = Bsp_Adc_Read(ADC_CH_CURRENT);
+-        /* ACS712 零电流时输出 2.5 V（过 R28/R29 分压后是 1.5 V），
+-         * 所以要先扣掉这个零点。它是双向器件，低于零点对应的就是负电流，
+-         * 这里一律钳到 0。 */
+-        s.current_ma = (raw > CURR_ZERO_COUNT)
+-                           ? (uint16_t)((uint32_t)(raw - CURR_ZERO_COUNT) *
+-                                        CURRENT_MA_PER_COUNT)
+-                           : 0u;
+-
+-        raw = Bsp_Adc_Read(ADC_CH_VBUS);
+-        s.bus_mv = (uint16_t)(((uint32_t)raw * ADC_VREF_MV / ADC_FULL_SCALE) *
+-                              VBUS_DIVIDER_X10 / 10u);
+-
+-#if APP_PEDAL_PRESENT
+-        raw = Bsp_Adc_Read(ADC_CH_PEDAL);
+-        s.throttle_permille = (uint16_t)(((uint32_t)raw * 1000u) / ADC_FULL_SCALE);
+-#else
+-        /* 踏板还没接：PA3 悬空时那点 ADC 噪声就足以把状态机一路推进 RUN。
+-         * 台架演示改用 CMD_SET_THROTTLE 命令直接给油门。 */
+-        s.throttle_permille = 0u;
+-#endif
+-
+-        raw = Bsp_Adc_Read(ADC_CH_SEAT);
+-        s.seat_pressed = (raw > 1500u) ? 1u : 0u;
+-
+-        /* 轮速
+-         * 待办（B 同学）：把这里的调试值换成 TIM3_CH1/CH2 的霍尔输入捕获，
+-         * 再做一个滑动窗口的周期估计。 */
+-        s.speed_kmh_x100 = g_dbg_speed_x100;
+-
+-        s.hall_pulses = 0u;
+-
+-        (void)xQueueOverwrite(g_q_sensor, &s);
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "app_pins.h"
++#include "bsp.h"
++
++#include "drv_imu.h"
++#include "drv_tof.h"
++#include "drv_nfc.h"
++
++#include <string.h>
++
++/* SensorTask，周期 10 ms
++ *
++ * 把一份 sensor_data_t 写进长度 1 的队列。下游都用 Peek 读，
++ * 所以每个消费者随时都能拿到最新的一次采样，
++ * 既不用来回拷贝，也不会把生产者卡住。
++ *
++ * ToF 每 3 拍读一次（30 ms），NFC 每 5 拍一次（50 ms）：
++ * 这两颗器件的转换时间都比 10 ms 的节拍长。 */
++
++void SensorTask(void *arg)
++{
++    TickType_t    last_wake;    /* vTaskDelayUntil 的基准，锁住 10 ms 周期 */
++    sensor_data_t s;            /* 正在往上写的这一份采样，写完整份才覆盖进队列 */
++    int16_t       acc[3];       /* IMU 加速度临时缓冲，mg */
++    int16_t       gyr[3];       /* IMU 角速度临时缓冲，0.1 °/s */
++    uint16_t      dist[2];      /* ToF 临时缓冲，mm */
++    uint8_t       uid[4];       /* 读到的头盔标签 UID 临时缓冲；本文件只关心"读到没有" */
++    uint32_t      pedal_mv;
++    uint32_t      current_ma;
++    uint16_t      raw;          /* ADC 原始码值，各通道轮流复用 */
++    uint8_t       tof_div;      /* ToF 分频计数：10 ms 一拍，数到 3 才是 30 ms */
++    uint8_t       nfc_div;      /* 佩戴分频计数：数到 5 才是 50 ms */
++
++    (void)arg;
++
++    memset(&s, 0, sizeof(s));
++    s.accel_mg[2] = 1000;
++
++    s.imu_present = (DrvImu_Init() == DRV_OK) ? 1u : 0u;
++    s.tof_present = (DrvTof_Init() == DRV_OK) ? 1u : 0u;
++    s.nfc_present = (DrvNfc_Init() == DRV_OK) ? 1u : 0u;
++
++    dist[0] = 4000u;
++    dist[1] = 4000u;
++    tof_div = 0u;
++    nfc_div = 0u;
++
++    App_Logf("sensor: imu=%u tof=%u nfc=%u\r\n",
++             (unsigned)s.imu_present,
++             (unsigned)s.tof_present,
++             (unsigned)s.nfc_present);
++
++    last_wake = xTaskGetTickCount();
++
++    for (;;)
++    {
++        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_SENSOR_MS));
++
++        /* IMU */
++        if (s.imu_present != 0u)
++        {
++            if (DrvImu_Read(acc, gyr) == DRV_OK)
++            {
++                s.accel_mg[0] = acc[0];
++                s.accel_mg[1] = acc[1];
++                s.accel_mg[2] = acc[2];
++                s.gyro_dps10[0] = gyr[0];
++                s.gyro_dps10[1] = gyr[1];
++                s.gyro_dps10[2] = gyr[2];
++            }
++            else
++            {
++                s.imu_present = 0u;
++            }
++        }
++
++        /* ToF，每 30 ms 读一次 */
++        tof_div++;
++        if (tof_div >= 3u)
++        {
++            tof_div = 0u;
++            if (s.tof_present != 0u)
++            {
++                if (DrvTof_Read(dist) == DRV_OK)
++                {
++                    s.tof_mm[0] = dist[0];
++                    s.tof_mm[1] = dist[1];
++                }
++                else
++                {
++                    s.tof_present = 0u;
++                    s.tof_mm[0] = 0u;
++                    s.tof_mm[1] = 0u;
++                }
++            }
++            else
++            {
++                s.tof_mm[0] = 0u;
++                s.tof_mm[1] = 0u;
++            }
++        }
++
++        /* 头盔标签，每 50 ms 读一次 */
++        nfc_div++;
++        if (nfc_div >= 5u)
++        {
++            nfc_div = 0u;
++            if (s.nfc_present != 0u)
++            {
++                s.helmet_ok = (DrvNfc_PollTag(uid) == DRV_OK) ? 1u : 0u;
++            }
++            else
++            {
++                s.helmet_ok = 0u;
++            }
++
++            /* 安全带开关跟着标签一起读，省一次来回 */
++            s.belt_closed =
++                (HAL_GPIO_ReadPin(BELT_GPIO_Port, BELT_Pin) == GPIO_PIN_RESET)
++                    ? 1u : 0u;
++        }
++
++        /* 模拟前端 */
++        raw = Bsp_Adc_Read(ADC_CH_CURRENT);
++        /* ACS712 零电流时输出 2.5 V（过 R28/R29 分压后是 1.5 V），
++         * 所以要先扣掉这个零点。它是双向器件，低于零点对应的就是负电流，
++         * 这里一律钳到 0。 */
++        /* Bipolar sensor: protect against either current direction; saturate. */
++        current_ma = (raw >= CURR_ZERO_COUNT) ? (raw - CURR_ZERO_COUNT)
++                                              : (CURR_ZERO_COUNT - raw);
++        current_ma *= CURRENT_MA_PER_COUNT;
++        s.current_ma = (uint16_t)((current_ma > 65535u) ? 65535u : current_ma);
++
++        raw = Bsp_Adc_Read(ADC_CH_VBUS);
++        s.bus_mv = (uint16_t)((uint32_t)raw * ADC_VREF_MV * VBUS_DIVIDER_X10 /
++                             (ADC_FULL_SCALE * 10u));
++
++        raw = Bsp_Adc_Read(ADC_CH_PEDAL);
++        pedal_mv = (uint32_t)raw * ADC_VREF_MV * 10u / (ADC_FULL_SCALE * 6u);
++        s.pedal_fault = (pedal_mv < PEDAL_FAULT_LOW_MV ||
++                         pedal_mv > PEDAL_FAULT_HIGH_MV) ? 1u : 0u;
++        if (s.pedal_fault || pedal_mv <= PEDAL_IDLE_MV)
++            s.throttle_permille = 0u;
++        else if (pedal_mv >= PEDAL_FULL_MV)
++            s.throttle_permille = 1000u;
++        else
++            s.throttle_permille = (uint16_t)((pedal_mv - PEDAL_IDLE_MV) * 1000u /
++                                            (PEDAL_FULL_MV - PEDAL_IDLE_MV));
++
++        raw = Bsp_Adc_Read(ADC_CH_SEAT);
++        s.seat_left_pressed = (raw > 1500u) ? 1u : 0u;
++        raw = Bsp_Adc_Read(ADC_CH_SEAT_R);
++        s.seat_right_pressed = (raw > 1500u) ? 1u : 0u;
++        s.seat_pressed = s.seat_left_pressed | s.seat_right_pressed;
++
++        /* Wheel capture is not implemented. Never substitute zero for valid speed. */
++        s.speed_kmh_x100 = 0u;
++        s.speed_valid = 0u;
++        s.hall_pulses = 0u;
++        s.sample_tick = xTaskGetTickCount();
++        s.sample_valid = 1u;
++
++        (void)xQueueOverwrite(g_q_sensor, &s);
++    }
++}
+--- a/童骑卫-FW/Core/Src/app_telemetry.c
++++ b/童骑卫-FW/Core/Src/app_telemetry.c
+@@ -1,103 +1,103 @@
+-#include "app_main.h"
+-#include "app_config.h"
+-#include "app_state.h"
+-#include "bsp.h"
+-#include "protocol.h"
+-
+-/* TelemetryTask，周期 100 ms
+- *
+- * 把 14 字节遥测帧打包好，走 USART3 交给 ESP32。
+- * 由 ESP32 那边转成 BLE 通知，本文件完全不需要知道 BLE 的存在。
+- *
+- * 每次发送都带超时：ESP32 死掉不能把本任务卡住。
+- * 而且它优先级只有 2，永远挤不到安全相关的任务前面去。 */
+-
+-/* 遥测帧序号。每次发包后自增，接收端用来识别重传和丢包。
+- * 8 位，255 之后回绕到 0 —— 协议里已经没有大小比较，
+- * 所以回绕本身不会出问题，见 app_comm.c 的 seq_accept()。 */
+-static uint8_t s_seq = 0u;
+-
+-static void pack_telemetry(uint8_t *p)
+-{
+-    sensor_data_t s;            /* 传感器快照 */
+-    limit_cfg_t   lim;          /* 限速快照 */
+-    uint32_t      faults;       /* 事件组里的故障位（只反映远端命令类故障，
+-                                 * 本地算出来的那些由 SafetyTask 直接进状态机） */
+-    uint8_t       wear;         /* 佩戴状态位域，打包进第 7 字节 */
+-
+-    (void)xQueuePeek(g_q_sensor, &s, 0);
+-    App_GetLimitSnapshot(&lim);
+-    faults = (uint32_t)xEventGroupGetBits(g_eg_fault);
+-
+-    p[0]  = (uint8_t)(s.speed_kmh_x100 & 0xFFu);
+-    p[1]  = (uint8_t)(s.speed_kmh_x100 >> 8);
+-    p[2]  = lim.effective;
+-    p[3]  = (uint8_t)(faults & 0xFFu);
+-    p[4]  = 0u;                                    /* 单圈时间，暂未实现 */
+-    p[5]  = 0u;
+-    p[6]  = (uint8_t)((s.bus_mv / 1000u) * 10u);   /* 电压放大 10 倍后存 */
+-
+-    wear = 0u;
+-    if (s.seat_pressed != 0u)
+-    {
+-        wear |= (uint8_t)(1u << WEAR_SEAT_SHIFT);
+-    }
+-    if (s.belt_closed != 0u)
+-    {
+-        wear |= (uint8_t)(1u << WEAR_BELT_SHIFT);
+-    }
+-    if (s.helmet_ok != 0u)
+-    {
+-        wear |= (uint8_t)(1u << WEAR_HELMET_SHIFT);
+-    }
+-    p[7]  = wear;
+-
+-    p[8]  = 0u;                                    /* 里程，暂未实现 */
+-    p[9]  = 0u;
+-    p[10] = (uint8_t)g_app_state;                  /* 状态机当前状态，见文档 7.5 */
+-    p[11] = 0u;
+-    p[12] = 0u;
+-    p[13] = 0u;
+-}
+-
+-void TelemetryTask(void *arg)
+-{
+-    TickType_t last_wake;   /* 100 ms 周期基准 */
+-    TickType_t last_hb;     /* 上一次发心跳的时刻，用来凑 1 s 间隔 */
+-    uint8_t    buf[PROTO_MAX_FRAME];        /* 整帧输出缓冲：帧头 + 载荷 + CRC */
+-    uint8_t    payload[PROTO_TELEMETRY_LEN];/* 14 字节遥测载荷，不含帧头 */
+-    uint8_t    hb;          /* 心跳载荷：bit0 = 当前是否允许驱动 */
+-    uint16_t   n;           /* Protocol_Build 返回的帧长；0 表示构造失败 */
+-
+-    (void)arg;
+-
+-    last_wake = xTaskGetTickCount();
+-    last_hb   = last_wake;
+-
+-    for (;;)
+-    {
+-        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_TELEMETRY_MS));
+-
+-        pack_telemetry(payload);
+-        n = Protocol_Build(buf, sizeof(buf), s_seq, CMD_TELEMETRY,
+-                           payload, PROTO_TELEMETRY_LEN);
+-        s_seq++;
+-        if (n > 0u)
+-        {
+-            (void)HAL_UART_Transmit(&huart3, buf, n, 10u);
+-        }
+-
+-        if ((xTaskGetTickCount() - last_hb) >= pdMS_TO_TICKS(LINK_HB_PERIOD_MS))
+-        {
+-            last_hb = xTaskGetTickCount();
+-
+-            hb = (g_drive_allowed != 0u) ? 0x01u : 0x00u;
+-            n = Protocol_Build(buf, sizeof(buf), s_seq, CMD_HEARTBEAT, &hb, 1u);
+-            s_seq++;
+-            if (n > 0u)
+-            {
+-                (void)HAL_UART_Transmit(&huart3, buf, n, 10u);
+-            }
+-        }
+-    }
+-}
++#include "app_main.h"
++#include "app_config.h"
++#include "app_state.h"
++#include "bsp.h"
++#include "protocol.h"
++
++/* TelemetryTask，周期 100 ms
++ *
++ * 把 14 字节遥测帧打包好，走 USART3 交给 ESP32。
++ * 由 ESP32 那边转成 BLE 通知，本文件完全不需要知道 BLE 的存在。
++ *
++ * 每次发送都带超时：ESP32 死掉不能把本任务卡住。
++ * 而且它优先级只有 2，永远挤不到安全相关的任务前面去。 */
++
++/* 遥测帧序号。每次发包后自增，接收端用来识别重传和丢包。
++ * 8 位，255 之后回绕到 0 —— 协议里已经没有大小比较，
++ * 所以回绕本身不会出问题，见 app_comm.c 的 seq_accept()。 */
++static uint8_t s_seq = 0u;
++
++static void pack_telemetry(uint8_t *p)
++{
++    sensor_data_t s;            /* 传感器快照 */
++    limit_cfg_t   lim;          /* 限速快照 */
++    uint32_t      faults;       /* 事件组里的故障位（只反映远端命令类故障，
++                                 * 本地算出来的那些由 SafetyTask 直接进状态机） */
++    uint8_t       wear;         /* 佩戴状态位域，打包进第 7 字节 */
++
++    (void)xQueuePeek(g_q_sensor, &s, 0);
++    App_GetLimitSnapshot(&lim);
++    faults = (uint32_t)xEventGroupGetBits(g_eg_fault) | g_local_faults;
++
++    p[0]  = (uint8_t)(s.speed_kmh_x100 & 0xFFu);
++    p[1]  = (uint8_t)(s.speed_kmh_x100 >> 8);
++    p[2]  = lim.effective;
++    p[3]  = (uint8_t)(faults & 0xFFu);
++    p[4]  = 0u;                                    /* 单圈时间，暂未实现 */
++    p[5]  = 0u;
++    p[6]  = (uint8_t)((s.bus_mv > 25500u) ? 255u : s.bus_mv / 100u); /* Legacy 0.1V, saturated. */
++
++    wear = 0u;
++    if (s.seat_pressed != 0u)
++    {
++        wear |= (uint8_t)(1u << WEAR_SEAT_SHIFT);
++    }
++    if (s.belt_closed != 0u)
++    {
++        wear |= (uint8_t)(1u << WEAR_BELT_SHIFT);
++    }
++    if (s.helmet_ok != 0u)
++    {
++        wear |= (uint8_t)(1u << WEAR_HELMET_SHIFT);
++    }
++    p[7]  = wear;
++
++    p[8]  = 0u;                                    /* 里程，暂未实现 */
++    p[9]  = 0u;
++    p[10] = (uint8_t)g_app_state;                  /* 状态机当前状态，见文档 7.5 */
++    p[11] = (uint8_t)((faults >> 8) & 0xFFu);
++    p[12] = (uint8_t)(s.bus_mv & 0xFFu); /* v2: full voltage in mV, little endian. */
++    p[13] = (uint8_t)(s.bus_mv >> 8);
++}
++
++void TelemetryTask(void *arg)
++{
++    TickType_t last_wake;   /* 100 ms 周期基准 */
++    TickType_t last_hb;     /* 上一次发心跳的时刻，用来凑 1 s 间隔 */
++    uint8_t    buf[PROTO_MAX_FRAME];        /* 整帧输出缓冲：帧头 + 载荷 + CRC */
++    uint8_t    payload[PROTO_TELEMETRY_LEN];/* 14 字节遥测载荷，不含帧头 */
++    uint8_t    hb;          /* 心跳载荷：bit0 = 当前是否允许驱动 */
++    uint16_t   n;           /* Protocol_Build 返回的帧长；0 表示构造失败 */
++
++    (void)arg;
++
++    last_wake = xTaskGetTickCount();
++    last_hb   = last_wake;
++
++    for (;;)
++    {
++        vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(PERIOD_TELEMETRY_MS));
++
++        pack_telemetry(payload);
++        n = Protocol_Build(buf, sizeof(buf), s_seq, CMD_TELEMETRY,
++                           payload, PROTO_TELEMETRY_LEN);
++        s_seq++;
++        if (n > 0u)
++        {
++            (void)HAL_UART_Transmit(&huart3, buf, n, 10u);
++        }
++
++        if ((xTaskGetTickCount() - last_hb) >= pdMS_TO_TICKS(LINK_HB_PERIOD_MS))
++        {
++            last_hb = xTaskGetTickCount();
++
++            hb = (g_drive_allowed != 0u) ? 0x01u : 0x00u;
++            n = Protocol_Build(buf, sizeof(buf), s_seq, CMD_HEARTBEAT, &hb, 1u);
++            s_seq++;
++            if (n > 0u)
++            {
++                (void)HAL_UART_Transmit(&huart3, buf, n, 10u);
++            }
++        }
++    }
++}
+--- a/童骑卫-FW/Core/Src/bsp.c
++++ b/童骑卫-FW/Core/Src/bsp.c
+@@ -1,215 +1,221 @@
+-#include "bsp.h"
+-#include "app_config.h"
+-#include "app_pins.h"
+-#include "usart.h"
+-
+-/* 这里承担 USART3 / ADC / TIM1 的 MspInit 工作，替代 CubeMX 生成的版本。
+- * usart.c 里重写的 HAL_UART_MspInit 只处理 USART1，
+- * 所以 USART3 的引脚复用必须在 HAL_UART_Init 之前在这里配好。 */
+-
+-/* USART3 句柄：与 ESP32 的链路。
+- * 对 ESP32 那边就是一条普通串口，本工程从不把它当调试串口用。
+- * 属性由 Bsp_Usart3_Init() 填，没有走 CubeMX。 */
+-UART_HandleTypeDef huart3;
+-
+-/* ADC1 句柄：电流(PA0) / 母线电压(PA1) / 踏板(PA3) / 座垫(PB0) 共用。
+- * 单通道轮询，每读一路都要重新配置一次通道，见 Bsp_Adc_Read()。 */
+-ADC_HandleTypeDef  hadc1;
+-
+-/* GPIO */
+-void Bsp_Gpio_Init(void)
+-{
+-    GPIO_InitTypeDef gpio;
+-
+-    __HAL_RCC_GPIOA_CLK_ENABLE();
+-    __HAL_RCC_GPIOB_CLK_ENABLE();
+-    __HAL_RCC_GPIOC_CLK_ENABLE();
+-
+-    /* 在把引脚切成输出之前就先把电平预置成安全值，
+-     * 这样开机过程中电调不会看到任何脉冲。 */
+-    HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin,  GPIO_PIN_RESET);
+-    HAL_GPIO_WritePin(HB_GPIO_Port,       HB_Pin,        GPIO_PIN_RESET);
+-    HAL_GPIO_WritePin(BUZZER_GPIO_Port,   BUZZER_Pin,    GPIO_PIN_RESET);
+-    HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin, GPIO_PIN_SET); /* 灭 */
+-
+-    gpio.Mode  = GPIO_MODE_OUTPUT_PP;
+-    gpio.Pull  = GPIO_NOPULL;
+-    gpio.Speed = GPIO_SPEED_FREQ_LOW;
+-
+-    gpio.Pin = MOTOR_EN_Pin;
+-    HAL_GPIO_Init(MOTOR_EN_GPIO_Port, &gpio);
+-    gpio.Pin = HB_Pin;
+-    HAL_GPIO_Init(HB_GPIO_Port, &gpio);
+-    gpio.Pin = BUZZER_Pin;
+-    HAL_GPIO_Init(BUZZER_GPIO_Port, &gpio);
+-    gpio.Pin = STATUS_LED_Pin;
+-    HAL_GPIO_Init(STATUS_LED_GPIO_Port, &gpio);
+-
+-    gpio.Mode = GPIO_MODE_INPUT;
+-    gpio.Pull = GPIO_PULLUP;
+-
+-    gpio.Pin = ESTOP_Pin;
+-    HAL_GPIO_Init(ESTOP_GPIO_Port, &gpio);
+-    gpio.Pin = BELT_Pin;
+-    HAL_GPIO_Init(BELT_GPIO_Port, &gpio);
+-}
+-
+-/* USART3：与 ESP32 通信 */
+-void Bsp_Usart3_Init(void)
+-{
+-    GPIO_InitTypeDef gpio;
+-
+-    __HAL_RCC_USART3_CLK_ENABLE();
+-    __HAL_RCC_GPIOB_CLK_ENABLE();
+-
+-    gpio.Pin   = GPIO_PIN_10;              /* 发送 */
+-    gpio.Mode  = GPIO_MODE_AF_PP;
+-    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+-    HAL_GPIO_Init(GPIOB, &gpio);
+-
+-    gpio.Pin  = GPIO_PIN_11;               /* 接收 */
+-    gpio.Mode = GPIO_MODE_INPUT;
+-    gpio.Pull = GPIO_PULLUP;
+-    HAL_GPIO_Init(GPIOB, &gpio);
+-
+-    huart3.Instance          = USART3;
+-    huart3.Init.BaudRate     = 115200;
+-    huart3.Init.WordLength   = UART_WORDLENGTH_8B;
+-    huart3.Init.StopBits     = UART_STOPBITS_1;
+-    huart3.Init.Parity       = UART_PARITY_NONE;
+-    huart3.Init.Mode         = UART_MODE_TX_RX;
+-    huart3.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+-    huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+-    (void)HAL_UART_Init(&huart3);
+-
+-    HAL_NVIC_SetPriority(USART3_IRQn, 11, 0);
+-    HAL_NVIC_EnableIRQ(USART3_IRQn);
+-}
+-
+-/* ADC1：电流(PA0)、母线电压(PA1)、踏板(PA3)、座垫压力片(PB0)
+- *
+- * 一次只转换一个通道，用轮询方式读。
+- * 按 10 ms 的周期算，每个周期花不到 0.2 ms。 */
+-void Bsp_Adc_Init(void)
+-{
+-    GPIO_InitTypeDef   gpio;
+-    ADC_ChannelConfTypeDef cfg;
+-
+-    __HAL_RCC_ADC1_CLK_ENABLE();
+-    __HAL_RCC_ADC_CONFIG(RCC_ADCPCLK2_DIV6);   /* 72/6 = 12 MHz，F103 的 ADC 上限 14 MHz */
+-
+-    __HAL_RCC_GPIOA_CLK_ENABLE();
+-    __HAL_RCC_GPIOB_CLK_ENABLE();
+-
+-    gpio.Mode = GPIO_MODE_ANALOG;
+-    gpio.Pull = GPIO_NOPULL;
+-
+-    gpio.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_3;
+-    HAL_GPIO_Init(GPIOA, &gpio);
+-
+-    gpio.Pin = GPIO_PIN_0;
+-    HAL_GPIO_Init(GPIOB, &gpio);
+-
+-    hadc1.Instance                   = ADC1;
+-    hadc1.Init.ScanConvMode          = ADC_SCAN_DISABLE;
+-    hadc1.Init.ContinuousConvMode    = DISABLE;
+-    hadc1.Init.DiscontinuousConvMode = DISABLE;
+-    hadc1.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
+-    hadc1.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
+-    hadc1.Init.NbrOfConversion       = 1;
+-    (void)HAL_ADC_Init(&hadc1);
+-
+-    (void)HAL_ADCEx_Calibration_Start(&hadc1);
+-
+-    /* 第一次读之前先把一个通道配好，否则转换出来的值没有意义 */
+-    cfg.Channel      = ADC_CH_CURRENT;
+-    cfg.Rank         = ADC_REGULAR_RANK_1;
+-    cfg.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+-    (void)HAL_ADC_ConfigChannel(&hadc1, &cfg);
+-}
+-
+-uint16_t Bsp_Adc_Read(uint32_t channel)
+-{
+-    ADC_ChannelConfTypeDef cfg;
+-    uint16_t value = 0u;
+-
+-    cfg.Channel      = channel;
+-    cfg.Rank         = ADC_REGULAR_RANK_1;
+-    cfg.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+-
+-    if (HAL_ADC_ConfigChannel(&hadc1, &cfg) != HAL_OK)
+-    {
+-        return 0u;
+-    }
+-
+-    if (HAL_ADC_Start(&hadc1) != HAL_OK)
+-    {
+-        return 0u;
+-    }
+-
+-    if (HAL_ADC_PollForConversion(&hadc1, 5u) == HAL_OK)
+-    {
+-        value = (uint16_t)HAL_ADC_GetValue(&hadc1);
+-    }
+-
+-    (void)HAL_ADC_Stop(&hadc1);
+-
+-    return value;
+-}
+-
+-/* 独立看门狗
+- *
+- * LSI 约 40 kHz，除 4 得 10 kHz，重装值 2000 -> 超时 200 ms。
+- * 全工程只有 SafetyTask 喂狗。这个任务一旦停了（卡死、死锁，或被人为注入故障），
+- * MCU 就会复位，电调使能线则回落到外部下拉电阻决定的低电平。
+- *
+- * 注意 IWDG 靠 LSI 独立计数，不需要 CPU、也不需要中断，
+- * 所以即使代码里把中断全关了，它照样会把芯片复位掉。 */
+-void Bsp_Iwdg_Init(void)
+-{
+-#if APP_USE_IWDG
+-    /* 故意直接操作寄存器：这棵 HAL 树里根本没带 hal_iwdg.c。
+-     * IWDG 由 LSI 驱动，而 LSI 上电就自动起振。 */
+-    IWDG->KR = 0x5555u;                 /* 解锁 PR 和 RLR */
+-    IWDG->PR = 0x0000u;                 /* LSI / 4，约 10 kHz */
+-    IWDG->RLR = 2000u;                  /* 2000 个计数 -> 200 ms */
+-    while (IWDG->SR != 0u)
+-    {
+-        /* 等新写入的重装值被硬件接受 */
+-    }
+-    IWDG->KR = 0xAAAAu;                 /* 先装载一次计数器 */
+-    IWDG->KR = 0xCCCCu;                 /* 启动，之后再也关不掉 */
+-#endif
+-}
+-
+-void Bsp_Iwdg_Feed(void)
+-{
+-#if APP_USE_IWDG
+-    IWDG->KR = 0xAAAAu;
+-#endif
+-}
+-
+-uint8_t Bsp_GetResetReason(void)
+-{
+-    uint8_t reason = RESET_UNKNOWN;
+-
+-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET)
+-    {
+-        reason = RESET_IWDG;
+-    }
+-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+-    {
+-        reason = RESET_PIN;
+-    }
+-    else
+-    {
+-        reason = RESET_UNKNOWN;
+-    }
+-
+-    return reason;
+-}
+-
+-void Bsp_ClearResetFlags(void)
+-{
+-    __HAL_RCC_CLEAR_RESET_FLAGS();
+-}
++#include "bsp.h"
++#include "app_config.h"
++#include "app_pins.h"
++#include "usart.h"
++
++/* 这里承担 USART3 / ADC / TIM1 的 MspInit 工作，替代 CubeMX 生成的版本。
++ * usart.c 里重写的 HAL_UART_MspInit 只处理 USART1，
++ * 所以 USART3 的引脚复用必须在 HAL_UART_Init 之前在这里配好。 */
++
++/* USART3 句柄：与 ESP32 的链路。
++ * 对 ESP32 那边就是一条普通串口，本工程从不把它当调试串口用。
++ * 属性由 Bsp_Usart3_Init() 填，没有走 CubeMX。 */
++UART_HandleTypeDef huart3;
++
++/* ADC1 句柄：电流(PA0) / 母线电压(PA1) / 踏板(PA3) / 座垫(PB0) 共用。
++ * 单通道轮询，每读一路都要重新配置一次通道，见 Bsp_Adc_Read()。 */
++ADC_HandleTypeDef  hadc1;
++
++/* GPIO */
++void Bsp_Gpio_Init(void)
++{
++    GPIO_InitTypeDef gpio;
++
++    __HAL_RCC_GPIOA_CLK_ENABLE();
++    __HAL_RCC_GPIOB_CLK_ENABLE();
++    __HAL_RCC_GPIOC_CLK_ENABLE();
++
++    /* 在把引脚切成输出之前就先把电平预置成安全值，
++     * 这样开机过程中电调不会看到任何脉冲。 */
++    HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin,  GPIO_PIN_RESET);
++    HAL_GPIO_WritePin(HB_GPIO_Port,       HB_Pin,        GPIO_PIN_RESET);
++    HAL_GPIO_WritePin(BUZZER_GPIO_Port,   BUZZER_Pin,    GPIO_PIN_RESET);
++    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2 | GPIO_PIN_4, GPIO_PIN_SET);
++    HAL_GPIO_WritePin(GPIOB, TOF_XSHUT1_Pin | TOF_XSHUT2_Pin | NFC_RST_Pin, GPIO_PIN_RESET);
++
++    gpio.Mode  = GPIO_MODE_OUTPUT_PP;
++    gpio.Pull  = GPIO_NOPULL;
++    gpio.Speed = GPIO_SPEED_FREQ_LOW;
++
++    gpio.Pin = MOTOR_EN_Pin;
++    HAL_GPIO_Init(MOTOR_EN_GPIO_Port, &gpio);
++    gpio.Pin = HB_Pin;
++    HAL_GPIO_Init(HB_GPIO_Port, &gpio);
++    gpio.Pin = BUZZER_Pin;
++    HAL_GPIO_Init(BUZZER_GPIO_Port, &gpio);
++    gpio.Pin = GPIO_PIN_2 | GPIO_PIN_4;
++    HAL_GPIO_Init(GPIOA, &gpio);
++    gpio.Pin = TOF_XSHUT1_Pin | TOF_XSHUT2_Pin | NFC_RST_Pin;
++    HAL_GPIO_Init(GPIOB, &gpio);
++
++    gpio.Mode = GPIO_MODE_INPUT;
++    gpio.Pull = GPIO_NOPULL;
++    gpio.Pin = ARM_OK_Pin;
++    HAL_GPIO_Init(ARM_OK_GPIO_Port, &gpio);
++    gpio.Pull = GPIO_PULLDOWN;
++    gpio.Pin = ESTOP_Pin;
++    HAL_GPIO_Init(ESTOP_GPIO_Port, &gpio);
++    gpio.Pull = GPIO_PULLUP;
++    gpio.Pin = BELT_Pin;
++    HAL_GPIO_Init(BELT_GPIO_Port, &gpio);
++}
++
++/* USART3：与 ESP32 通信 */
++void Bsp_Usart3_Init(void)
++{
++    GPIO_InitTypeDef gpio;
++
++    __HAL_RCC_USART3_CLK_ENABLE();
++    __HAL_RCC_GPIOB_CLK_ENABLE();
++
++    gpio.Pin   = GPIO_PIN_10;              /* 发送 */
++    gpio.Mode  = GPIO_MODE_AF_PP;
++    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
++    HAL_GPIO_Init(GPIOB, &gpio);
++
++    gpio.Pin  = GPIO_PIN_11;               /* 接收 */
++    gpio.Mode = GPIO_MODE_INPUT;
++    gpio.Pull = GPIO_PULLUP;
++    HAL_GPIO_Init(GPIOB, &gpio);
++
++    huart3.Instance          = USART3;
++    huart3.Init.BaudRate     = 115200;
++    huart3.Init.WordLength   = UART_WORDLENGTH_8B;
++    huart3.Init.StopBits     = UART_STOPBITS_1;
++    huart3.Init.Parity       = UART_PARITY_NONE;
++    huart3.Init.Mode         = UART_MODE_TX_RX;
++    huart3.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
++    huart3.Init.OverSampling = UART_OVERSAMPLING_16;
++    (void)HAL_UART_Init(&huart3);
++
++    HAL_NVIC_SetPriority(USART3_IRQn, 11, 0);
++    HAL_NVIC_EnableIRQ(USART3_IRQn);
++}
++
++/* ADC1：电流(PA0)、母线电压(PA1)、踏板(PA3)、座垫压力片(PB0)
++ *
++ * 一次只转换一个通道，用轮询方式读。
++ * 按 10 ms 的周期算，每个周期花不到 0.2 ms。 */
++void Bsp_Adc_Init(void)
++{
++    GPIO_InitTypeDef   gpio;
++    ADC_ChannelConfTypeDef cfg;
++
++    __HAL_RCC_ADC1_CLK_ENABLE();
++    __HAL_RCC_ADC_CONFIG(RCC_ADCPCLK2_DIV6);   /* 72/6 = 12 MHz，F103 的 ADC 上限 14 MHz */
++
++    __HAL_RCC_GPIOA_CLK_ENABLE();
++    __HAL_RCC_GPIOB_CLK_ENABLE();
++
++    gpio.Mode = GPIO_MODE_ANALOG;
++    gpio.Pull = GPIO_NOPULL;
++
++    gpio.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_3;
++    HAL_GPIO_Init(GPIOA, &gpio);
++
++    gpio.Pin = GPIO_PIN_0 | GPIO_PIN_1;
++    HAL_GPIO_Init(GPIOB, &gpio);
++
++    hadc1.Instance                   = ADC1;
++    hadc1.Init.ScanConvMode          = ADC_SCAN_DISABLE;
++    hadc1.Init.ContinuousConvMode    = DISABLE;
++    hadc1.Init.DiscontinuousConvMode = DISABLE;
++    hadc1.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
++    hadc1.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
++    hadc1.Init.NbrOfConversion       = 1;
++    (void)HAL_ADC_Init(&hadc1);
++
++    (void)HAL_ADCEx_Calibration_Start(&hadc1);
++
++    /* 第一次读之前先把一个通道配好，否则转换出来的值没有意义 */
++    cfg.Channel      = ADC_CH_CURRENT;
++    cfg.Rank         = ADC_REGULAR_RANK_1;
++    cfg.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
++    (void)HAL_ADC_ConfigChannel(&hadc1, &cfg);
++}
++
++uint16_t Bsp_Adc_Read(uint32_t channel)
++{
++    ADC_ChannelConfTypeDef cfg;
++    uint16_t value = 0u;
++
++    cfg.Channel      = channel;
++    cfg.Rank         = ADC_REGULAR_RANK_1;
++    cfg.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
++
++    if (HAL_ADC_ConfigChannel(&hadc1, &cfg) != HAL_OK)
++    {
++        return 0u;
++    }
++
++    if (HAL_ADC_Start(&hadc1) != HAL_OK)
++    {
++        return 0u;
++    }
++
++    if (HAL_ADC_PollForConversion(&hadc1, 5u) == HAL_OK)
++    {
++        value = (uint16_t)HAL_ADC_GetValue(&hadc1);
++    }
++
++    (void)HAL_ADC_Stop(&hadc1);
++
++    return value;
++}
++
++/* 独立看门狗
++ *
++ * LSI 约 40 kHz，除 4 得 10 kHz，重装值 2000 -> 超时 200 ms。
++ * 全工程只有 SafetyTask 喂狗。这个任务一旦停了（卡死、死锁，或被人为注入故障），
++ * MCU 就会复位，电调使能线则回落到外部下拉电阻决定的低电平。
++ *
++ * 注意 IWDG 靠 LSI 独立计数，不需要 CPU、也不需要中断，
++ * 所以即使代码里把中断全关了，它照样会把芯片复位掉。 */
++void Bsp_Iwdg_Init(void)
++{
++#if APP_USE_IWDG
++    /* 故意直接操作寄存器：这棵 HAL 树里根本没带 hal_iwdg.c。
++     * IWDG 由 LSI 驱动，而 LSI 上电就自动起振。 */
++    IWDG->KR = 0x5555u;                 /* 解锁 PR 和 RLR */
++    IWDG->PR = 0x0000u;                 /* LSI / 4，约 10 kHz */
++    IWDG->RLR = 2000u;                  /* 2000 个计数 -> 200 ms */
++    while (IWDG->SR != 0u)
++    {
++        /* 等新写入的重装值被硬件接受 */
++    }
++    IWDG->KR = 0xAAAAu;                 /* 先装载一次计数器 */
++    IWDG->KR = 0xCCCCu;                 /* 启动，之后再也关不掉 */
++#endif
++}
++
++void Bsp_Iwdg_Feed(void)
++{
++#if APP_USE_IWDG
++    IWDG->KR = 0xAAAAu;
++#endif
++}
++
++uint8_t Bsp_GetResetReason(void)
++{
++    uint8_t reason = RESET_UNKNOWN;
++
++    if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET)
++    {
++        reason = RESET_IWDG;
++    }
++    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
++    {
++        reason = RESET_PIN;
++    }
++    else
++    {
++        reason = RESET_UNKNOWN;
++    }
++
++    return reason;
++}
++
++void Bsp_ClearResetFlags(void)
++{
++    __HAL_RCC_CLEAR_RESET_FLAGS();
++}
+--- a/童骑卫-FW/Core/Src/drv_motor.c
++++ b/童骑卫-FW/Core/Src/drv_motor.c
+@@ -2,6 +2,8 @@
+ #include "app_config.h"
+ #include "app_pins.h"
+ #include "main.h"
++#include "FreeRTOS.h"
++#include "task.h"
+ 
+ /* 电调驱动，TIM1_CH1，输出在 PA8
+  *
+@@ -9,7 +11,8 @@
+  * 脉宽 1000..2000 us，1500 us 是中立位。
+  *
+  * 安全提示：只有在 MOTOR_EN 为高时，电调信号线才算是可信的。
+- * MOTOR_EN 必须外接下拉电阻，这样 MCU 一旦死掉会自动回落到低电平。 */
++ * MOTOR_EN 由底板安全门控、手动锁存及外部看门狗共同限制。
++ * 下拉电阻只在 MCU 复位/高阻时有效，不能检测 CPU 停滞。 */
+ 
+ /* TIM1 的句柄。只有本文件用，所以不用暴露到头文件里。
+  * 和 CubeMX 生成的 htimX 不冲突：那套是给 TIM4 做 HAL 时基用的。 */
+@@ -19,7 +22,8 @@
+  * 存在的唯一理由是给 SafetyTask 用：DECEL 状态要判断
+  * "斜坡是否真的降到 0 了"才能回到 READY，而它只能通过
+  * Motor_GetOutput() 读到这个值。 */
+-static int16_t s_output = 0;
++static volatile int16_t s_output = 0;
++static volatile uint8_t s_enabled = 0u;
+ 
+ void Motor_Init(void)
+ {
+@@ -53,6 +57,7 @@
+     (void)HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1);
+ 
+     (void)HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
++    __HAL_TIM_MOE_DISABLE(&htim1);
+ 
+     s_output = 0;
+     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, ESC_PULSE_NEUTRAL_US);
+@@ -60,8 +65,29 @@
+ 
+ void Motor_Enable(uint8_t on)
+ {
+-    HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin,
+-                      (on != 0u) ? GPIO_PIN_SET : GPIO_PIN_RESET);
++    taskENTER_CRITICAL();
++    if (on != 0u)
++    {
++        if (s_enabled == 0u)
++        {
++            s_output = 0;
++            __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, ESC_PULSE_NEUTRAL_US);
++            /* Transfer neutral from the preload register before releasing MOE. */
++            htim1.Instance->EGR = TIM_EGR_UG;
++            __HAL_TIM_MOE_ENABLE(&htim1);
++            s_enabled = 1u;
++        }
++        HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin, GPIO_PIN_SET);
++    }
++    else
++    {
++        HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin, GPIO_PIN_RESET);
++        s_enabled = 0u;
++        s_output = 0;
++        __HAL_TIM_MOE_DISABLE(&htim1);
++        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, ESC_PULSE_NEUTRAL_US);
++    }
++    taskEXIT_CRITICAL();
+ }
+ 
+ void Motor_SetOutput(int16_t permille)
+@@ -77,8 +103,6 @@
+         permille = -1000;
+     }
+ 
+-    s_output = permille;
+-
+     pulse = (int32_t)ESC_PULSE_NEUTRAL_US + ((int32_t)permille * 500) / 1000;
+     if (pulse < (int32_t)ESC_PULSE_MIN_US)
+     {
+@@ -89,7 +113,18 @@
+         pulse = (int32_t)ESC_PULSE_MAX_US;
+     }
+ 
+-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)pulse);
++    taskENTER_CRITICAL();
++    if (s_enabled != 0u)
++    {
++        s_output = permille;
++        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)pulse);
++    }
++    else
++    {
++        s_output = 0;
++        __HAL_TIM_MOE_DISABLE(&htim1);
++    }
++    taskEXIT_CRITICAL();
+ }
+ 
+ void Motor_Stop(void)
+--- a/童骑卫-FW/Core/Src/gpio.c
++++ b/童骑卫-FW/Core/Src/gpio.c
+@@ -48,17 +48,10 @@
+   __HAL_RCC_GPIOC_CLK_ENABLE();
+   __HAL_RCC_GPIOA_CLK_ENABLE();
+ 
+-  /*Configure GPIO pin Output Level
+-   * 上电先把LED1(PC13)置为高电平=熄灭, 免得初始化过程中闪一下 */
+-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+-
+-  /*Configure GPIO pin : PC13 (STATUS_LED)
+-   * 蓝色板上 LED1 接在 PC13 上, 共阳接法(输出低电平点亮).
+-   * 注意: PC13/14/15 属于后备域, 驱动能力只有 3mA, 所以板子上串的是 510R 限流电阻.
+-   * bsp.c 的 Bsp_Gpio_Init() 稍后会用同一个引脚再配一次(名字叫 STATUS_LED),
+-   * 两者等价, 实际以后者为准 */
++  /* Hardware v2: PC13 receives the external ARM latch output.
++   * Never configure it as an LED output, including during early startup. */
+   GPIO_InitStruct.Pin = LED1_Pin;
+-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
++  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+   GPIO_InitStruct.Pull = GPIO_NOPULL;
+   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+   HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+--- a/童骑卫-Gateway/include/telemetry.h
++++ b/童骑卫-Gateway/include/telemetry.h
+@@ -9,8 +9,10 @@
+     uint16_t speed_x100;    /* [0..1]  km/h x 100                    */
+     uint8_t  limit_kmh;     /* [2]     effective speed limit         */
+     uint8_t  faults_lo;     /* [3]     FAULT_* bits 0..7             */
++    uint16_t faults_all;    /* [3],[11] full v2 fault word           */
+     uint16_t lap_ms10;      /* [4..5]  lap time, ms / 10 (0 = none)  */
+-    uint8_t  volts_x10;     /* [6]     battery voltage x 10          */
++    uint16_t volts_x10;     /* v2 [12..13] mV converted to 0.1V     */
++    uint16_t bus_mv;        /* [12..13] mV; legacy fallback [6]     */
+     uint8_t  wear;          /* [7]     bit0-1 seat, bit2-3 belt, 4-5 helmet */
+     uint16_t trip_m;        /* [8..9]  trip distance, m              */
+     uint8_t  state;         /* [10]    app_state_t                   */
+--- a/童骑卫-Gateway/src/ble_link.cpp
++++ b/童骑卫-Gateway/src/ble_link.cpp
+@@ -115,14 +115,14 @@
+     buf[3]  = t->faults_lo;
+     buf[4]  = (uint8_t)(t->lap_ms10 & 0xFFu);
+     buf[5]  = (uint8_t)(t->lap_ms10 >> 8);
+-    buf[6]  = t->volts_x10;
++    buf[6]  = (uint8_t)((t->volts_x10 > 255u) ? 255u : t->volts_x10);
+     buf[7]  = t->wear;
+     buf[8]  = (uint8_t)(t->trip_m & 0xFFu);
+     buf[9]  = (uint8_t)(t->trip_m >> 8);
+     buf[10] = t->state;
+-    buf[11] = 0u;
+-    buf[12] = 0u;
+-    buf[13] = 0u;
++    buf[11] = (uint8_t)(t->faults_all >> 8);
++    buf[12] = (uint8_t)(t->bus_mv & 0xFFu);
++    buf[13] = (uint8_t)(t->bus_mv >> 8);
+ 
+     s_telem_chr->setValue(buf, sizeof(buf));
+     s_telem_chr->notify();
+--- a/童骑卫-Gateway/src/cloud.cpp
++++ b/童骑卫-Gateway/src/cloud.cpp
+@@ -1,158 +1,158 @@
+-#include "cloud.h"
+-#include "config.h"
+-#include "uplink.h"
+-
+-#include <stdio.h>
+-#include <stdlib.h>
+-
+-#include <ArduinoJson.h>
+-
+-static Uplink  *s_up    = nullptr;
+-static uint32_t s_msg_id = 1u;
+-static uint32_t s_sent   = 0u;
+-static uint32_t s_failed = 0u;
+-
+-/*  Last value that actually reached the cloud. -1 / 0 means "never sent",
+- *  which forces the first packet to carry everything.  */
+-static int      s_last_speed  = -1;
+-static int      s_last_limit  = -1;
+-static int      s_last_state  = -1;
+-static int      s_last_faults = -1;
+-static int      s_last_volts  = -1;
+-static int      s_last_wear   = -1;
+-static int      s_last_trip   = -1;
+-static int      s_last_rssi   = 999;
+-
+-static uint32_t s_t_speed  = 0u;
+-static uint32_t s_t_bat    = 0u;
+-static uint32_t s_t_trip   = 0u;
+-static uint32_t s_t_rssi   = 0u;
+-static uint32_t s_t_state  = 0u;
+-static uint32_t s_t_faults = 0u;
+-
+-static bool wifi_configured(void)
+-{
+-    return String(CFG_WIFI_SSID) != "YOUR_SSID";
+-}
+-
+-void Cloud_Begin(void)
+-{
+-    if (wifi_configured())
+-    {
+-        s_up = Uplink_WiFi();
+-        (void)s_up->begin();
+-    }
+-    else
+-    {
+-        Uplink *g = Uplink_4G();
+-        if (g != nullptr)
+-        {
+-            s_up = g;
+-            (void)s_up->begin();
+-        }
+-    }
+-
+-    Serial.printf("[cloud] uplink=%s\n", Cloud_UplinkName());
+-}
+-
+-const char *Cloud_UplinkName(void)
+-{
+-    return (s_up != nullptr) ? s_up->name() : "off";
+-}
+-
+-uint32_t Cloud_Sent(void)   { return s_sent; }
+-uint32_t Cloud_Failed(void) { return s_failed; }
+-
+-void Cloud_Tick(uint32_t now, const Telemetry &t)
+-{
+-    if ((s_up == nullptr) || (!t.valid))
+-    {
+-        return;
+-    }
+-
+-    s_up->loop();
+-    if (!s_up->connected())
+-    {
+-        return;
+-    }
+-
+-    /* ---- decide which properties are due (06.6.3) ---- */
+-    const bool send_speed =
+-        (now - s_t_speed >= CFG_CLOUD_SPEED_MS) &&
+-        ((s_last_speed < 0) ||
+-         (abs((int)t.speed_x100 - s_last_speed) >= CFG_CLOUD_SPEED_DELTA));
+-
+-    const bool send_limit = ((int)t.limit_kmh != s_last_limit);
+-
+-    const bool send_state =
+-        ((int)t.state != s_last_state) ||
+-        (now - s_t_state >= CFG_CLOUD_STATE_KEEP_MS);
+-
+-    const bool send_faults =
+-        ((int)t.faults_lo != s_last_faults) ||
+-        ((t.faults_lo != 0u) && (now - s_t_faults >= CFG_CLOUD_FAULT_MS));
+-
+-    const bool send_bat = (now - s_t_bat >= CFG_CLOUD_BATTERY_MS);
+-
+-    const bool send_wear = ((int)t.wear != s_last_wear);
+-
+-    const bool send_trip = (now - s_t_trip >= CFG_CLOUD_TRIP_MS);
+-
+-    const int rssi = s_up->rssi();
+-    const bool send_rssi = (now - s_t_rssi >= CFG_CLOUD_RSSI_MS);
+-
+-    if (!(send_speed || send_limit || send_state || send_faults ||
+-          send_bat || send_wear || send_trip || send_rssi))
+-    {
+-        return;
+-    }
+-
+-    /* ---- build Alink JSON ---- */
+-    JsonDocument doc;
+-    doc["id"]      = String(s_msg_id);
+-    doc["version"] = "1.0";
+-    doc["method"]  = "thing.event.property.post";
+-
+-    JsonObject params = doc["params"].to<JsonObject>();
+-
+-    if (send_speed)  { params["speed"]   = (float)t.speed_x100 / 100.0f; }
+-    if (send_limit)  { params["limit"]   = t.limit_kmh; }
+-    if (send_state)  { params["state"]   = t.state; }
+-    if (send_faults) { params["faults"]  = t.faults_lo; }
+-    if (send_bat)    { params["battery"] = (float)t.volts_x10 / 10.0f; }
+-    if (send_wear)   { params["wear"]    = t.wear; }
+-    if (send_trip)   { params["trip_m"]  = t.trip_m; }
+-    if (send_rssi && (rssi != 0)) { params["rssi"] = rssi; }
+-
+-    char payload[CFG_CLOUD_PAYLOAD_MAX];
+-    const size_t n = serializeJson(doc, payload, sizeof(payload));
+-    if ((n == 0u) || (n >= sizeof(payload)))
+-    {
+-        s_failed++;
+-        return;
+-    }
+-
+-    char topic[160];
+-    snprintf(topic, sizeof(topic),
+-             "/sys/%s/%s/thing/event/property/post",
+-             CFG_ALIYUN_PRODUCT_KEY, CFG_ALIYUN_DEVICE_NAME);
+-
+-    if (!s_up->publish(topic, payload))
+-    {
+-        s_failed++;
+-        return;                      /* keep the last_* values, retry later */
+-    }
+-
+-    /* ---- commit ---- */
+-    s_sent++;
+-    s_msg_id++;
+-
+-    if (send_speed)  { s_last_speed  = t.speed_x100; s_t_speed  = now; }
+-    if (send_limit)  { s_last_limit  = t.limit_kmh; }
+-    if (send_state)  { s_last_state  = t.state;      s_t_state  = now; }
+-    if (send_faults) { s_last_faults = t.faults_lo;  s_t_faults = now; }
+-    if (send_bat)    { s_last_volts  = t.volts_x10;  s_t_bat    = now; }
+-    if (send_wear)   { s_last_wear   = t.wear; }
+-    if (send_trip)   { s_last_trip   = t.trip_m;     s_t_trip   = now; }
+-    if (send_rssi)   { s_last_rssi   = rssi;         s_t_rssi   = now; }
+-}
++#include "cloud.h"
++#include "config.h"
++#include "uplink.h"
++
++#include <stdio.h>
++#include <stdlib.h>
++
++#include <ArduinoJson.h>
++
++static Uplink  *s_up    = nullptr;
++static uint32_t s_msg_id = 1u;
++static uint32_t s_sent   = 0u;
++static uint32_t s_failed = 0u;
++
++/*  Last value that actually reached the cloud. -1 / 0 means "never sent",
++ *  which forces the first packet to carry everything.  */
++static int      s_last_speed  = -1;
++static int      s_last_limit  = -1;
++static int      s_last_state  = -1;
++static int      s_last_faults = -1;
++static int      s_last_volts  = -1;
++static int      s_last_wear   = -1;
++static int      s_last_trip   = -1;
++static int      s_last_rssi   = 999;
++
++static uint32_t s_t_speed  = 0u;
++static uint32_t s_t_bat    = 0u;
++static uint32_t s_t_trip   = 0u;
++static uint32_t s_t_rssi   = 0u;
++static uint32_t s_t_state  = 0u;
++static uint32_t s_t_faults = 0u;
++
++static bool wifi_configured(void)
++{
++    return String(CFG_WIFI_SSID) != "YOUR_SSID";
++}
++
++void Cloud_Begin(void)
++{
++    if (wifi_configured())
++    {
++        s_up = Uplink_WiFi();
++        (void)s_up->begin();
++    }
++    else
++    {
++        Uplink *g = Uplink_4G();
++        if (g != nullptr)
++        {
++            s_up = g;
++            (void)s_up->begin();
++        }
++    }
++
++    Serial.printf("[cloud] uplink=%s\n", Cloud_UplinkName());
++}
++
++const char *Cloud_UplinkName(void)
++{
++    return (s_up != nullptr) ? s_up->name() : "off";
++}
++
++uint32_t Cloud_Sent(void)   { return s_sent; }
++uint32_t Cloud_Failed(void) { return s_failed; }
++
++void Cloud_Tick(uint32_t now, const Telemetry &t)
++{
++    if ((s_up == nullptr) || (!t.valid))
++    {
++        return;
++    }
++
++    s_up->loop();
++    if (!s_up->connected())
++    {
++        return;
++    }
++
++    /* ---- decide which properties are due (06.6.3) ---- */
++    const bool send_speed =
++        (now - s_t_speed >= CFG_CLOUD_SPEED_MS) &&
++        ((s_last_speed < 0) ||
++         (abs((int)t.speed_x100 - s_last_speed) >= CFG_CLOUD_SPEED_DELTA));
++
++    const bool send_limit = ((int)t.limit_kmh != s_last_limit);
++
++    const bool send_state =
++        ((int)t.state != s_last_state) ||
++        (now - s_t_state >= CFG_CLOUD_STATE_KEEP_MS);
++
++    const bool send_faults =
++        ((int)t.faults_all != s_last_faults) ||
++        ((t.faults_all != 0u) && (now - s_t_faults >= CFG_CLOUD_FAULT_MS));
++
++    const bool send_bat = (now - s_t_bat >= CFG_CLOUD_BATTERY_MS);
++
++    const bool send_wear = ((int)t.wear != s_last_wear);
++
++    const bool send_trip = (now - s_t_trip >= CFG_CLOUD_TRIP_MS);
++
++    const int rssi = s_up->rssi();
++    const bool send_rssi = (now - s_t_rssi >= CFG_CLOUD_RSSI_MS);
++
++    if (!(send_speed || send_limit || send_state || send_faults ||
++          send_bat || send_wear || send_trip || send_rssi))
++    {
++        return;
++    }
++
++    /* ---- build Alink JSON ---- */
++    JsonDocument doc;
++    doc["id"]      = String(s_msg_id);
++    doc["version"] = "1.0";
++    doc["method"]  = "thing.event.property.post";
++
++    JsonObject params = doc["params"].to<JsonObject>();
++
++    if (send_speed)  { params["speed"]   = (float)t.speed_x100 / 100.0f; }
++    if (send_limit)  { params["limit"]   = t.limit_kmh; }
++    if (send_state)  { params["state"]   = t.state; }
++    if (send_faults) { params["faults"]  = t.faults_all; }
++    if (send_bat)    { params["battery"] = (float)t.volts_x10 / 10.0f; }
++    if (send_wear)   { params["wear"]    = t.wear; }
++    if (send_trip)   { params["trip_m"]  = t.trip_m; }
++    if (send_rssi && (rssi != 0)) { params["rssi"] = rssi; }
++
++    char payload[CFG_CLOUD_PAYLOAD_MAX];
++    const size_t n = serializeJson(doc, payload, sizeof(payload));
++    if ((n == 0u) || (n >= sizeof(payload)))
++    {
++        s_failed++;
++        return;
++    }
++
++    char topic[160];
++    snprintf(topic, sizeof(topic),
++             "/sys/%s/%s/thing/event/property/post",
++             CFG_ALIYUN_PRODUCT_KEY, CFG_ALIYUN_DEVICE_NAME);
++
++    if (!s_up->publish(topic, payload))
++    {
++        s_failed++;
++        return;                      /* keep the last_* values, retry later */
++    }
++
++    /* ---- commit ---- */
++    s_sent++;
++    s_msg_id++;
++
++    if (send_speed)  { s_last_speed  = t.speed_x100; s_t_speed  = now; }
++    if (send_limit)  { s_last_limit  = t.limit_kmh; }
++    if (send_state)  { s_last_state  = t.state;      s_t_state  = now; }
++    if (send_faults) { s_last_faults = t.faults_all;  s_t_faults = now; }
++    if (send_bat)    { s_last_volts  = t.volts_x10;  s_t_bat    = now; }
++    if (send_wear)   { s_last_wear   = t.wear; }
++    if (send_trip)   { s_last_trip   = t.trip_m;     s_t_trip   = now; }
++    if (send_rssi)   { s_last_rssi   = rssi;         s_t_rssi   = now; }
++}
+--- a/童骑卫-Gateway/src/telemetry.cpp
++++ b/童骑卫-Gateway/src/telemetry.cpp
+@@ -10,8 +10,11 @@
+     out->speed_x100 = (uint16_t)((uint16_t)p[0] | ((uint16_t)p[1] << 8));
+     out->limit_kmh  = p[2];
+     out->faults_lo  = p[3];
++    out->faults_all = (uint16_t)(p[3] | ((uint16_t)p[11] << 8));
+     out->lap_ms10   = (uint16_t)((uint16_t)p[4] | ((uint16_t)p[5] << 8));
+-    out->volts_x10  = p[6];
++    out->bus_mv = (uint16_t)(p[12] | ((uint16_t)p[13] << 8));
++    if (out->bus_mv == 0u) out->bus_mv = (uint16_t)p[6] * 100u;
++    out->volts_x10 = out->bus_mv / 100u;
+     out->wear       = p[7];
+     out->trip_m     = (uint16_t)((uint16_t)p[8] | ((uint16_t)p[9] << 8));
+     out->state      = p[10];
+--- a/童骑卫-Gateway/tools/host_test/test_link.cpp
++++ b/童骑卫-Gateway/tools/host_test/test_link.cpp
+@@ -16,6 +16,7 @@
+ #include <string.h>
+ 
+ #include "stm32_link.h"
++#include "telemetry.h"
+ 
+ uint8_t __stub_rx[1024];
+ int     __stub_rx_n = 0;
+@@ -107,6 +108,17 @@
+     check("send builds AA55 + crc",
+           (__stub_tx_n == 7) && (__stub_tx[0] == 0xAA) && (__stub_tx[1] == 0x55));
+ 
++    uint8_t v2[14] = {};
++    v2[3] = 0x80; v2[6] = 255; v2[11] = 0x1c;
++    v2[12] = 0xd8; v2[13] = 0x72;
++    Telemetry decoded;
++    check("v2 7S voltage and full fault word",
++          Telemetry_Decode(v2, 14, &decoded) && decoded.bus_mv == 29400u &&
++          decoded.volts_x10 == 294u && decoded.faults_all == 0x1c80u);
++    v2[12] = 0; v2[13] = 0; v2[6] = 118; v2[11] = 0;
++    check("legacy voltage still decodes",
++          Telemetry_Decode(v2, 14, &decoded) && decoded.bus_mv == 11800u);
++
+     printf("\nrx=%lu crc=%lu\n",
+            (unsigned long)link.rxFrames(), (unsigned long)link.crcErrors());
+     printf(fails ? "%d FAILED\n" : "all good\n", fails);
+--- a/童骑卫-App/tools/test_node.js
++++ b/童骑卫-App/tools/test_node.js
+@@ -68,6 +68,16 @@
+ eq('decode fault count', t.faultList.length, 2);
+ eq('decode fault names', t.faultList.map(function (f) { return f.name; }).join(','), '碰撞,急停');
+ 
++var v2Payload = new Uint8Array(payload);
++v2Payload[6] = 255; /* Legacy field saturates above 25.5V. */
++v2Payload[11] = 0x1c; /* Sensor, pedal and commissioning faults. */
++v2Payload[12] = 0xd8;
++v2Payload[13] = 0x72; /* 29400mV */
++var v2 = proto.decodeTelemetry(v2Payload);
++eq('v2 7S full-charge voltage', v2.volts, 29.4);
++eq('v2 full fault word', v2.faults, 0x1c82);
++eq('v2 fault count', v2.faultList.length, 5);
++
+ /*  穿戴位：每个传感器只占 1 位，位置 0/2/4 —— 对着 app_types.h 抄的。
+  *  0x11 = 0001 0001b → seat 位0=1、belt 位2=0、helmet 位4=1。 */
+ check('wear seat', t.wearState.seat === true);
+--- a/童骑卫-App/utils/protocol.js
++++ b/童骑卫-App/utils/protocol.js
+@@ -30,7 +30,12 @@
+   { bit: 4, name: '链路丢失', short: '链路' },
+   { bit: 5, name: '超速', short: '超速' },
+   { bit: 6, name: '欠压', short: '欠压' },
+-  { bit: 7, name: '急停', short: '急停' }
++  { bit: 7, name: '急停', short: '急停' },
++  { bit: 8, name: '远程停车', short: '远停' },
++  { bit: 9, name: '故障注入', short: '注入' },
++  { bit: 10, name: '传感器失效', short: '传感器' },
++  { bit: 11, name: '踏板异常', short: '踏板' },
++  { bit: 12, name: '等待硬件联调', short: '待联调' }
+ ];
+ 
+ /* ---- 命令字 ---------------------------------------------------------- */
+@@ -81,10 +86,10 @@
+     speedX100: speedX100,
+     speed: speedX100 / 100,
+     limit: b[2],
+-    faults: b[3],
+-    faultList: decodeFaults(b[3]),
++    faults: b[3] | (b[11] << 8),
++    faultList: decodeFaults(b[3] | (b[11] << 8)),
+     lapMs: u16le(b, 4) * 10,
+-    volts: b[6] / 10,
++    volts: u16le(b, 12) ? u16le(b, 12) / 1000 : b[6] / 10,
+     wear: wear,
+     wearState: decodeWear(wear),
+     tripM: u16le(b, 8),

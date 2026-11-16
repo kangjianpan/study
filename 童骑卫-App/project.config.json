@@ -1,0 +1,22 @@
+{
+  "description": "童骑卫 GuardKart 家长端小程序",
+  "appid": "touristappid",
+  "projectname": "guardkart-app",
+  "compileType": "miniprogram",
+  "libVersion": "3.0.0",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": false
+  },
+  "condition": {}
+}

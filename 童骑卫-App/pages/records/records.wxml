@@ -1,0 +1,64 @@
+<view class="wrap">
+
+  <view class="card" wx:if="{{!connected}}">
+    <view class="card-title">未连接</view>
+    <view class="muted">连上车之后这里才会有数据。</view>
+    <view class="btn btn-primary gap-top" bindtap="goConnect">去连接</view>
+  </view>
+
+  <block wx:else>
+
+    <view class="card">
+      <view class="card-title">车上记录</view>
+
+      <view class="row item">
+        <view>最近一圈</view>
+        <view class="num">{{lapText}}</view>
+      </view>
+      <view class="row item">
+        <view>本次里程</view>
+        <view class="num">{{tripText}}</view>
+      </view>
+
+      <view class="muted gap-top" wx:if="{{lapMs === 0 && tripM === 0}}">
+        固件当前版本不统计圈速和里程（遥测第 4~5、8~9 字节固定为 0），
+        所以这里显示"—"。等 STM32 侧把这两个字段填上，页面不用改。
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="row">
+        <view class="card-title">手机观察值</view>
+        <view class="muted" bindtap="resetStats">清零</view>
+      </view>
+
+      <view class="row item">
+        <view>最高车速</view>
+        <view class="num">{{maxSpeed}} km/h</view>
+      </view>
+      <view class="row item">
+        <view>观察时长</view>
+        <view class="num">{{observedSec}} s</view>
+      </view>
+      <view class="row item">
+        <view>收到帧数</view>
+        <view class="num">{{frames}}</view>
+      </view>
+      <view class="row item">
+        <view>断链次数</view>
+        <view class="num">{{drops}}</view>
+      </view>
+      <view class="row item">
+        <view>链路可用率</view>
+        <view class="num">{{linkPct}}%</view>
+      </view>
+
+      <view class="muted gap-top">
+        手机只数它自己收到的帧。断链那段时间车速它不知道，
+        所以「最高车速」是下界，不是真实峰值。
+      </view>
+    </view>
+
+  </block>
+
+</view>

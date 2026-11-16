@@ -1,0 +1,101 @@
+/*  全局样式：深色卡片 + 一个绿色强调色，指标用等宽数字。
+ *  不做主题切换——现场演示时浅色深色来回切没有收益。 */
+
+page {
+  background: #eef2f5;
+  color: #1b2530;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+}
+
+.wrap {
+  padding: 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(17, 24, 32, 0.06);
+}
+
+.card-title {
+  font-size: 26rpx;
+  color: #6b7785;
+  margin-bottom: 20rpx;
+}
+
+.num {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: #8a94a6;
+  font-size: 24rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gap-top {
+  margin-top: 24rpx;
+}
+
+.pill {
+  display: inline-block;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+}
+
+.pill-ok {
+  background: #e3f6ee;
+  color: #12805c;
+}
+
+.pill-warn {
+  background: #fff3e0;
+  color: #b26a00;
+}
+
+.pill-bad {
+  background: #fdeaea;
+  color: #c62828;
+}
+
+.pill-idle {
+  background: #eceff2;
+  color: #6b7785;
+}
+
+.btn {
+  border-radius: 16rpx;
+  padding: 26rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.btn-primary {
+  background: #12805c;
+  color: #ffffff;
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: #12805c;
+  border: 2rpx solid #12805c;
+}
+
+.btn-danger {
+  background: #c62828;
+  color: #ffffff;
+}
+
+.btn[disabled] {
+  opacity: 0.45;
+}

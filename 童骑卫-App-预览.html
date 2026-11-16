@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>童骑卫 App 页面预览</title>
+<style>
+/*  rpx → px 按 750rpx = 375px 折算，即 1rpx = 0.5px。
+    样式逐条对着 app.wxss 和页面 wxss 抄，不是另外设计的一套。 */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #dfe5ea;
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  color: #1b2530;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 整块舞台按窗口宽度等比缩放，窗口再窄也不会把手机挤出屏幕 */
+.stage { display: flex; gap: 36px; align-items: flex-start; transform-origin: top center; }
+
+/* ---------- 右侧说明 ---------- */
+.side { width: 300px; flex: none; padding-top: 8px; }
+.side h1 { font-size: 20px; margin-bottom: 8px; }
+.side p { font-size: 13px; line-height: 1.7; color: #55606b; margin-bottom: 14px; }
+.side ol { font-size: 13px; line-height: 1.9; color: #55606b; padding-left: 18px; margin-bottom: 18px; }
+.switch { display: flex; flex-direction: column; gap: 8px; }
+.switch button {
+  text-align: left; padding: 10px 14px; border-radius: 8px; cursor: pointer;
+  border: 1px solid #c6cfd7; background: #fff; font-size: 14px; color: #1b2530;
+  font-family: inherit;
+}
+.switch button.on { background: #12805c; border-color: #12805c; color: #fff; }
+.side .warn {
+  margin-top: 18px; font-size: 12px; line-height: 1.7; color: #8a5a00;
+  background: #fff6e5; border-left: 3px solid #e0a020; padding: 10px 12px; border-radius: 4px;
+}
+
+/* ---------- 手机 ---------- */
+.phone {
+  width: 375px; height: 812px; background: #eef2f5; border-radius: 38px;
+  box-shadow: 0 18px 50px rgba(17,24,32,.28); overflow: hidden;
+  display: flex; flex-direction: column; position: relative; flex: none;
+}
+.statusbar {
+  height: 44px; background: #111820; color: #fff; font-size: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; flex: none;
+}
+.navbar {
+  height: 44px; background: #111820; color: #fff; font-size: 16px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; flex: none;
+  position: relative;
+}
+.navbar .back {
+  position: absolute; left: 16px; font-size: 14px; font-weight: 400; color: #b7c3ce;
+}
+.screen { flex: 1; overflow-y: auto; }
+.screen::-webkit-scrollbar { width: 0; }
+
+/* ---------- 通用（对应 app.wxss） ---------- */
+.wrap { padding: 12px; }
+.card {
+  background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+  box-shadow: 0 1px 6px rgba(17,24,32,.06);
+}
+.card-title { font-size: 13px; color: #6b7785; margin-bottom: 10px; }
+.num { font-family: "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.muted { color: #8a94a6; font-size: 12px; }
+.row { display: flex; align-items: center; justify-content: space-between; }
+.gap-top { margin-top: 12px; }
+.pill {
+  display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px;
+}
+.pill-ok { background: #e3f6ee; color: #12805c; }
+.pill-warn { background: #fff3e0; color: #b26a00; }
+.pill-bad { background: #fdeaea; color: #c62828; }
+.pill-idle { background: #eceff2; color: #6b7785; }
+.btn { border-radius: 8px; padding: 13px; text-align: center; font-size: 15px; cursor: pointer; }
+.btn-primary { background: #12805c; color: #fff; }
+.btn-ghost { background: #fff; color: #12805c; border: 1px solid #12805c; }
+.btn-danger { background: #c62828; color: #fff; }
+
+/* ---------- tabBar ---------- */
+.tabbar {
+  height: 56px; background: #fff; border-top: 1px solid #e6ebef; flex: none;
+  display: flex; padding-bottom: 6px;
+}
+.tabbar .tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2px; font-size: 11px; color: #8a94a6; cursor: pointer;
+}
+.tabbar .tab.on { color: #12805c; }
+.tabbar .dot { width: 18px; height: 18px; border-radius: 5px; background: currentColor; opacity: .18; }
+
+/* ---------- 连接页 ---------- */
+.devname { font-size: 17px; font-weight: 600; margin: 4px 0; }
+.info { word-break: break-all; margin-bottom: 4px; }
+.did { margin-top: 3px; font-size: 11px; word-break: break-all; }
+.dev { padding: 11px 0; border-bottom: 1px solid #eef1f4; cursor: pointer; }
+.dev:last-child { border-bottom: none; }
+.empty { padding: 12px 0; }
+.err { color: #c62828; line-height: 1.6; font-size: 13px; }
+.note .muted { line-height: 1.8; }
+
+/* ---------- 仪表页 ---------- */
+.hero { background: #111820; color: #fff; }
+.hero .muted { color: #9aa7b4; }
+.speed { font-size: 66px; font-weight: 700; line-height: 1.1; margin: 6px 0 10px; }
+.unit { font-size: 16px; font-weight: 400; color: #9aa7b4; margin-left: 6px; }
+.bar { height: 7px; background: #26323d; border-radius: 999px; overflow: hidden; margin-bottom: 7px; }
+.bar-fill { height: 100%; background: #12805c; border-radius: 999px; transition: width .12s linear; }
+.wear { display: flex; gap: 8px; }
+.chip { flex: 1; border-radius: 7px; padding: 10px 8px; text-align: center; }
+.chip.ok { background: #e3f6ee; }
+.chip.bad { background: #fdeaea; }
+.chiptxt { font-size: 12px; color: #6b7785; }
+.chipval { margin-top: 4px; font-size: 13px; font-weight: 600; }
+.chip.ok .chipval { color: #12805c; }
+.chip.bad .chipval { color: #c62828; }
+.fault { justify-content: flex-start; gap: 7px; padding: 5px 0; color: #c62828; font-size: 14px; }
+.dotred { width: 6px; height: 6px; border-radius: 50%; background: #c62828; }
+
+/* ---------- 控制页 ---------- */
+.limit { font-size: 48px; font-weight: 700; text-align: center; margin: 10px 0 5px; }
+.btnrow { gap: 10px; }
+.flex1 { flex: 1; }
+.slider { margin: 6px 0; position: relative; height: 36px; display: flex; align-items: center; }
+.slider .track { height: 4px; background: #e3e8ec; border-radius: 2px; width: 100%; position: relative; }
+.slider .fill { position: absolute; left: 0; top: 0; height: 4px; background: #12805c; border-radius: 2px; }
+.slider .knob {
+  position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  border: 1px solid #d5dbe0; box-shadow: 0 1px 4px rgba(0,0,0,.2); top: -8px;
+}
+.scale { display: flex; justify-content: space-between; }
+
+/* ---------- 记录页 / 远程页 ---------- */
+.item { padding: 9px 0; border-bottom: 1px solid #f0f3f5; font-size: 14px; }
+.item:last-child { border-bottom: none; }
+.banner { background: #111820; color: #fff; }
+.bannertitle { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.bannertext { font-size: 13px; line-height: 1.7; color: #b7c3ce; }
+.kv { margin-bottom: 6px; }
+.k { font-size: 11px; color: #8a94a6; }
+.v { font-size: 12px; word-break: break-all; }
+.status { margin-top: 6px; word-break: break-all; }
+.raw {
+  margin-top: 8px; padding: 8px; background: #f5f7f9; border-radius: 6px;
+  font-size: 11px; word-break: break-all; color: #6b7785;
+}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+<div class="side">
+  <h1>童骑卫 App — 页面预览</h1>
+  <p>静态还原，用的是真实协议字段和真实排版尺寸（750rpx = 375px 折算）。数据是演示值，不是从车上读的。</p>
+
+  <div class="switch" id="switch">
+    <button data-page="connect" class="on">连接页</button>
+    <button data-page="dashboard">仪表页</button>
+    <button data-page="control">控制页</button>
+    <button data-page="records">记录页</button>
+    <button data-page="remote">远程查看页（不在 tabBar）</button>
+  </div>
+
+  <div class="warn">
+    这是浏览器里的还原稿，用来快速看版式。<br><br>
+    真实交互（蓝牙、写 FFF2、连云端）必须用<b>微信开发者工具 + 真机预览</b>，模拟器没有蓝牙。
+  </div>
+</div>
+
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span>5G &nbsp; 100%</span>
+  </div>
+
+  <div class="navbar" id="navtitle">连接车辆</div>
+
+  <div class="screen" id="screen"></div>
+
+  <div class="tabbar" id="tabbar">
+    <div class="tab on" data-page="connect"><div class="dot"></div>连接</div>
+    <div class="tab" data-page="dashboard"><div class="dot"></div>仪表</div>
+    <div class="tab" data-page="control"><div class="dot"></div>控制</div>
+    <div class="tab" data-page="records"><div class="dot"></div>记录</div>
+  </div>
+</div>
+
+</div><!-- /stage -->
+
+<script>
+/* ---------------------------------------------------------------
+   数据：与 protocol.js 解出来的一帧遥测一致
+   车速 9.4 / 限速 12 / 状态 RUN(3) / 无故障 / 三项穿戴合格 / 11.9 V
+   --------------------------------------------------------------- */
+var T = {
+  speed: 9.4, limit: 12, state: 3, stateName: '行驶',
+  wear: { seat: true, belt: true, helmet: true },
+  volts: 11.9, faults: [], lapMs: 0, tripM: 0
+};
+
+var TITLES = {
+  connect: '连接车辆',
+  dashboard: '仪表',
+  control: '控制',
+  records: '记录',
+  remote: '远程查看'
+};
+
+/* 复刻 dashboard.js 的 100 上限 + 百分比取整 */
+function pct() {
+  var p = Math.round(T.speed / T.limit * 100);
+  return p > 100 ? 100 : p;
+}
+
+var VIEWS = {
+
+connect: function () {
+  return '<div class="wrap">' +
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">车端网关</div>' +
+        '<div class="pill pill-ok">已连接</div></div>' +
+      '<div class="devname">GuardKart-01</div>' +
+      '<div class="muted info">GuardKart-01|fw=0.9.3|mac=24:6F:28:1A:3C:5B</div>' +
+      '<div class="btn btn-ghost gap-top">断开连接</div>' +
+      '<div class="btn btn-primary gap-top">进入仪表</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">扫描结果</div>' +
+      '<div class="dev"><div class="row"><div class="devname">GuardKart-01</div>' +
+        '<div class="muted num">-47 dBm</div></div>' +
+        '<div class="muted num did">24:6F:28:1A:3C:5B</div></div>' +
+      '<div class="dev"><div class="row"><div class="devname">GuardKart-02</div>' +
+        '<div class="muted num">-78 dBm</div></div>' +
+        '<div class="muted num did">24:6F:28:1A:3C:71</div></div>' +
+    '</div>' +
+
+    '<div class="card note">' +
+      '<div class="card-title">没有看到设备？</div>' +
+      '<div class="muted">1. 开发者工具模拟器不支持蓝牙，请用真机预览。</div>' +
+      '<div class="muted">2. 手机系统蓝牙打开，安卓需允许微信使用「附近设备」。</div>' +
+      '<div class="muted">3. 网关已连上另一台手机时不会再广播，让那台先断开。</div>' +
+    '</div></div>';
+},
+
+dashboard: function () {
+  var wear = T.wear;
+  function chip(name, ok, on, off) {
+    return '<div class="chip ' + (ok ? 'ok' : 'bad') + '">' +
+      '<div class="chiptxt">' + name + '</div>' +
+      '<div class="chipval">' + (ok ? on : off) + '</div></div>';
+  }
+  return '<div class="wrap">' +
+    '<div class="card hero">' +
+      '<div class="row"><div class="muted">当前车速</div>' +
+        '<div class="pill pill-ok">链路正常</div></div>' +
+      '<div class="speed num"><span id="spd">' + T.speed.toFixed(1) +
+        '</span><span class="unit">km/h</span></div>' +
+      '<div class="bar"><div class="bar-fill" id="bar" style="width:' + pct() + '%"></div></div>' +
+      '<div class="row muted"><div>限速 ' + T.limit + ' km/h</div>' +
+        '<div class="num" id="pctv">' + pct() + '%</div></div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">车辆状态</div>' +
+        '<div class="pill pill-ok">' + T.stateName + '</div></div>' +
+      '<div class="row gap-top"><div class="muted">电池</div>' +
+        '<div class="num">' + T.volts.toFixed(1) + ' V</div></div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">穿戴联锁</div>' +
+      '<div class="wear">' +
+        chip('坐垫', wear.seat, '已坐稳', '未检测到') +
+        chip('安全带', wear.belt, '已扣', '未扣') +
+        chip('头盔', wear.helmet, '已佩戴', '未佩戴') +
+      '</div>' +
+      '<div class="muted gap-top">三项任一不合格，车辆不进就绪。</div>' +
+    '</div>' +
+
+    '<div class="btn btn-ghost">远程查看（只读）</div>' +
+  '</div>';
+},
+
+control: function () {
+  /* 滑杆位置：6..20 映射到 0..100% */
+  var p = (T.limit - 6) / (20 - 6) * 100;
+  return '<div class="wrap">' +
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">家长限速</div>' +
+        '<div class="muted">车上生效：<span class="num">' + T.limit + '</span> km/h</div></div>' +
+      '<div class="limit num">' + T.limit + '<span class="unit">km/h</span></div>' +
+      '<div class="slider">' +
+        '<div class="track"><div class="fill" style="width:' + p + '%"></div>' +
+        '<div class="knob" style="left:calc(' + p + '% - 10px)"></div></div>' +
+      '</div>' +
+      '<div class="row muted scale"><div>6</div><div>20</div></div>' +
+      '<div class="muted gap-top">拖动松手后才下发，避免滑动过程中连发几十条。</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">停车</div>' +
+      '<div class="row btnrow">' +
+        '<div class="btn btn-danger flex1">请求停车</div>' +
+        '<div class="btn btn-ghost flex1">解除停车</div>' +
+      '</div>' +
+      '<div class="muted gap-top">这是「请求减速到 0」，走的是通信链路。' +
+        '车把上的物理急停直接切接触器，不经过任何软件——两套都留着，不要拿这个替代那个。</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">场地限速</div>' +
+      '<div class="muted">和上面的家长限速是两个来源，车端取最小值。同一台车上，场地永远比家长更保守。</div>' +
+      '<div class="btn btn-ghost gap-top">以当前值下发场地限速</div>' +
+    '</div>' +
+
+    '<div class="card"><div class="muted">车辆状态：' + T.stateName + '</div></div>' +
+  '</div>';
+},
+
+records: function () {
+  return '<div class="wrap">' +
+    '<div class="card">' +
+      '<div class="card-title">车上记录</div>' +
+      '<div class="row item"><div>最近一圈</div><div class="num">—</div></div>' +
+      '<div class="row item"><div>本次里程</div><div class="num">—</div></div>' +
+      '<div class="muted gap-top">固件当前版本不统计圈速和里程（遥测第 4~5、8~9 字节固定为 0），' +
+        '所以这里显示「—」。等 STM32 侧把这两个字段填上，页面不用改。</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">手机观察值</div><div class="muted">清零</div></div>' +
+      '<div class="row item"><div>最高车速</div><div class="num">11.2 km/h</div></div>' +
+      '<div class="row item"><div>观察时长</div><div class="num">284 s</div></div>' +
+      '<div class="row item"><div>收到帧数</div><div class="num">2831</div></div>' +
+      '<div class="row item"><div>断链次数</div><div class="num">1</div></div>' +
+      '<div class="row item"><div>链路可用率</div><div class="num">99%</div></div>' +
+      '<div class="muted gap-top">手机只数它自己收到的帧。断链那段时间车速它不知道，' +
+        '所以「最高车速」是下界，不是真实峰值。</div>' +
+    '</div></div>';
+},
+
+remote: function () {
+  return '<div class="wrap">' +
+    '<div class="card banner">' +
+      '<div class="bannertitle">观景窗，不是方向盘</div>' +
+      '<div class="bannertext">这一页只能看，不能开。远程链路上没有停车按钮，' +
+        '也没有限速滑杆——云端的数据延迟以秒计，用它做安全决策比不做更危险。</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">云端连接</div>' +
+        '<div class="pill pill-ok">已连接</div></div>' +
+      '<div class="kv"><div class="k">Broker</div>' +
+        '<div class="v num">a1B2c3D4e5F.iot-as-mqtt.cn-shanghai.aliyuncs.com</div></div>' +
+      '<div class="kv"><div class="k">订阅</div>' +
+        '<div class="v num">/a1B2c3D4e5F/GuardKart-01-viewer/user/view</div></div>' +
+      '<div class="muted status">已订阅 /a1B2c3D4e5F/GuardKart-01-viewer/user/view</div>' +
+      '<div class="btn btn-ghost gap-top">重连</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="row"><div class="card-title">异地观察</div>' +
+        '<div class="muted num">3 s 前</div></div>' +
+      '<div class="row item"><div>车速</div><div class="num">9.4 km/h</div></div>' +
+      '<div class="row item"><div>限速</div><div class="num">12 km/h</div></div>' +
+      '<div class="row item"><div>状态</div><div>行驶</div></div>' +
+      '<div class="row item"><div>故障</div><div>无</div></div>' +
+      '<div class="row item"><div>电池</div><div class="num">11.9 V</div></div>' +
+      '<div class="row item"><div>穿戴</div><div>坐垫✓ 安全带✓ 头盔✓</div></div>' +
+      '<div class="row item"><div>里程</div><div class="num">—</div></div>' +
+      '<div class="row item"><div>信号</div><div class="num">-63 dBm</div></div>' +
+      '<div class="raw num">{"id":"41","version":"1.0","method":"thing.event.property.post",' +
+        '"params":{"speed":9.4,"wear":21}}</div>' +
+    '</div></div>';
+}
+};
+
+/* ---------------- 切换 ---------------- */
+var current = 'connect';
+var screen = document.getElementById('screen');
+var navtitle = document.getElementById('navtitle');
+var tabbar = document.getElementById('tabbar');
+var spdTimer = null;
+
+function render(page) {
+  current = page;
+  screen.innerHTML = VIEWS[page]();
+  screen.scrollTop = 0;
+  navtitle.textContent = TITLES[page];
+  tabbar.style.display = (page === 'remote') ? 'none' : 'flex';
+  navtitle.innerHTML = (page === 'remote')
+    ? '<span class="back">‹ 返回</span>' + TITLES[page]
+    : TITLES[page];
+
+  [].forEach.call(document.querySelectorAll('#switch button'), function (b) {
+    b.classList.toggle('on', b.dataset.page === page);
+  });
+  [].forEach.call(tabbar.children, function (t) {
+    t.classList.toggle('on', t.dataset.page === page);
+  });
+
+  clearInterval(spdTimer);
+  if (page === 'dashboard') {
+    /* 轻微上下浮动，演示 10 Hz 刷新的观感（真实是每秒 10 帧） */
+    var target = 9.4;
+    spdTimer = setInterval(function () {
+      target += (Math.random() - 0.5) * 1.2;
+      if (target < 7.5) target = 7.5;
+      if (target > 11.5) target = 11.5;
+      T.speed = target;
+      var s = document.getElementById('spd');
+      var b = document.getElementById('bar');
+      var p = document.getElementById('pctv');
+      if (!s || !b || !p) { clearInterval(spdTimer); return; }
+      s.textContent = T.speed.toFixed(1);
+      b.style.width = pct() + '%';
+      p.textContent = pct() + '%';
+    }, 400);
+  }
+}
+
+document.getElementById('switch').addEventListener('click', function (e) {
+  var b = e.target.closest('button');
+  if (b) render(b.dataset.page);
+});
+tabbar.addEventListener('click', function (e) {
+  var t = e.target.closest('.tab');
+  if (t) render(t.dataset.page);
+});
+
+/* 按窗口宽度等比缩放整块舞台（手机 375 + 间距 36 + 说明 300 ≈ 711） */
+function fitStage() {
+  var stage = document.getElementById('stage');
+  var w = (window.innerWidth - 48) / 715;
+  var h = (window.innerHeight - 48) / 830;
+  var z = Math.min(1, w, h);
+  stage.style.zoom = (z < 1) ? String(z) : '';
+}
+window.addEventListener('resize', fitStage);
+fitStage();
+
+/* 允许用 #dashboard 之类直接打开某一页，方便截图与分享 */
+var q = /([a-z]+)/.exec(location.hash.replace('#', '')) ||
+        /[?&]p=([a-z]+)/.exec(location.search);
+render(q && VIEWS[q[1]] ? q[1] : 'connect');
+</script>
+</body>
+</html>

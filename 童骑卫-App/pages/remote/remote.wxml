@@ -1,0 +1,90 @@
+<view class="wrap">
+
+  <view class="card banner">
+    <view class="bannertitle">观景窗，不是方向盘</view>
+    <view class="bannertext">
+      这一页只能看，不能开。远程链路上没有停车按钮，也没有限速滑杆——
+      云端的数据延迟以秒计，用它做安全决策比不做更危险。
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="row">
+      <view class="card-title">云端连接</view>
+      <view class="pill {{connected ? 'pill-ok' : 'pill-idle'}}">
+        {{connected ? '已连接' : (connecting ? '连接中' : '未连接')}}
+      </view>
+    </view>
+
+    <view class="kv">
+      <view class="k">Broker</view>
+      <view class="v num">{{host}}</view>
+    </view>
+    <view class="kv">
+      <view class="k">订阅</view>
+      <view class="v num">{{topic}}</view>
+    </view>
+
+    <view class="muted status">{{status}}</view>
+    <view class="err" wx:if="{{error}}">{{error}}</view>
+
+    <view class="btn btn-primary gap-top" wx:if="{{!connected}}" bindtap="connect">
+      连接云端
+    </view>
+    <view class="btn btn-ghost gap-top" wx:if="{{connected}}" bindtap="reconnect">
+      重连
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{connected}}">
+    <view class="row">
+      <view class="card-title">异地观察</view>
+      <view class="muted num">{{age}} 前</view>
+    </view>
+
+    <view class="row item">
+      <view>车速</view>
+      <view class="num">{{speed}} km/h</view>
+    </view>
+    <view class="row item">
+      <view>限速</view>
+      <view class="num">{{limit}} km/h</view>
+    </view>
+    <view class="row item">
+      <view>状态</view>
+      <view>{{state}}</view>
+    </view>
+    <view class="row item">
+      <view>故障</view>
+      <view>{{faults}}</view>
+    </view>
+    <view class="row item">
+      <view>电池</view>
+      <view class="num">{{battery}} V</view>
+    </view>
+    <view class="row item">
+      <view>穿戴</view>
+      <view>{{wear}}</view>
+    </view>
+    <view class="row item">
+      <view>里程</view>
+      <view class="num">{{trip}}</view>
+    </view>
+    <view class="row item">
+      <view>信号</view>
+      <view class="num">{{rssi}}</view>
+    </view>
+
+    <view class="raw muted num" wx:if="{{lastRaw}}">{{lastRaw}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">这一页暂时收不到数据？</view>
+    <view class="muted">1. 车端网关没上电或没连上 WiFi。</view>
+    <view class="muted">2. 阿里云上还没配「规则引擎 → 数据流转」，
+      观察者设备订阅 Topic 是空的。</view>
+    <view class="muted">3. 正式版要用到的域名没进白名单（见 README §5）。</view>
+    <view class="muted">4. 网关只上报变化的属性，静止时可能几十秒没有一条。</view>
+  </view>
+
+</view>
