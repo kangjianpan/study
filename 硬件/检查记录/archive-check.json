@@ -8,7 +8,7 @@
     100
   ],
   "copper_layers": 2,
-  "tracks": 1493,
+  "tracks": 1495,
   "vias": 147,
   "mounting_holes_mm": 3.2,
   "mounting_hole_centres_mm": [
@@ -38,6 +38,9 @@
   "core_row_spacing_mm": 15.24,
   "mechanical_body_overlaps": 0,
   "core_body_intrusions": 0,
+  "cross_component_pad_spacing_errors": 0,
+  "cross_component_same_net_pads_checked": true,
+  "silkscreen_text_copper_body_clearance_errors": 0,
   "limits": "Independent archive/copper/connectivity/geometry checks. Online editor display, official ERC/DRC, assembly and hardware tests remain pending.",
-  "sha256": "6860a1cb49c62a71288e5dbe9b65584a5821c250c99ee356d5e3ee91fa6ab053"
+  "sha256": "fa81689d7758cb421b85b819280b30f222d73a26fb436a3572142e1b0b261d11"
 }

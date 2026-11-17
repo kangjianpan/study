@@ -1,0 +1,79 @@
+{
+  "before_sha256": "6860a1cb49c62a71288e5dbe9b65584a5821c250c99ee356d5e3ee91fa6ab053",
+  "sha256": "fa81689d7758cb421b85b819280b30f222d73a26fb436a3572142e1b0b261d11",
+  "placements_before_mm": {
+    "C5": [
+      40,
+      81,
+      0
+    ],
+    "C50": [
+      58,
+      91,
+      180
+    ]
+  },
+  "placements_after_mm": {
+    "C5": [
+      41.2,
+      81,
+      0
+    ],
+    "C50": [
+      58.6,
+      91,
+      180
+    ]
+  },
+  "old_overlap_cases": [
+    {
+      "a": "C5.1",
+      "b": "L1.2",
+      "a_net": "+5V_BUCK",
+      "b_net": "+5V_BUCK",
+      "gap_mm": 0.0,
+      "overlap_mm2": 1.215,
+      "required_mm": 0.18
+    },
+    {
+      "a": "C50.2",
+      "b": "C27.2",
+      "a_net": "GND",
+      "b_net": "GND",
+      "gap_mm": 0.0,
+      "overlap_mm2": 0.16,
+      "required_mm": 0.18
+    }
+  ],
+  "repaired_pad_gaps": [
+    {
+      "a": "L1.2",
+      "b": "C5.1",
+      "gap_mm": 0.75
+    },
+    {
+      "a": "C27.2",
+      "b": "C50.2",
+      "gap_mm": 0.4
+    }
+  ],
+  "changed_route_groups": [
+    78,
+    128,
+    184,
+    189,
+    261,
+    262,
+    264,
+    265,
+    708,
+    711,
+    712,
+    812
+  ],
+  "removed_track_segments": 17,
+  "added_track_segments": 19,
+  "schematic_and_library_documents_unchanged": true,
+  "all_other_components_and_pad_nets_unchanged": true,
+  "limits": "Independent geometry checks; official editor DRC and assembly checks remain pending."
+}

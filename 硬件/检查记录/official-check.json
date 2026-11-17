@@ -9,5 +9,6 @@
   "defaultSheet_valid": true,
   "all_library_references_valid": true,
   "canvas_parser_pass": true,
-  "limits": "Parser validation only; editor display and ERC/DRC not tested."
+  "limits": "Parser validation only; editor display and ERC/DRC not tested.",
+  "archive_sha256": "fa81689d7758cb421b85b819280b30f222d73a26fb436a3572142e1b0b261d11"
 }
