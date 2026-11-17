@@ -1,0 +1,1925 @@
+{
+  "queried_at": "2026-11-17T18:17:28.451821+08:00",
+  "inventory_scope": "LCSC public catalog snapshot; not a JLCPCB SMT reservation or domestic CNY quote",
+  "project_sha256": "3e3febb1326688af11da6927473ea3cffaa1fa38adc6cd7fa542cd0dda53e17b",
+  "bom_sha256": "880c14c286e1f3887dd4b47ab54eeaf383de311fad3cabb130fc9158cb2d4e66",
+  "boards": 5,
+  "per_board": 139,
+  "batch": 695,
+  "smt_per_board": 116,
+  "tht_per_board": 23,
+  "products": {
+    "C3099": {
+      "productCode": "C3099",
+      "productModel": "0451001.MRL",
+      "brandNameEn": "Littelfuse",
+      "encapStandard": "2410",
+      "stockNumber": 11750,
+      "domesticStockVO": {
+        "total": 11750,
+        "shipImmediately": 11750,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 11750,
+        "shipImmediately": 11750,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/00c9748756ca418792b5b22a2bd74996.pdf?productCode=C3099",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C3099",
+      "parameters": {
+        "Melting I2t": "0.6029",
+        "Interrupt Rating": "50A",
+        "Operating Temperature": "-55℃~+125℃",
+        "Height": "-",
+        "Width": "2.5mm",
+        "Type": "Surface Mount Fuse",
+        "Length": "6.1mm",
+        "Current Rating": "1A",
+        "Voltage Rating (DC)": "125V"
+      }
+    },
+    "C83847": {
+      "productCode": "C83847",
+      "productModel": "SMBJ30CA",
+      "brandNameEn": "Littelfuse",
+      "encapStandard": "DO-214AA",
+      "stockNumber": 38670,
+      "domesticStockVO": {
+        "total": 38670,
+        "shipImmediately": 38670,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 38670,
+        "shipImmediately": 38670,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/4ab84a227fae39f9eac85241b8264ead.pdf?productCode=C83847",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C83847",
+      "parameters": {
+        "Clamping Voltage": "48.4V",
+        "Operating Temperature": "-65℃~+150℃",
+        "Peak Pulse Current (Ipp)": "12.4A",
+        "Peak Pulse Power Dissipation (Ppp)": "600W@10/1000us",
+        "Number of Channels": "Single-channel",
+        "Voltage - Breakdown": "33.3V",
+        "type": "TVS",
+        "Reverse Leakage Current (Ir)": "1uA",
+        "Polarity": "Bidirectional",
+        "Reverse Stand-Off Voltage (Vrwm)": "30V"
+      }
+    },
+    "C407952": {
+      "productCode": "C407952",
+      "productModel": "EEUFR1J101",
+      "brandNameEn": "PANASONIC",
+      "encapStandard": "Through Hole,D10xL12.5mm",
+      "stockNumber": 710,
+      "domesticStockVO": {
+        "total": 710,
+        "shipImmediately": 710,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 710,
+        "shipImmediately": 710,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/c806a024cf5f6c2e240da4f697426acc.pdf?productCode=C407952",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C407952",
+      "parameters": {
+        "Tolerance": "±20%",
+        "Voltage Rating": "63V",
+        "Capacitance": "100uF",
+        "Lifetime": "6000hrs@105℃",
+        "Ripple Current": "761mA@100kHz",
+        "Pin Spacing": "5mm",
+        "Polarity type": "Polarized",
+        "Operating Temperature": "-40℃~+105℃",
+        "Equivalent Series Resistance(ESR)": "63mΩ@100kHz",
+        "Height - Seated (Max)": "12.5mm",
+        "Diameter": "10mm"
+      }
+    },
+    "C513710": {
+      "productCode": "C513710",
+      "productModel": "CC0805KKX7R0BB224",
+      "brandNameEn": "YAGEO",
+      "encapStandard": "0805",
+      "stockNumber": 76860,
+      "domesticStockVO": {
+        "total": 76860,
+        "shipImmediately": 76860,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 76860,
+        "shipImmediately": 76860,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 20,
+      "split": 20,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C513710",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C513710",
+      "parameters": {
+        "Capacitance": "220nF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "100V"
+      }
+    },
+    "C2879422": {
+      "productCode": "C2879422",
+      "productModel": "LMR36520ADDAR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOPowerPAD-8",
+      "stockNumber": 4462,
+      "domesticStockVO": {
+        "total": 4462,
+        "shipImmediately": 4462,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 4462,
+        "shipImmediately": 4462,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/a494b09ed23766576753ecd2ca82f6e0.pdf?productCode=C2879422",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2879422",
+      "parameters": {
+        "Operating Temperature": "-40℃~+125℃@(TJ)",
+        "Frequency - Switching": "400kHz",
+        "Function": "Step-down type",
+        "Number of Outputs": "1",
+        "Features": "Cycle-by-cycle current limiting;Hiccup current limiting;Light load efficient mode;Operating status indication;Built-in LDO regulator;Overcurrent Protection",
+        "Output Type": "Adjustable",
+        "Topology": "Buck",
+        "Operating Voltage": "4.2V~65V",
+        "Switch tube (built-in/external)": "Built-in",
+        "Output Current": "2A",
+        "Output Voltage": "1V~28V",
+        "Quiescent Current": "26uA"
+      }
+    },
+    "C2044906": {
+      "productCode": "C2044906",
+      "productModel": "SRN8040TA-100M",
+      "brandNameEn": "BOURNS",
+      "encapStandard": "SMD,8x8mm",
+      "stockNumber": 1039,
+      "domesticStockVO": {
+        "total": 1039,
+        "shipImmediately": 1039,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 1039,
+        "shipImmediately": 1039,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/b695fd8616ed3b8a63e3fc055c477574.pdf?productCode=C2044906",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2044906",
+      "parameters": {
+        "Current Rating": "4.6A",
+        "Inductance": "10uH",
+        "Tolerance": "±20%",
+        "DC Resistance(DCR)": "33mΩ",
+        "Current - Saturation(Isat)": "5A",
+        "Type": "-",
+        "Application Grade": "Automotive Grade"
+      }
+    },
+    "C14663": {
+      "productCode": "C14663",
+      "productModel": "CC0603KRX7R9BB104",
+      "brandNameEn": "YAGEO",
+      "encapStandard": "0603",
+      "stockNumber": 0,
+      "domesticStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C14663",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C14663",
+      "parameters": {
+        "Capacitance": "100nF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "50V"
+      }
+    },
+    "C17266784": {
+      "productCode": "C17266784",
+      "productModel": "CL32B475KCVZW6E",
+      "brandNameEn": "Samsung Electro-Mechanics",
+      "encapStandard": "1210",
+      "stockNumber": 0,
+      "domesticStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/09ea745abad3986829bc96366969cc56.pdf?productCode=C17266784",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C17266784",
+      "parameters": {
+        "Capacitance": "4.7uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "100V"
+      }
+    },
+    "C21397": {
+      "productCode": "C21397",
+      "productModel": "GRM32ER71E226KE15L",
+      "brandNameEn": "muRata",
+      "encapStandard": "1210",
+      "stockNumber": 52060,
+      "domesticStockVO": {
+        "total": 52060,
+        "shipImmediately": 52060,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 52060,
+        "shipImmediately": 52060,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/e260ed09f17fa4c3c70af8bd58d1e74a.pdf?productCode=C21397",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C21397",
+      "parameters": {
+        "Capacitance": "22uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "25V"
+      }
+    },
+    "C25803": {
+      "productCode": "C25803",
+      "productModel": "0603WAF1003T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 4974000,
+      "domesticStockVO": {
+        "total": 4974000,
+        "shipImmediately": 4974000,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 4974000,
+        "shipImmediately": 4974000,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25803",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C25803",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "100kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C25962": {
+      "productCode": "C25962",
+      "productModel": "0603WAF2492T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 582800,
+      "domesticStockVO": {
+        "total": 582800,
+        "shipImmediately": 582800,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 582800,
+        "shipImmediately": 582800,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25962",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C25962",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "24.9kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C22827": {
+      "productCode": "C22827",
+      "productModel": "0603WAF1803T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 162700,
+      "domesticStockVO": {
+        "total": 162700,
+        "shipImmediately": 162700,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 162700,
+        "shipImmediately": 162700,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22827",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C22827",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "180kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C25804": {
+      "productCode": "C25804",
+      "productModel": "0603WAF1002T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 100,
+      "domesticStockVO": {
+        "total": 100,
+        "shipImmediately": 100,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 100,
+        "shipImmediately": 100,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25804",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C25804",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "10kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C2905423": {
+      "productCode": "C2905423",
+      "productModel": "KH-2.54FH-1X20P-H8.5",
+      "brandNameEn": "kinghelm",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 1315,
+      "domesticStockVO": {
+        "total": 1315,
+        "shipImmediately": 1315,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 1315,
+        "shipImmediately": 1315,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/7870b89d4abf2f48ac04d17862fa5218.pdf?productCode=C2905423",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2905423",
+      "parameters": {
+        "Number of Pins": "20P",
+        "Current Rating": "3A",
+        "PIN Length": "3mm",
+        "Voltage Rating": "-",
+        "Operating Temperature": "-40℃~+105℃",
+        "Mounting Type": "Through Hole",
+        "Insulation Height": "8.5mm",
+        "Holes Structure": "1x20P",
+        "Pitch": "2.54mm",
+        "Holes Direction": "Top",
+        "Number of Rows": "1",
+        "Contact Plating": "Gold",
+        "Contact Material": "Brass",
+        "Row Spacing": "-",
+        "Circular Hole / Square Hole": "Square Hole"
+      }
+    },
+    "C8465": {
+      "productCode": "C8465",
+      "productModel": "WJ500V-5.08-2P",
+      "brandNameEn": "KANGNEX",
+      "encapStandard": "Through Hole,P=5.08mm",
+      "stockNumber": 268815,
+      "domesticStockVO": {
+        "total": 268815,
+        "shipImmediately": 268815,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 268815,
+        "shipImmediately": 268815,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/5a3d038c44f6e3872ef57456c5bdf975.pdf?productCode=C8465",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C8465",
+      "parameters": {
+        "Wire Gauge - mm2": "2.5",
+        "Number of Positions or Pins": "1x2P",
+        "Number of Pins": "2P",
+        "Screw Specification": "M2.5",
+        "Pitch": "5.08mm",
+        "Current Rating": "18A",
+        "Operating Temperature": "-40℃~+105℃",
+        "Voltage Rating (Max)": "250V",
+        "Height Above Board": "14.07mm",
+        "Color": "Green",
+        "Wire Gauge - AWG": "14~30",
+        "Mounting Type": "Through Hole",
+        "Number of PINs Per Row": "2",
+        "Number of Rows": "1"
+      }
+    },
+    "C474932": {
+      "productCode": "C474932",
+      "productModel": "KF128L-3.81-2P",
+      "brandNameEn": "Cixi Kefa Elec",
+      "encapStandard": "Through Hole,P=3.81mm",
+      "stockNumber": 17085,
+      "domesticStockVO": {
+        "total": 17085,
+        "shipImmediately": 17085,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 17085,
+        "shipImmediately": 17085,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/359aeb32d4df7c377b3d679b49255e88.pdf?productCode=C474932",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C474932",
+      "parameters": {
+        "Wire Gauge - mm2": "1",
+        "Number of Positions or Pins": "1x2P",
+        "Number of Pins": "2P",
+        "Screw Specification": "M2",
+        "Pitch": "3.81mm",
+        "Current Rating": "10A",
+        "Operating Temperature": "-40℃~+105℃",
+        "Voltage Rating (Max)": "300V",
+        "Height Above Board": "8.6mm",
+        "Color": "Green",
+        "Wire Gauge - AWG": "16~26",
+        "Mounting Type": "Through Hole",
+        "Number of PINs Per Row": "2",
+        "Number of Rows": "1"
+      }
+    },
+    "C474933": {
+      "productCode": "C474933",
+      "productModel": "KF128L-3.81-3P",
+      "brandNameEn": "Cixi Kefa Elec",
+      "encapStandard": "Through Hole,P=3.81mm",
+      "stockNumber": 6210,
+      "domesticStockVO": {
+        "total": 6210,
+        "shipImmediately": 6210,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 6210,
+        "shipImmediately": 6210,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/359aeb32d4df7c377b3d679b49255e88.pdf?productCode=C474933",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C474933",
+      "parameters": {
+        "Wire Gauge - mm2": "1",
+        "Number of Positions or Pins": "1x3P",
+        "Number of Pins": "3P",
+        "Screw Specification": "M2",
+        "Pitch": "3.81mm",
+        "Current Rating": "10A",
+        "Operating Temperature": "-40℃~+105℃",
+        "Voltage Rating (Max)": "300V",
+        "Height Above Board": "8.6mm",
+        "Color": "Green",
+        "Wire Gauge - AWG": "16~26",
+        "Mounting Type": "Through Hole",
+        "Number of PINs Per Row": "3",
+        "Number of Rows": "1"
+      }
+    },
+    "C2897367": {
+      "productCode": "C2897367",
+      "productModel": "PM254-1-04-Z-8.5",
+      "brandNameEn": "HCTL",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 12615,
+      "domesticStockVO": {
+        "total": 12615,
+        "shipImmediately": 12615,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 12615,
+        "shipImmediately": 12615,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/87e2b5b113f4df247d2b8d5758217346.pdf?productCode=C2897367",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2897367",
+      "parameters": {
+        "Number of Pins": "4P",
+        "Current Rating": "3A",
+        "PIN Length": "3.2mm",
+        "Voltage Rating": "-",
+        "Operating Temperature": "-40℃~+105℃",
+        "Mounting Type": "Through Hole",
+        "Insulation Height": "8.5mm",
+        "Holes Structure": "1x4P",
+        "Pitch": "2.54mm",
+        "Holes Direction": "Top",
+        "Number of Rows": "1",
+        "Contact Material": "Copper Alloy",
+        "Row Spacing": "-",
+        "Circular Hole / Square Hole": "Square Hole"
+      }
+    },
+    "C2897369": {
+      "productCode": "C2897369",
+      "productModel": "PM254-1-06-Z-8.5",
+      "brandNameEn": "HCTL",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 18372,
+      "domesticStockVO": {
+        "total": 18372,
+        "shipImmediately": 18372,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 18372,
+        "shipImmediately": 18372,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 6,
+      "split": 6,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/87e2b5b113f4df247d2b8d5758217346.pdf?productCode=C2897369",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2897369",
+      "parameters": {
+        "Number of Pins": "6P",
+        "Current Rating": "3A",
+        "PIN Length": "3.2mm",
+        "Voltage Rating": "-",
+        "Operating Temperature": "-40℃~+105℃",
+        "Mounting Type": "Through Hole",
+        "Insulation Height": "8.5mm",
+        "Holes Structure": "1x6P",
+        "Pitch": "2.54mm",
+        "Holes Direction": "Top",
+        "Number of Rows": "1",
+        "Contact Material": "Copper Alloy",
+        "Row Spacing": "-",
+        "Circular Hole / Square Hole": "Square Hole"
+      }
+    },
+    "C492407": {
+      "productCode": "C492407",
+      "productModel": "PZ254V-11-08P",
+      "brandNameEn": "XFCN",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 97020,
+      "domesticStockVO": {
+        "total": 97020,
+        "shipImmediately": 97020,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 97020,
+        "shipImmediately": 97020,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 10,
+      "split": 10,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/3b85a1cdf6ed945f2e278f00c1e42442.pdf?productCode=C492407",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C492407",
+      "parameters": {
+        "Connector Type": "Through Hole",
+        "Voltage Rating (Max)": "250V",
+        "Contact Material": "Brass",
+        "Number of Rows": "1",
+        "Pitch": "2.54mm",
+        "Circluar Pins/Square Pins": "Square pin",
+        "Current Rating": "3A",
+        "Insulation Height": "2.5mm",
+        "Length of Mating Pin": "6.1mm",
+        "Number of PINs": "8P",
+        "Operating Temperature": "-40℃~+105℃",
+        "Length of End Connection Pin": "3mm",
+        "Contact Plating": "Gold",
+        "Color": "Black",
+        "Pin Structure": "1x8P",
+        "Row Spacing": "-"
+      }
+    },
+    "C2897366": {
+      "productCode": "C2897366",
+      "productModel": "PM254-1-03-Z-8.5",
+      "brandNameEn": "HCTL",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 23870,
+      "domesticStockVO": {
+        "total": 23870,
+        "shipImmediately": 23870,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 23870,
+        "shipImmediately": 23870,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/87e2b5b113f4df247d2b8d5758217346.pdf?productCode=C2897366",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2897366",
+      "parameters": {
+        "Number of Pins": "3P",
+        "Current Rating": "3A",
+        "PIN Length": "3.2mm",
+        "Voltage Rating": "-",
+        "Operating Temperature": "-40℃~+105℃",
+        "Mounting Type": "Through Hole",
+        "Insulation Height": "8.5mm",
+        "Holes Structure": "1x3P",
+        "Pitch": "2.54mm",
+        "Holes Direction": "Top",
+        "Number of Rows": "1",
+        "Contact Material": "Copper Alloy",
+        "Row Spacing": "-",
+        "Circular Hole / Square Hole": "Square Hole"
+      }
+    },
+    "C5187472": {
+      "productCode": "C5187472",
+      "productModel": "TYPE-C 16P QTWT",
+      "brandNameEn": "SHOU HAN",
+      "encapStandard": "SMD",
+      "stockNumber": 47050,
+      "domesticStockVO": {
+        "total": 47050,
+        "shipImmediately": 47050,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 47050,
+        "shipImmediately": 47050,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 10,
+      "split": 10,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/d3846d73123f7a78a150a5dc80fdd645.pdf?productCode=C5187472",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C5187472",
+      "parameters": {
+        "Protocol Standard": "-",
+        "Number of Ports": "1",
+        "Supplementary Features": "-",
+        "Number of Contacts": "16P",
+        "Connector Type": "Type-C",
+        "Center Height": "-",
+        "Voltage Rating": "5V",
+        "Operating Temperature": "-30℃~+80℃",
+        "Length": "7.35mm",
+        "Mounting Type": "Surface Mount, Right Angle",
+        "Gender": "Female"
+      }
+    },
+    "C84681": {
+      "productCode": "C84681",
+      "productModel": "CH340C",
+      "brandNameEn": "WCH",
+      "encapStandard": "SOP-16",
+      "stockNumber": 86567,
+      "domesticStockVO": {
+        "total": 86567,
+        "shipImmediately": 86567,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 86567,
+        "shipImmediately": 86567,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/e2f14e51aaa60c793f1f0cbc8a5d5faa.pdf?productCode=C84681",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C84681",
+      "parameters": {
+        "Operating Temperature": "-20℃~+70℃",
+        "Voltage - Supply": "3.3V;5V",
+        "Number of ports": "-",
+        "Features": "Programmable baud rate;Power-on reset;Built-in clock generator",
+        "Applications Function": "Transceiver",
+        "Data Rate": "2Mbps",
+        "Quiescent Supply Current": "50uA",
+        "USB Protocol": "USB 2.0",
+        "Current - Supply": "7mA"
+      }
+    },
+    "C25819": {
+      "productCode": "C25819",
+      "productModel": "0603WAF4702T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 0,
+      "domesticStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25819",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C25819",
+      "parameters": {
+        "Resistance": "47kΩ",
+        "Power(Watts)": "100mW",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C21190": {
+      "productCode": "C21190",
+      "productModel": "0603WAF1001T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 0,
+      "domesticStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C21190",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C21190",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "1kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C20069125": {
+      "productCode": "C20069125",
+      "productModel": "S8050",
+      "brandNameEn": "R+O",
+      "encapStandard": "SOT-23",
+      "stockNumber": 3839650,
+      "domesticStockVO": {
+        "total": 3839650,
+        "shipImmediately": 3839650,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 3839650,
+        "shipImmediately": 3839650,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 50,
+      "split": 50,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/b850ef7a2550a6f5d433c2653f503655.pdf?productCode=C20069125",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C20069125",
+      "parameters": {
+        "Current - Collector Cutoff": "100nA",
+        "Operating Temperature": "-55℃~+150℃",
+        "Transition frequency(fT)": "100MHz",
+        "Collector - Emitter Voltage VCEO": "25V",
+        "Emitter-Base Voltage VEBO": "5V",
+        "DC Current Gain": "120",
+        "Pd - Power Dissipation": "300mW",
+        "Current - Collector(Ic)": "500mA",
+        "Configuration": "Standalone",
+        "Number": "1 NPN",
+        "type": "NPN",
+        "Vce Saturation(VCE(sat))": "600mV"
+      }
+    },
+    "C51933307": {
+      "productCode": "C51933307",
+      "productModel": "GL0805UR01",
+      "brandNameEn": "Guiguang light",
+      "encapStandard": "0805",
+      "stockNumber": 805700,
+      "domesticStockVO": {
+        "total": 805700,
+        "shipImmediately": 805700,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 805700,
+        "shipImmediately": 805700,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/a1d284d6e484d8894ccf91c9838f4642.pdf?productCode=C51933307",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C51933307",
+      "parameters": {
+        "Installation method": "Top-mount",
+        "Color Temperature": "-",
+        "Peak Wavelength": "-",
+        "Lens Color": "Water Clear",
+        "Viewing Angle": "120°",
+        "Luminous Intensity": "80mcd~100mcd",
+        "Forward Current": "20mA",
+        "Illumination Color": "Red",
+        "Lamp Holder Type": "2mm x 1.25mm square LED",
+        "Voltage - Forward(Vf)": "1.8V~2.1V",
+        "Operating Temperature": "-40℃~+85℃",
+        "Diode Configuration": "Discrete Diode",
+        "Wavelength": "620nm~625nm"
+      }
+    },
+    "C23162": {
+      "productCode": "C23162",
+      "productModel": "0603WAF4701T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 2083200,
+      "domesticStockVO": {
+        "total": 2083200,
+        "shipImmediately": 2083200,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 2083200,
+        "shipImmediately": 2083200,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23162",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C23162",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "4.7kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C22962": {
+      "productCode": "C22962",
+      "productModel": "0603WAF2200T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 99300,
+      "domesticStockVO": {
+        "total": 99300,
+        "shipImmediately": 99300,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 99300,
+        "shipImmediately": 99300,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22962",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C22962",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "220Ω",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C19726": {
+      "productCode": "C19726",
+      "productModel": "BAT54SLT1G",
+      "brandNameEn": "onsemi",
+      "encapStandard": "SOT-23",
+      "stockNumber": 453293,
+      "domesticStockVO": {
+        "total": 453293,
+        "shipImmediately": 453293,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 453293,
+        "shipImmediately": 453293,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/46cb550ea5604e38b1c44b1ec0935405.pdf?productCode=C19726",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C19726",
+      "parameters": {
+        "Diode Configuration": "1 Pair Series Connection",
+        "Current - Rectified": "200mA",
+        "Operating Junction Temperature Range": "-55℃~+150℃",
+        "Voltage - DC Reverse(Vr)": "30V",
+        "Reverse Leakage Current (Ir)": "2uA@25V",
+        "Voltage - Forward(Vf@If)": "800mV@100mA"
+      }
+    },
+    "C393938": {
+      "productCode": "C393938",
+      "productModel": "TS665CJ",
+      "brandNameEn": "SHOU HAN",
+      "encapStandard": "Through Hole-4P,6x6mm",
+      "stockNumber": 138100,
+      "domesticStockVO": {
+        "total": 138100,
+        "shipImmediately": 138100,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 138100,
+        "shipImmediately": 138100,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 50,
+      "split": 50,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/5504467bc27a7ce0c895781414357e69.pdf?productCode=C393938",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C393938",
+      "parameters": {
+        "with Bracket": "Without Bracket",
+        "Length": "6mm",
+        "Operating Force": "2.5N",
+        "Height": "5mm",
+        "Voltage Rating": "12V",
+        "Switching Life": "50,000 cycles",
+        "Operating Temperature": "-25℃~+70℃",
+        "Width": "6mm",
+        "Termination Style": "PC Pin",
+        "Actuator Style": "Round Button",
+        "With Lamp": "No",
+        "Mounting Type": "Through Hole",
+        "Actuator/Cap Color": "Black",
+        "Circuit": "SPST",
+        "Contact Current": "50mA"
+      }
+    },
+    "C2937625": {
+      "productCode": "C2937625",
+      "productModel": "PZ254V-11-03P",
+      "brandNameEn": "XFCN",
+      "encapStandard": "Through Hole,P=2.54mm",
+      "stockNumber": 900320,
+      "domesticStockVO": {
+        "total": 900320,
+        "shipImmediately": 900320,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 900320,
+        "shipImmediately": 900320,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 20,
+      "split": 20,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/3b85a1cdf6ed945f2e278f00c1e42442.pdf?productCode=C2937625",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2937625",
+      "parameters": {
+        "Connector Type": "Through Hole",
+        "Voltage Rating (Max)": "250V",
+        "Contact Material": "Brass",
+        "Number of Rows": "1",
+        "Pitch": "2.54mm",
+        "Circluar Pins/Square Pins": "Square pin",
+        "Current Rating": "3A",
+        "Supplementary Features": "-",
+        "Insulation Height": "2.5mm",
+        "Length of Mating Pin": "6.1mm",
+        "Contact Plating": "Gold",
+        "Number of PINs": "3P",
+        "Operating Temperature": "-40℃~+105℃",
+        "Length of End Connection Pin": "3mm",
+        "Color": "Black",
+        "Row Spacing": "-",
+        "Pin Structure": "1x3P"
+      }
+    },
+    "C23138": {
+      "productCode": "C23138",
+      "productModel": "0603WAF3300T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 200000,
+      "domesticStockVO": {
+        "total": 200000,
+        "shipImmediately": 200000,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 200000,
+        "shipImmediately": 200000,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23138",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C23138",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "330Ω",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C84260": {
+      "productCode": "C84260",
+      "productModel": "NCD0805G1",
+      "brandNameEn": "NATIONSTAR",
+      "encapStandard": "0805",
+      "stockNumber": 241380,
+      "domesticStockVO": {
+        "total": 241380,
+        "shipImmediately": 241380,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 241380,
+        "shipImmediately": 241380,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 30,
+      "split": 30,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/e9136671caaf5a8744659ae1d2411e7a.pdf?productCode=C84260",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C84260",
+      "parameters": {
+        "Half wave width": "30nm",
+        "Forward Current": "20mA",
+        "Voltage - Forward(Vf)": "2.5V~3.6V",
+        "Operating Temperature": "-30℃~+85℃",
+        "Diode Configuration": "Discrete Diode",
+        "ESD Withstand Voltage": "-",
+        "Installation method": "Top-mount",
+        "Color Temperature": "-",
+        "Peak Wavelength": "520nm",
+        "Lens Color": "Water Clear",
+        "Luminous Intensity": "400mcd",
+        "Viewing Angle": "130°",
+        "Illumination Color": "Green",
+        "Lamp Holder Type": "1.2mm square LED",
+        "Wavelength": "525nm~537.5nm"
+      }
+    },
+    "C23186": {
+      "productCode": "C23186",
+      "productModel": "0603WAF5101T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 13576600,
+      "domesticStockVO": {
+        "total": 13576600,
+        "shipImmediately": 13576600,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 13576600,
+        "shipImmediately": 13576600,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23186",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C23186",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "5.1kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C22809": {
+      "productCode": "C22809",
+      "productModel": "0603WAF1502T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 1361600,
+      "domesticStockVO": {
+        "total": 1361600,
+        "shipImmediately": 1361600,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 1361600,
+        "shipImmediately": 1361600,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22809",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C22809",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "15kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C15874": {
+      "productCode": "C15874",
+      "productModel": "SS310",
+      "brandNameEn": "MDD(Microdiode Semiconductor)",
+      "encapStandard": "SMA(DO-214AC)",
+      "stockNumber": 263680,
+      "domesticStockVO": {
+        "total": 263680,
+        "shipImmediately": 263680,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 263680,
+        "shipImmediately": 263680,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 20,
+      "split": 20,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/dfa1ff67dea875d0135103ba9ada713a.pdf?productCode=C15874",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C15874",
+      "parameters": {
+        "Operating Junction Temperature Range": "-55℃~+125℃",
+        "Diode Configuration": "Standalone",
+        "Voltage - DC Reverse (Vr) (Max)": "100V",
+        "Pd - Power Dissipation": "-",
+        "Voltage - Forward(Vf@If)": "850mV@3A",
+        "Reverse Leakage Current (Ir)": "500uA@100V",
+        "Non-Repetitive Peak Forward Surge Current": "80A",
+        "Current - Rectified": "3A"
+      }
+    },
+    "C97890": {
+      "productCode": "C97890",
+      "productModel": "GRM188R71C105KA12D",
+      "brandNameEn": "muRata",
+      "encapStandard": "0603",
+      "stockNumber": 0,
+      "domesticStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 0,
+        "shipImmediately": 0,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 20,
+      "split": 20,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/94604444d76a493ab645cce3573b75da.pdf?productCode=C97890",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C97890",
+      "parameters": {
+        "Capacitance": "1uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "16V"
+      }
+    },
+    "C3235556": {
+      "productCode": "C3235556",
+      "productModel": "LM66200DRLR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-583",
+      "stockNumber": 19355,
+      "domesticStockVO": {
+        "total": 19355,
+        "shipImmediately": 19355,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 19355,
+        "shipImmediately": 19355,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://www.ti.com/cn/lit/ds/symlink/lm66200.pdf",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C3235556",
+      "parameters": {
+        "Quiescent Current": "1.32uA",
+        "Operating temperature": "-40℃~+125℃",
+        "FET Type": "Integrated FET",
+        "RDS(on)": "74mΩ",
+        "Input Voltage (Vin)": "1.6V~5.5V",
+        "Function": "Reverse current blocking;Over temperature protection;With enable",
+        "Number of Channels": "2"
+      }
+    },
+    "C14860": {
+      "productCode": "C14860",
+      "productModel": "CL31B106KAHNNNE",
+      "brandNameEn": "Samsung Electro-Mechanics",
+      "encapStandard": "1206",
+      "stockNumber": 1603540,
+      "domesticStockVO": {
+        "total": 1603540,
+        "shipImmediately": 1603540,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 1603540,
+        "shipImmediately": 1603540,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 20,
+      "split": 20,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C14860",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C14860",
+      "parameters": {
+        "Capacitance": "10uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "25V"
+      }
+    },
+    "C5290219": {
+      "productCode": "C5290219",
+      "productModel": "AP2112M-3.3TRG1",
+      "brandNameEn": "DIODES",
+      "encapStandard": "SO-8",
+      "stockNumber": 2420,
+      "domesticStockVO": {
+        "total": 2420,
+        "shipImmediately": 2420,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 2420,
+        "shipImmediately": 2420,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/5b29baebdc4332b382a530ff21092301.pdf?productCode=C5290219",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C5290219",
+      "parameters": {
+        "Output Voltage": "3.3V",
+        "Number of Outputs": "1",
+        "Operating Temperature": "-40℃~+85℃@(Ta)",
+        "Supply Current (Iq)": "55uA",
+        "Output Configuration": "Positive",
+        "Operating Voltage": "6V",
+        "Output Current": "600mA",
+        "Features": "Enable control;Output discharge;Short Circuit Protection;Thermal shutdown",
+        "Output Type": "Fixed"
+      }
+    },
+    "C100040": {
+      "productCode": "C100040",
+      "productModel": "CC0603KRX7R9BB102",
+      "brandNameEn": "YAGEO",
+      "encapStandard": "0603",
+      "stockNumber": 1188150,
+      "domesticStockVO": {
+        "total": 1188150,
+        "shipImmediately": 1188150,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 1188150,
+        "shipImmediately": 1188150,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 50,
+      "split": 50,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C100040",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C100040",
+      "parameters": {
+        "Capacitance": "1nF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "50V"
+      }
+    },
+    "C130064": {
+      "productCode": "C130064",
+      "productModel": "TPS3820-33DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-5",
+      "stockNumber": 5972,
+      "domesticStockVO": {
+        "total": 5972,
+        "shipImmediately": 5972,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 5972,
+        "shipImmediately": 5972,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/ad64c0cf370842d797eb941d0a5f074b.pdf?productCode=C130064",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C130064",
+      "parameters": {
+        "Reset Timeout": "25ms",
+        "Operating Temperature": "-40℃~+85℃",
+        "output type": "Push-pull",
+        "Function": "Watchdog timer;Manual reset input",
+        "Reset Active Level": "Active Low",
+        "standby current": "15uA",
+        "Voltage - Supply": "2.5V;3V;3.3V;5V",
+        "ChipType": "Voltage monitor",
+        "Threshold Voltage": "2.93V",
+        "Number of Voltages Monitored": "1"
+      }
+    },
+    "C22046": {
+      "productCode": "C22046",
+      "productModel": "SN74LVC1G11DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-6",
+      "stockNumber": 27710,
+      "domesticStockVO": {
+        "total": 27710,
+        "shipImmediately": 27710,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 27710,
+        "shipImmediately": 27710,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/f9fe4b60fb92429ca2433ed3303bc81b.pdf?productCode=C22046",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C22046",
+      "parameters": {
+        "Logic Family": "74LVC Series",
+        "Voltage - Supply": "1.65V~5.5V",
+        "Output Logic Level - Low": "450mV;300mV;550mV",
+        "Propagation Delay": "3.5ns@5V,50pF",
+        "Features": "Local shutdown mode",
+        "Input Logic Level - Low": "700mV~800mV",
+        "Input Logic Level - High": "1.7V~2V",
+        "Operating Temperature": "-40℃~+125℃",
+        "Output Logic Level - High": "1.2V;1.9V;2.3V;3.8V",
+        "Quiescent Current(Iq)": "10uA",
+        "Number of Channels": "1;3",
+        "Current - Output High(IOH)": "32mA",
+        "Current - Output Low(IOL)": "32mA"
+      }
+    },
+    "C7835": {
+      "productCode": "C7835",
+      "productModel": "SN74LVC1G14DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-5",
+      "stockNumber": 188460,
+      "domesticStockVO": {
+        "total": 188460,
+        "shipImmediately": 188460,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 188460,
+        "shipImmediately": 188460,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 10,
+      "split": 10,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/0e43b480841b4c9eb7e0535f50137db3.pdf?productCode=C7835",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C7835",
+      "parameters": {
+        "output type": "Push-pull",
+        "Logic Family": "74LVC",
+        "Input Type": "Schmitt trigger",
+        "Voltage - Supply": "1.65V~5.5V",
+        "Output Logic Level - Low": "550mV",
+        "Propagation Delay": "6.5ns@2.5V,50pF",
+        "Features": "Power shutdown protection;Noise suppression function",
+        "Operating Temperature": "-40℃~+85℃",
+        "Input Logic Level - High": "1.16V~3.33V",
+        "Input Logic Level - Low": "390mV~1.87V",
+        "Output Logic Level - High": "2.3V",
+        "Quiescent Current(Iq)": "10uA",
+        "Number of Channels": "1",
+        "Current - Output High(IOH)": "32mA",
+        "Current - Output Low(IOL)": "32mA"
+      }
+    },
+    "C70285": {
+      "productCode": "C70285",
+      "productModel": "SN74LVC1G74DCUR",
+      "brandNameEn": "TI",
+      "encapStandard": "VSSOP-8",
+      "stockNumber": 65,
+      "domesticStockVO": {
+        "total": 65,
+        "shipImmediately": 65,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 65,
+        "shipImmediately": 65,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/d81fc89027ae4813b4418e722d351b7c.pdf?productCode=C70285",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C70285",
+      "parameters": {
+        "Voltage - Supply": "1.65V~5.5V",
+        "Number of Bits per Element": "1",
+        "Output Type": "Complementary",
+        "Operating Temperature": "-40℃~+125℃",
+        "Series": "74LVC Series",
+        "Synchronous/Asynchronous": "Asynchronous",
+        "Number of Elements": "1",
+        "Current - Output High(IOH)": "32mA",
+        "Current - Output Low(IOL)": "32mA",
+        "Setup Time": "1.1ns",
+        "Quiescent Current": "10uA",
+        "Hold Time": "500ps",
+        "Propagation Delay": "6.4ns@5V,50pF",
+        "Trigger Type": "Rising Edge"
+      }
+    },
+    "C7666": {
+      "productCode": "C7666",
+      "productModel": "SN74LVC1G08DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-5",
+      "stockNumber": 60910,
+      "domesticStockVO": {
+        "total": 60910,
+        "shipImmediately": 60910,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 60910,
+        "shipImmediately": 60910,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 10,
+      "split": 10,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/e2f1087e6f7247829c67fb7d8225c4dc.pdf?productCode=C7666",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C7666",
+      "parameters": {
+        "Logic Family": "74LVC Series",
+        "Voltage - Supply": "1.65V~5.5V",
+        "Output Logic Level - Low": "450mV;300mV;550mV",
+        "Propagation Delay": "4ns@5V,50pF",
+        "Features": "Live insertion protection;Local shutdown mode;Rear drive protection;Overvoltage-tolerant input",
+        "Input Logic Level - Low": "700mV;800mV",
+        "Input Logic Level - High": "1.7V;2V",
+        "Operating Temperature": "-40℃~+125℃",
+        "Output Logic Level - High": "1.2V;1.9V;2.3V;3.8V",
+        "Quiescent Current(Iq)": "10uA",
+        "Number of Channels": "1;2",
+        "Current - Output High(IOH)": "32mA",
+        "Current - Output Low(IOL)": "32mA"
+      }
+    },
+    "C113521": {
+      "productCode": "C113521",
+      "productModel": "SN74AHCT1G08DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-5",
+      "stockNumber": 10260,
+      "domesticStockVO": {
+        "total": 10260,
+        "shipImmediately": 10260,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 10260,
+        "shipImmediately": 10260,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/32d148913c634c3094ac6d14ec28d4d1.pdf?productCode=C113521",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C113521",
+      "parameters": {
+        "Input Type": "TTL Compatible CMOS",
+        "output type": "-",
+        "Logic Family": "74AHCT Series",
+        "Voltage - Supply": "4.5V~5.5V",
+        "Output Logic Level - Low": "100mV;360mV",
+        "Propagation Delay": "7.9ns@5V,50pF",
+        "Features": "Overvoltage-tolerant input",
+        "Input Logic Level - Low": "800mV",
+        "Input Logic Level - High": "2V",
+        "Operating Temperature": "-40℃~+125℃",
+        "Output Logic Level - High": "4.4V;3.94V",
+        "Quiescent Current(Iq)": "1uA",
+        "Current - Output High(IOH)": "8mA",
+        "Number of Channels": "1;2",
+        "Current - Output Low(IOL)": "8mA"
+      }
+    },
+    "C20917": {
+      "productCode": "C20917",
+      "productModel": "AO3400A",
+      "brandNameEn": "AOS",
+      "encapStandard": "SOT-23",
+      "stockNumber": 603445,
+      "domesticStockVO": {
+        "total": 603445,
+        "shipImmediately": 603445,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 603445,
+        "shipImmediately": 603445,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/130876b936da464599428c58fd8de8f6.pdf?productCode=C20917",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C20917",
+      "parameters": {
+        "Output Capacitance(Coss)": "75pF",
+        "Ciss-Input Capacitance": "630pF",
+        "Pd - Power Dissipation": "1.4W",
+        "Configuration": "-",
+        "Operating Temperature": "-55℃~+150℃",
+        "Drain to Source Voltage": "30V",
+        "Current - Continuous Drain(Id)": "5.7A",
+        "Reverse Transfer Capacitance (Crss)": "50pF",
+        "RDS(on)": "48mΩ@2.5V",
+        "Number": "1 N-channel",
+        "Gate Charge(Qg)": "7nC@10V",
+        "Vgs": "±12V",
+        "Gate Threshold Voltage (Vgs(th))": "1.45V",
+        "Type": "N-Channel"
+      }
+    },
+    "C2482": {
+      "productCode": "C2482",
+      "productModel": "SS110",
+      "brandNameEn": "MDD(Microdiode Semiconductor)",
+      "encapStandard": "SMA(DO-214AC)",
+      "stockNumber": 553150,
+      "domesticStockVO": {
+        "total": 553150,
+        "shipImmediately": 553150,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 553150,
+        "shipImmediately": 553150,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 50,
+      "split": 50,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/9977bb85cd7e349115b7bcb7054cfa0d.pdf?productCode=C2482",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2482",
+      "parameters": {
+        "Operating Junction Temperature Range": "-55℃~+150℃",
+        "Diode Configuration": "Standalone",
+        "Voltage - DC Reverse (Vr) (Max)": "100V",
+        "Pd - Power Dissipation": "-",
+        "Voltage - Forward(Vf@If)": "850mV@1A",
+        "Reverse Leakage Current (Ir)": "200uA@100V",
+        "Non-Repetitive Peak Forward Surge Current": "25A",
+        "Current - Rectified": "1A"
+      }
+    },
+    "C23654": {
+      "productCode": "C23654",
+      "productModel": "SN74LVC1G125DBVR",
+      "brandNameEn": "TI",
+      "encapStandard": "SOT-23-5",
+      "stockNumber": 215390,
+      "domesticStockVO": {
+        "total": 215390,
+        "shipImmediately": 215390,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 215390,
+        "shipImmediately": 215390,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 10,
+      "split": 10,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/397db609d8c243daaad8f1a233af4e5d.pdf?productCode=C23654",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C23654",
+      "parameters": {
+        "Input type": "-",
+        "Voltage - Supply": "1.65V~5.5V",
+        "Output Type": "Tri-State",
+        "Operating Temperature": "-40℃~+125℃",
+        "Quiescent Supply Current": "10uA",
+        "Function": "Power-off isolation;Output enable",
+        "Current - Output High(IOH)": "32mA",
+        "Series": "74LVC",
+        "Current - Output Low(IOL)": "32mA",
+        "Number of Bits per Element": "1",
+        "Channel Type": "Unidirectional",
+        "Number of Elements": "1",
+        "Propagation Delay": "3.7ns@3.3V,15pF"
+      }
+    },
+    "C15127": {
+      "productCode": "C15127",
+      "productModel": "AO3401A",
+      "brandNameEn": "AOS",
+      "encapStandard": "SOT-23",
+      "stockNumber": 931975,
+      "domesticStockVO": {
+        "total": 931975,
+        "shipImmediately": 931975,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 931975,
+        "shipImmediately": 931975,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 5,
+      "split": 5,
+      "smtLabel": "BASE",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/fee353dd1e9e0bc90b295f14f381aa4c.pdf?productCode=C15127",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C15127",
+      "parameters": {
+        "Operating Temperature": "-",
+        "Drain to Source Voltage": "30V",
+        "Output Capacitance(Coss)": "80pF",
+        "Current - Continuous Drain(Id)": "4A",
+        "Ciss-Input Capacitance": "645pF",
+        "Pd - Power Dissipation": "-",
+        "Reverse Transfer Capacitance (Crss)": "55pF",
+        "RDS(on)": "47mΩ@10V;60mΩ@4.5V;85mΩ@2.5V",
+        "Number": "1 P-Channel",
+        "Gate Charge(Qg)": "14nC@10V",
+        "Gate Threshold Voltage (Vgs(th))": "900mV",
+        "Type": "-"
+      }
+    },
+    "C314282": {
+      "productCode": "C314282",
+      "productModel": "0603B104K500CT",
+      "brandNameEn": "Walsin",
+      "encapStandard": "0603",
+      "stockNumber": 591600,
+      "domesticStockVO": {
+        "total": 591600,
+        "shipImmediately": 591600,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 591600,
+        "shipImmediately": 591600,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/075a7e54e3698b3e27011665ed540992.pdf?productCode=C314282",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C314282",
+      "parameters": {
+        "Capacitance": "100nF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "50V"
+      }
+    },
+    "C1870804": {
+      "productCode": "C1870804",
+      "productModel": "12101C475K4Z2A",
+      "brandNameEn": "Kyocera AVX",
+      "encapStandard": "1210",
+      "stockNumber": 2551,
+      "domesticStockVO": {
+        "total": 2551,
+        "shipImmediately": 2551,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 2551,
+        "shipImmediately": 2551,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 1,
+      "split": 1,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C1870804",
+      "parameters": {
+        "Capacitance": "4.7uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "100V"
+      }
+    },
+    "C965160": {
+      "productCode": "C965160",
+      "productModel": "NQ03WAF4702T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 9400,
+      "domesticStockVO": {
+        "total": 9400,
+        "shipImmediately": 9400,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 9400,
+        "shipImmediately": 9400,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/d0e2bf20b057685ecbd7986b762e82e9.pdf?productCode=C965160",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C965160",
+      "parameters": {
+        "Resistance": "47kΩ",
+        "Power(Watts)": "100mW",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C2758735": {
+      "productCode": "C2758735",
+      "productModel": "NQ03WAF1001T5E",
+      "brandNameEn": "UNI-ROYAL",
+      "encapStandard": "0603",
+      "stockNumber": 90900,
+      "domesticStockVO": {
+        "total": 90900,
+        "shipImmediately": 90900,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 90900,
+        "shipImmediately": 90900,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 100,
+      "split": 100,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/d0e2bf20b057685ecbd7986b762e82e9.pdf?productCode=C2758735",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C2758735",
+      "parameters": {
+        "Power(Watts)": "100mW",
+        "Resistance": "1kΩ",
+        "Voltage Rating": "75V",
+        "Type": "Thick Film Resistor",
+        "Temperature Coefficient": "±100ppm/℃",
+        "Tolerance": "±1%",
+        "Operating Temperature": "-55℃~+155℃"
+      }
+    },
+    "C106248": {
+      "productCode": "C106248",
+      "productModel": "CC0603KRX7R7BB105",
+      "brandNameEn": "YAGEO",
+      "encapStandard": "0603",
+      "stockNumber": 324500,
+      "domesticStockVO": {
+        "total": 324500,
+        "shipImmediately": 324500,
+        "ship3Days": 0
+      },
+      "overseasStockVO": {
+        "total": 324500,
+        "shipImmediately": 324500,
+        "ship3Days": 0
+      },
+      "minBuyNumber": 50,
+      "split": 50,
+      "smtLabel": "EXPAND",
+      "pdfUrl": "https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C106248",
+      "source": "https://wmsc.lcsc.com/ftps/wm/product/detail?productCode=C106248",
+      "parameters": {
+        "Capacitance": "1uF",
+        "Temperature Coefficient": "X7R",
+        "Tolerance": "±10%",
+        "Voltage Rating": "16V"
+      }
+    }
+  }
+}
