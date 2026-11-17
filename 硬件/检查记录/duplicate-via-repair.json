@@ -1,0 +1,87 @@
+{
+  "baseline_git_commit": "77f12e8",
+  "removed_vias": [
+    {
+      "original_index": 157,
+      "net": "VBUS_USB",
+      "x": 45.75,
+      "y": 74.55,
+      "diameter": 0.6,
+      "hole": 0.3
+    },
+    {
+      "original_index": 159,
+      "net": "VBUS_USB",
+      "x": 7.95,
+      "y": 35.7,
+      "diameter": 0.6,
+      "hole": 0.3
+    },
+    {
+      "original_index": 160,
+      "net": "VBUS_USB",
+      "x": 45.75,
+      "y": 74.55,
+      "diameter": 0.6,
+      "hole": 0.3
+    },
+    {
+      "original_index": 163,
+      "net": "VBUS_USB",
+      "x": 45.75,
+      "y": 74.55,
+      "diameter": 0.6,
+      "hole": 0.3
+    },
+    {
+      "original_index": 165,
+      "net": "VBUS_USB",
+      "x": 21.6,
+      "y": 47.1,
+      "diameter": 0.6,
+      "hole": 0.3
+    },
+    {
+      "original_index": 166,
+      "net": "VBUS_USB",
+      "x": 45.75,
+      "y": 74.55,
+      "diameter": 0.6,
+      "hole": 0.3
+    }
+  ],
+  "via_count_before": 167,
+  "via_count_after": 161,
+  "screenshot_reported_drill_pair_errors": 12,
+  "wire_physical_error": [
+    {
+      "route": 768,
+      "net": "DRIVE_SAFE",
+      "old_width_mm": 0.124,
+      "new_width_mm": 0.15,
+      "points": [
+        [
+          82.477,
+          30.962
+        ],
+        [
+          83.31,
+          30.962
+        ]
+      ]
+    }
+  ],
+  "editor_1oz_width_limits_mm": [
+    0.127,
+    2.54
+  ],
+  "baseline_sha256": "e59aa72a2c5df3546e0cc77d718ab1a0777bcdffaab0cbf000adb6bb0da02340",
+  "archive_sha256": "3e3febb1326688af11da6927473ea3cffaa1fa38adc6cd7fa542cd0dda53e17b",
+  "original_drill_pair_errors_reproduced": 12,
+  "original_track_width_errors_reproduced": 1,
+  "repaired_drill_pair_errors": 0,
+  "repaired_track_width_errors": 0,
+  "unique_via_locations_and_sizes_preserved": true,
+  "route_coordinates_and_all_other_widths_preserved": true,
+  "limits": "Independent checks only; reimport into online editor, rebuild pours and rerun official DRC."
+}

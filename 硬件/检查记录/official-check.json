@@ -11,5 +11,5 @@
   "all_library_references_valid": true,
   "canvas_parser_pass": true,
   "limits": "Parser validation only; editor display and ERC/DRC not tested.",
-  "archive_sha256": "e59aa72a2c5df3546e0cc77d718ab1a0777bcdffaab0cbf000adb6bb0da02340"
+  "archive_sha256": "3e3febb1326688af11da6927473ea3cffaa1fa38adc6cd7fa542cd0dda53e17b"
 }
