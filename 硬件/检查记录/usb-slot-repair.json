@@ -1,0 +1,116 @@
+{
+  "before_sha256": "4ce1e2d891ab56daa4b21c095c8d2ecba55ae2b418c5e9ac2736458716e4c109",
+  "sha256": "e77d2a65dd744472a946ff5d3285f065c9e31e10aad827443370eeba5f2a017d",
+  "original_slot_to_track_errors": [
+    {
+      "slot": "J15.e50",
+      "object": "route190_GND",
+      "type": "track",
+      "gap_mm": 0.272979,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route191_GND",
+      "type": "track",
+      "gap_mm": 0.242805,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route192_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route384_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route385_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route940_VBUS_USB",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e50",
+      "object": "route941_VBUS_USB",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e51",
+      "object": "route189_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e51",
+      "object": "route195_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e51",
+      "object": "route389_GND",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    },
+    {
+      "slot": "J15.e51",
+      "object": "route427_+5V_SENS",
+      "type": "track",
+      "gap_mm": 0.0,
+      "required_mm": 0.3
+    }
+  ],
+  "repaired_slot_clearances": [
+    {
+      "slot": "J15.e50",
+      "minimum_track_clearance_mm": 0.330832
+    },
+    {
+      "slot": "J15.e51",
+      "minimum_track_clearance_mm": 0.434862
+    }
+  ],
+  "schematic_library_components_padnets_unchanged": true,
+  "changed_route_groups": [
+    104,
+    105,
+    237,
+    238,
+    240,
+    256,
+    502,
+    503
+  ],
+  "removed_track_segments": 19,
+  "added_track_segments": 20,
+  "slot_to_copper_clearance_mm": 0.3,
+  "ground_plane_slot_clearance_mm": 0.35,
+  "ground_pours_before": 3,
+  "ground_pours_after": 2,
+  "ground_regions": {
+    "1": 7,
+    "2": 7
+  },
+  "project_default_sheet_reference_repaired": true,
+  "limits": "Independent native archive geometry; user must rerun online editor DRC after importing."
+}
