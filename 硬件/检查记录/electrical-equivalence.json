@@ -1,0 +1,10 @@
+{
+  "baseline_git_commit": "bb92d64",
+  "baseline_sha256": "e77d2a65dd744472a946ff5d3285f065c9e31e10aad827443370eeba5f2a017d",
+  "archive_sha256": "e59aa72a2c5df3546e0cc77d718ab1a0777bcdffaab0cbf000adb6bb0da02340",
+  "schematic_and_non_pcb_records_identical": true,
+  "component_ids_and_electrical_attributes_identical": true,
+  "footprint_pad_definitions_identical": true,
+  "pcb_pad_nets_identical": true,
+  "limits": "Electrical data equivalence only; physical routing is checked separately."
+}
